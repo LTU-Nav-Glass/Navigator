@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Navigator</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_dest">Destination</string>
+    <string name="searchbar_hint">Search room...</string>
+    <string name="desc_compass">Compass</string>
+    <string name="desc_compass_arrow">Compass arrow</string>
 </resources>
