@@ -8,7 +8,7 @@ The app can be used in conjunction with AR glasses to allow a seamless integrati
 - Lasse - @[La-Cezanne](https://github.com/La-Cezanne)
   > "It´s scrumming time!"
 - Ethan - @[ethanh1-ai](https://github.com/ethanh1-ai)
-  > Quote TODO
+  > "Oh the code's not working? Oj då."
 - Alexandre - @[Deleranax](https://github.com/Deleranax)
   > Quote TODO
 - Elliot - @[elliotdelano](https://github.com/elliotdelano)
