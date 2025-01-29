@@ -6,7 +6,6 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/search_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <com.google.android.material.search.SearchBar
@@ -17,34 +16,67 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.search.SearchView
+        android:id="@+id/search_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:hint="@string/searchbar_hint"
         app:layout_anchor="@id/search_bar">
-
-        <!-- Search suggestions/results go here (ScrollView, RecyclerView, etc.). -->
-
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/search_results"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </ScrollView>
     </com.google.android.material.search.SearchView>
 
     <RelativeLayout
+        android:id="@+id/compass"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center">
-
         <ImageView
-            android:id="@+id/compass_image"
+            android:id="@+id/compass_disk"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:contentDescription="@string/desc_compass"
             android:src="@drawable/compass" />
-
         <ImageView
-            android:id="@+id/compass_arrow_image"
+            android:id="@+id/compass_arrow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:contentDescription="@string/desc_compass_arrow"
             android:src="@drawable/compass_arrow" />
-
     </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/bottom_sheet"
+        style="@style/Widget.Material3.BottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        app:behavior_hideable="false"
+        app:behavior_peekHeight="90dp">
+
+        <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_nav_info"
+            android:textAppearance="?textAppearanceTitleLarge"
+            android:layout_marginBottom="16dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/nav_infos"
+            android:layout_width="match_parent"
+            android:layout_height="200dp">
+        </androidx.recyclerview.widget.RecyclerView>
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

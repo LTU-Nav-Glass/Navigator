@@ -4,4 +4,7 @@
     <string name="searchbar_hint">Search room...</string>
     <string name="desc_compass">Compass</string>
     <string name="desc_compass_arrow">Compass arrow</string>
+    <string name="title_nav_info">Navigation informations</string>
+    <string name="title_distance">Distance</string>
+    <string name="placeholder_distance">\? m</string>
 </resources>
