@@ -55,6 +55,21 @@ public class LocationAPI {
         }
         return null; // Location not found
     }
+
+    public List<String> findLocationsByPartialId(String partialId) {
+        List<String> matchingRooms = new ArrayList<>();
+        if (partialId == null || partialId.trim().isEmpty()) {
+            return matchingRooms; // Return empty list for null or empty input
+        }
+
+        String lowerCasePartialId = partialId.toLowerCase();
+        for (Room r : rooms) {
+            if (r.getId().toLowerCase().contains(lowerCasePartialId)) {
+                matchingRooms.add(r.getId());
+            }
+        }
+        return matchingRooms;
+    }
 }
 
 /* *** DEMO USAGE ***
