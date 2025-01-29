@@ -3,5 +3,10 @@
     "id": "test",
     "longitude": 10.0,
     "latitude": 11.0
+  },
+  {
+    "id": "A2011",
+    "longitude": 22.137618480752703,
+    "latitude": 65.61760290996648
   }
 ]
