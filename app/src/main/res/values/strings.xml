@@ -1,10 +1,13 @@
 <resources>
     <string name="app_name">Navigator</string>
-    <string name="title_dest">Destination</string>
-    <string name="searchbar_hint">Search room...</string>
+    <string name="searchbar_hint">Search room</string>
     <string name="desc_compass">Compass</string>
     <string name="desc_compass_arrow">Compass arrow</string>
-    <string name="title_nav_info">Navigation informations</string>
+    <string name="title_nav_info">Navigation information</string>
+    <string name="title_current_location">Device Location</string>
+    <string name="title_target_location">Target Location</string>
+    <string name="title_orientation">Target Location</string>
+    <string name="title_bearing">Bearing</string>
     <string name="title_distance">Distance</string>
-    <string name="placeholder_distance">\? m</string>
+    <string name="title_azimuth">Azimuth</string>
 </resources>

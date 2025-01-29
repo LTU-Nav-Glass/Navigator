@@ -8,6 +8,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -15,6 +17,7 @@ import com.google.android.material.search.SearchBar;
 import com.google.android.material.search.SearchView;
 
 import se.ltu.navigator.databinding.ActivityMainBinding;
+import se.ltu.navigator.navinfo.NavInfoAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     // Navigation infos
     protected LinearLayout bottomSheet;
     protected BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
-    protected RecyclerView navInfos;
+    protected RecyclerView navInfo;
 
     /*
      * Logic
@@ -60,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Create compass manager
         compassManager = new CompassManager(this);
-        this.compassManager.startMonitoring();
 
         // Binding
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -76,11 +78,15 @@ public class MainActivity extends AppCompatActivity {
 
         bottomSheet = findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        navInfo = findViewById(R.id.nav_info);
 
         // Event handling
-
         searchView.getEditText().setOnKeyListener(this::onSearchKeyTyped);
         searchView.getEditText().setOnEditorActionListener(this::onSearchAction);
+
+        // Recycler views
+        navInfo.setLayoutManager(new LinearLayoutManager(this));
+        navInfo.setAdapter(new NavInfoAdapter());
     }
 
     /**
