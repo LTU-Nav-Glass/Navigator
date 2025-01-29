@@ -4,17 +4,14 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -25,22 +22,22 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import se.ltu.navigator.databinding.ActivityMainBinding;
+import se.ltu.navigator.util.userLocationManager;
 
 public class MainActivity extends AppCompatActivity {
+
+    //private appPermissionRequest permissionRequest;
+
     private final int REQUEST_PERMISSION_FINE_LOCATION = 1;
+
 
     //these two variables will be used for updating user during movement
     private final long MINIMUM_TIME_BETWEEN_UPDATES = 55;
     private final float MINIMUM_DISTANCE_CHANGE_FOR_UPDATES = 3;
-
-    private Context context; //provides info regarding the user's location
-
-    private Location user; //location object storing the user's lat and long
-    private LocationManager locationManager;
     private LocationListener locationListener; //able to give current updates to locationManager
 
-    private double user_alt,user_long,user_lat; //private vars holding user's altitude, longitude, and latitude
-
+    private Context context; //provides info regarding the user's location
+    private userLocationManager user;
     private ActivityMainBinding binding;
 
     private static final String mainTag = "MainActivity"; //Tag usually indicates method log message comes from
@@ -62,37 +59,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        initUI();
-
-        Log.d(mainTag, "Created"); //test to see if log cat works
-
-
-        //Conditional to measure if perms have been granted
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            Log.d(mainTag, "No Permission");
-
-            showPhoneStatePermission();
-            return;
-        } else {
-
-            locationManager = (LocationManager) getSystemService(context.LOCATION_SERVICE); //instantiated locationManager with the user's location information
-
-            Log.d(mainTag, "Permission");
-
-            user = locationManager.getLastKnownLocation(locationManager.NETWORK_PROVIDER); //instantiate user based off phone's coordinates
-
-            //Line below may be used for getting location updates
-            //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATES, MINIMUM_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
-
-        }
+        initUser();
 
     }
 
@@ -111,33 +78,36 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        user = locationManager.getLastKnownLocation(locationManager.NETWORK_PROVIDER); //instantiate user based off phone's coordinates
-
-        // Puts data from Location object into field variables
-        user_alt = user.getAltitude();
-        user_long = user.getLongitude();
-        user_lat = user.getLatitude();
+        initUser();
 
         // Logs tags of each number for testing
-        Log.d(mainTag, "Altitude: " + user_alt); //test to see how accurate it is
-        Log.d(mainTag, "Longitude: " + user_long);
-        Log.d(mainTag, "Latitude: " + user_lat);
+        Log.d(mainTag, "Altitude: " + user.getAltitude()); //test to see how accurate it is
+        Log.d(mainTag, "Longitude: " + user.getLongitude());
+        Log.d(mainTag, "Latitude: " + user.getLatitude());
 
     }
 
-    /**
-     * This method initializes the basic UI of the preset of the app
-     */
-    private void initUI() {
-        BottomNavigationView navView = findViewById(R.id.nav_view);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(binding.navView, navController);
+    private void initUser()
+    {
+        //Conditional to measure if perms have been granted
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            showPhoneStatePermission();
+            return;
+        } else {
+
+            LocationManager locationManager = (LocationManager) getSystemService(context.LOCATION_SERVICE); //instantiated locationManager with the user's location information
+
+            user = new userLocationManager(locationManager.getLastKnownLocation(locationManager.NETWORK_PROVIDER)); //instantiate user based off phone's coordinates);
+        }
     }
 
     /**
