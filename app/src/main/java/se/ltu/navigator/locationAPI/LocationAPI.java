@@ -6,6 +6,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.location.Location;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -13,14 +15,14 @@ import java.util.List;
 
 public class LocationAPI {
 
-    private List<Location> locations;
+    private List<Room> rooms;
 
     public LocationAPI(Context context) {
-        locations = loadLocations(context);
+        rooms = loadLocations(context);
     }
 
-    private List<Location> loadLocations(Context context) {
-        List<Location> locationList = new ArrayList<>();
+    private List<Room> loadLocations(Context context) {
+        List<Room> locationList = new ArrayList<>();
         try {
             AssetManager assetManager = context.getAssets();
             InputStream inputStream = assetManager.open("locations.json");
@@ -34,9 +36,9 @@ public class LocationAPI {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String id = jsonObject.getString("id");
-                float longitude = (float) jsonObject.getDouble("longitude");
-                float latitude = (float) jsonObject.getDouble("latitude");
-                Location location = new Location(id, longitude, latitude);
+                double longitude = jsonObject.getDouble("longitude");
+                double latitude = jsonObject.getDouble("latitude");
+                Room location = new Room(id, longitude, latitude);
                 locationList.add(location);
             }
         } catch (IOException | JSONException e) {
@@ -46,9 +48,9 @@ public class LocationAPI {
     }
 
     public Location getLocationById(String locationId) {
-        for (Location location : locations) {
-            if (location.getId().equals(locationId)) {
-                return location;
+        for (Room r : rooms) {
+            if (r.getId().equals(locationId)) {
+                return r.getLocation();
             }
         }
         return null; // Location not found
