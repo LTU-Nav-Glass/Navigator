@@ -116,8 +116,12 @@ public class CompassManager implements SensorEventListener {
             lastAzimuth = currentAzimuth;
 
             if (currentLocation != null && targetLocation != null) {
+                NavInfo.CURRENT_LOCATION.setData(currentLocation.getLatitude() + ", " + currentLocation.getLongitude());
+                NavInfo.CURRENT_LOCATION.setData(targetLocation.getLatitude() + ", " + targetLocation.getLongitude());
+                NavInfo.DISTANCE.setData(currentLocation.distanceTo(targetLocation) + "m");
+
                 currentBearing = currentLocation.bearingTo(targetLocation);
-                NavInfo.AZIMUTH.setData(currentBearing + "°");
+                NavInfo.BEARING.setData(currentBearing + "°");
 
                 // Animate the rotation of the compass (arrow)
                 RotateAnimation rotateArrow = new RotateAnimation(-lastBearing, -currentBearing, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);

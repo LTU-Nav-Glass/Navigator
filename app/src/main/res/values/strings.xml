@@ -6,7 +6,6 @@
     <string name="title_nav_info">Navigation information</string>
     <string name="title_current_location">Device Location</string>
     <string name="title_target_location">Target Location</string>
-    <string name="title_orientation">Target Location</string>
     <string name="title_bearing">Bearing</string>
     <string name="title_distance">Distance</string>
     <string name="title_azimuth">Azimuth</string>

@@ -9,7 +9,6 @@ public enum NavInfo {
     CURRENT_LOCATION(R.string.title_current_location),
     TARGET_LOCATION(R.string.title_target_location),
     AZIMUTH(R.string.title_azimuth),
-    ORIENTATION(R.string.title_orientation),
     BEARING(R.string.title_bearing),
     DISTANCE(R.string.title_distance);
 
