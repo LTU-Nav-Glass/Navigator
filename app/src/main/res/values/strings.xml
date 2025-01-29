@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name">Navigator</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="searchbar_hint">Search room</string>
+    <string name="desc_compass">Compass</string>
+    <string name="desc_compass_arrow">Compass arrow</string>
+    <string name="title_nav_info">Navigation information</string>
+    <string name="title_current_location">Device Location</string>
+    <string name="title_target_location">Target Location</string>
+    <string name="title_orientation">Target Location</string>
+    <string name="title_bearing">Bearing</string>
+    <string name="title_distance">Distance</string>
+    <string name="title_azimuth">Azimuth</string>
 </resources>
