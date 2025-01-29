@@ -30,13 +30,6 @@ public class MainActivity extends AppCompatActivity {
 
     private final int REQUEST_PERMISSION_FINE_LOCATION = 1;
 
-
-    //these two variables will be used for updating user during movement
-    private final long MINIMUM_TIME_BETWEEN_UPDATES = 55;
-    private final float MINIMUM_DISTANCE_CHANGE_FOR_UPDATES = 3;
-    private LocationListener locationListener; //able to give current updates to locationManager
-
-    private Context context; //provides info regarding the user's location
     private userLocationManager user;
     private ActivityMainBinding binding;
 
@@ -78,8 +71,6 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        initUser();
-
         // Logs tags of each number for testing
         Log.d(mainTag, "Altitude: " + user.getAltitude()); //test to see how accurate it is
         Log.d(mainTag, "Longitude: " + user.getLongitude());
@@ -87,29 +78,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void initUser()
+
+    public void initUser()
     {
-        //Conditional to measure if perms have been granted
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-
-            showPhoneStatePermission();
-            return;
-        } else {
-
-            LocationManager locationManager = (LocationManager) getSystemService(context.LOCATION_SERVICE); //instantiated locationManager with the user's location information
-
-            user = new userLocationManager(locationManager.getLastKnownLocation(locationManager.NETWORK_PROVIDER)); //instantiate user based off phone's coordinates);
-        }
+        user = new userLocationManager(this);
     }
-
     /**
      *
      * @param requestCode
@@ -137,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * This method is run when the app is created and shows the current phone state and displays what permissions are needed
      */
-    private void showPhoneStatePermission()
+    public void showPhoneStatePermission()
     {
         int permissionCheck = ContextCompat.checkSelfPermission(
                 this, Manifest.permission.ACCESS_FINE_LOCATION);
