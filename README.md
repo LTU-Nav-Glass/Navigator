@@ -10,7 +10,7 @@ The app can be used in conjunction with AR glasses to allow a seamless integrati
 - Ethan - @[ethanh1-ai](https://github.com/ethanh1-ai)
   > "Oh the code's not working? Oj då."
 - Alexandre - @[Deleranax](https://github.com/Deleranax)
-  > Quote TODO
+  > "Thank you helping us help you help us all."
 - Elliot - @[elliotdelano](https://github.com/elliotdelano)
   > Quote TODO
 
