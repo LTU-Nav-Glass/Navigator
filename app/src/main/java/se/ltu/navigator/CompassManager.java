@@ -13,6 +13,7 @@ import android.view.animation.RotateAnimation;
 import org.jetbrains.annotations.NotNull;
 
 import se.ltu.navigator.navinfo.NavInfo;
+import se.ltu.navigator.util.UserLocationManager;
 
 /**
  * Compass logic manager responsible to change arrow and compass angle according to provided
@@ -34,6 +35,7 @@ public class CompassManager implements SensorEventListener {
     private float lastAzimuth;
     private float currentBearing;
     private float lastBearing;
+    private UserLocationManager userLocationManager;
 
     public CompassManager(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -45,6 +47,10 @@ public class CompassManager implements SensorEventListener {
         rotationMatrix[ 4] = 1;
         rotationMatrix[ 8] = 1;
         rotationMatrix[12] = 1;
+
+        userLocationManager = new UserLocationManager(mainActivity);
+
+        currentLocation = userLocationManager.getLocation();
     }
 
     /**
@@ -95,6 +101,9 @@ public class CompassManager implements SensorEventListener {
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
+        userLocationManager.update();
+        this.currentLocation = userLocationManager.getLocation();
+
         if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
             // We compute the rotation matrix from the rotation vector
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);

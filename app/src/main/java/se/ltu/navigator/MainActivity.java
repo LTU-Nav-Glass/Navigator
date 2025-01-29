@@ -1,11 +1,8 @@
 package se.ltu.navigator;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -14,8 +11,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.util.Log;
 import android.widget.Toast;
-
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,16 +22,12 @@ import com.google.android.material.search.SearchBar;
 import com.google.android.material.search.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import se.ltu.navigator.databinding.ActivityMainBinding;
 import se.ltu.navigator.locationAPI.LocationAPI;
 import se.ltu.navigator.navinfo.NavInfoAdapter;
 import se.ltu.navigator.search.SearchAdapter;
-import se.ltu.navigator.util.userLocationManager;
+import se.ltu.navigator.util.UserLocationManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final int REQUEST_PERMISSION_FINE_LOCATION = 1;
 
-    private userLocationManager user;
+    private UserLocationManager user;
     private ActivityMainBinding binding;
 
     // Search
@@ -177,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void initUser()
     {
-        user = new userLocationManager(this);
+        user = new UserLocationManager(this);
     }
 
     /**
