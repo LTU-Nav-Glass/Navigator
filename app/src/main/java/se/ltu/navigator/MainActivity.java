@@ -19,7 +19,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,7 +33,9 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import se.ltu.navigator.databinding.ActivityMainBinding;
+import se.ltu.navigator.locationAPI.LocationAPI;
 import se.ltu.navigator.navinfo.NavInfoAdapter;
+import se.ltu.navigator.search.SearchAdapter;
 import se.ltu.navigator.util.userLocationManager;
 
 public class MainActivity extends AppCompatActivity {
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     protected SearchBar searchBar;
     protected SearchView searchView;
     protected RecyclerView searchResults;
+    protected SearchAdapter searchAdapter;
 
     // Compass
     protected RelativeLayout compass;
@@ -70,8 +72,10 @@ public class MainActivity extends AppCompatActivity {
      * Logic
      */
 
-    // Compass logic
-    private CompassManager compassManager;
+    // Modules
+    protected CompassManager compassManager;
+    protected SearchBarManager searchBarManager;
+    protected LocationAPI locationAPI;
 
     /**
      * Method called when the view is created.
@@ -86,9 +90,6 @@ public class MainActivity extends AppCompatActivity {
 
         initUser();
 
-        // Create compass manager
-        compassManager = new CompassManager(this);
-
         // Binding
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
         searchBar = findViewById(R.id.search_bar);
         searchView = findViewById(R.id.search_view);
         searchResults = findViewById(R.id.search_results);
+        searchAdapter = new SearchAdapter();
 
         compass = findViewById(R.id.compass);
         compassDisk = findViewById(R.id.compass_disk);
@@ -105,11 +107,15 @@ public class MainActivity extends AppCompatActivity {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         navInfo = findViewById(R.id.nav_info);
 
-        // Event handling
-        searchView.getEditText().setOnKeyListener(this::onSearchKeyTyped);
-        searchView.getEditText().setOnEditorActionListener(this::onSearchAction);
+        // Initialize modules
+        compassManager = new CompassManager(this);
+        searchBarManager = new SearchBarManager(this);
+        locationAPI = new LocationAPI(this);
 
         // Recycler views
+        searchResults.setLayoutManager(new LinearLayoutManager(this));
+        searchResults.setAdapter(searchAdapter);
+
         navInfo.setLayoutManager(new LinearLayoutManager(this));
         navInfo.setAdapter(new NavInfoAdapter());
     }
@@ -163,9 +169,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Logs tags of each number for testing
-        Log.d(mainTag, "Altitude: " + user.getAltitude()); //test to see how accurate it is
-        Log.d(mainTag, "Longitude: " + user.getLongitude());
-        Log.d(mainTag, "Latitude: " + user.getLatitude());
+        Log.d(TAG, "Altitude: " + user.getAltitude()); //test to see how accurate it is
+        Log.d(TAG, "Longitude: " + user.getLongitude());
+        Log.d(TAG, "Latitude: " + user.getLatitude());
 
     }
 
