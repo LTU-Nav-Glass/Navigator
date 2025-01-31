@@ -6,6 +6,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
@@ -19,7 +20,7 @@ import se.ltu.navigator.util.UserLocationManager;
  * Compass logic manager responsible to change arrow and compass angle according to provided
  * locations.
  */
-public class CompassManager implements SensorEventListener {
+public class CompassManager implements SensorEventListener, UserLocationManager.LocationUpdateListener {
     public static final int SAMPLING_PERIOD_US = 10000;
 
     private final MainActivity mainActivity;
@@ -48,9 +49,15 @@ public class CompassManager implements SensorEventListener {
         rotationMatrix[ 8] = 1;
         rotationMatrix[12] = 1;
 
-        userLocationManager = new UserLocationManager(mainActivity);
+        userLocationManager = new UserLocationManager(mainActivity, this);
 
-        currentLocation = userLocationManager.getLocation();
+//        currentLocation = userLocationManager.getLocation();
+        userLocationManager.startUpdates();
+    }
+
+    @Override
+    public void onLocationUpdated(Location location) {
+        setCurrentLocation(location);
     }
 
     /**
@@ -72,6 +79,9 @@ public class CompassManager implements SensorEventListener {
      */
     public void setCurrentLocation(@NotNull Location currentLocation) {
         this.currentLocation = currentLocation;
+//        Log.d("CompassManager", "Altitude: " + currentLocation.getAltitude()); //test to see how accurate it is
+//        Log.d("CompassManager", "Longitude: " + currentLocation.getLongitude());
+//        Log.d("CompassManager", "Latitude: " + currentLocation.getLatitude());
     }
 
     /**

@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        initUser();
+//        initUser();
 
         // Binding
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -160,15 +160,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Logs tags of each number for testing
-        Log.d(TAG, "Altitude: " + user.getAltitude()); //test to see how accurate it is
-        Log.d(TAG, "Longitude: " + user.getLongitude());
-        Log.d(TAG, "Latitude: " + user.getLatitude());
+//        Log.d(TAG, "Altitude: " + user.getAltitude()); //test to see how accurate it is
+//        Log.d(TAG, "Longitude: " + user.getLongitude());
+//        Log.d(TAG, "Latitude: " + user.getLatitude());
 
     }
 
     public void initUser()
     {
-        user = new UserLocationManager(this);
+//        user = new UserLocationManager(this);
     }
 
     /**

@@ -1,6 +1,7 @@
 package se.ltu.navigator.util;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -21,6 +22,13 @@ public class UserLocationManager
     private final float MINIMUM_DISTANCE_CHANGE_FOR_UPDATES = 3;
     private LocationListener locationListener; //able to give current updates to locationManager
     private MainActivity mainActivity;
+    private LocationManager locationManager;
+
+    public interface LocationUpdateListener {
+        void onLocationUpdated(Location location);
+    }
+
+    private LocationUpdateListener locationUpdateListener;
 
     //private Context context;
     public UserLocationManager(Location location)
@@ -31,10 +39,12 @@ public class UserLocationManager
         this.location = location;
     }
 
-    public UserLocationManager(MainActivity mainActivity)
+    public UserLocationManager(MainActivity mainActivity, LocationUpdateListener listener)
     {
         this.mainActivity = mainActivity;
-        this.update();
+        this.locationUpdateListener = listener;
+        locationManager = (LocationManager) mainActivity.getSystemService(Context.LOCATION_SERVICE);
+        startUpdates();
     }
 
     public double getLongitude()
@@ -56,6 +66,30 @@ public class UserLocationManager
     {
         return location;
     }
+
+    public void startUpdates() {
+        if (ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            mainActivity.showPhoneStatePermission();
+            return;
+        }
+
+        locationListener = location -> {
+            setLocation(location);
+            if(locationUpdateListener != null) {
+                locationUpdateListener.onLocationUpdated(location);
+            }
+        };
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATES, MINIMUM_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MINIMUM_TIME_BETWEEN_UPDATES, MINIMUM_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
+    }
+
+    public void stopUpdates() {
+        if (locationListener != null) {
+            locationManager.removeUpdates(locationListener);
+            locationListener = null;
+        }
+    }
+
 
     public void update(){
         LocationManager locationManager = (LocationManager) mainActivity.getSystemService(mainActivity.LOCATION_SERVICE); //instantiated locationManager with the user's location information
@@ -85,6 +119,7 @@ public class UserLocationManager
 
     public void setLocation(Location location)
     {
+        if(location == null) return;
         this.location = location;
         longitude = location.getLongitude();
         latitude = location.getLatitude();
