@@ -15,30 +15,17 @@ import androidx.core.app.ActivityCompat;
 import se.ltu.navigator.MainActivity;
 
 
-public class UserLocationManager implements LocationListener
+public class UserLocationManager
 {
     private MainActivity mainActivity;
     private LocationManager locationManager;
-    private LocationRequest locationRequest;
+    private LocationListener locationListener;
     private Location location;
     private double longitude, latitude, altitude;
 
     //these two variables will be used for updating user during movement
     private final long TIME_BETWEEN_UPDATES = 5000;
-    private final float MINIMUM_DISTANCE_CHANGE_FOR_UPDATES = 3;
-
-    public interface LocationUpdateListener {
-        void onLocationUpdated(Location location);
-    }
-
-    //private Context context;
-    public UserLocationManager(Location location)
-    {
-        longitude = location.getLongitude();
-        latitude = location.getLatitude();
-        altitude = location.getAltitude();
-        this.location = location;
-    }
+    private final float MINIMUM_DISTANCE_CHANGE_FOR_UPDATES = 0;
 
     public UserLocationManager(MainActivity mainActivity)
     {
@@ -78,7 +65,7 @@ public class UserLocationManager implements LocationListener
             return;
         }
 
-        locationManager.requestLocationUpdates(LocationManager.FUSED_PROVIDER, TIME_BETWEEN_UPDATES, MINIMUM_DISTANCE_CHANGE_FOR_UPDATES, this);
+        locationManager.requestLocationUpdates(LocationManager.FUSED_PROVIDER, TIME_BETWEEN_UPDATES, MINIMUM_DISTANCE_CHANGE_FOR_UPDATES, this::setLocation);
         //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, TIME_BETWEEN_UPDATES, MINIMUM_DISTANCE_CHANGE_FOR_UPDATES, this);
     }
 
@@ -86,7 +73,7 @@ public class UserLocationManager implements LocationListener
      * Stops location updates.
      */
     public void stopUpdates() {
-        locationManager.removeUpdates(this);
+        locationManager.removeUpdates(this::setLocation);
     }
 
 
@@ -120,10 +107,7 @@ public class UserLocationManager implements LocationListener
         longitude = location.getLongitude();
         latitude = location.getLatitude();
         altitude = location.getAltitude();
-    }
 
-    @Override
-    public void onLocationChanged(@NonNull Location location) {
-        setLocation(location);
+        Log.i("LOC", "Localisation");
     }
 }

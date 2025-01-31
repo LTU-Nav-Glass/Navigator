@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
     private final int REQUEST_PERMISSION_FINE_LOCATION = 1;
 
-    private UserLocationManager user;
     private ActivityMainBinding binding;
 
     // Search
@@ -80,8 +79,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-//        initUser();
 
         // Binding
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -167,11 +164,6 @@ public class MainActivity extends AppCompatActivity {
 //        Log.d(TAG, "Longitude: " + user.getLongitude());
 //        Log.d(TAG, "Latitude: " + user.getLatitude());
 
-    }
-
-    public void initUser()
-    {
-//        user = new UserLocationManager(this);
     }
 
     /**
