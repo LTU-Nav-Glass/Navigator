@@ -42,12 +42,26 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/desc_compass"
             android:src="@drawable/compass" />
-        <ImageView
+        <RelativeLayout
             android:id="@+id/compass_arrow"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/desc_compass_arrow"
-            android:src="@drawable/compass_arrow" />
+            android:layout_gravity="center">
+            <ImageView
+                android:id="@+id/compass_arrow_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/desc_compass_arrow"
+                android:src="@drawable/compass_arrow" />
+            <TextView
+                android:id="@+id/compass_arrow_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textColor="?colorSecondaryContainer"
+                android:textAppearance="?textAppearanceTitleLarge"
+                android:text="-" />
+        </RelativeLayout>
     </RelativeLayout>
 
     <LinearLayout

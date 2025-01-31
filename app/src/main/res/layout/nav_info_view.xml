@@ -19,6 +19,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?textAppearanceDisplaySmall"
             android:textColor="?colorAccent"
+            android:gravity="center_horizontal"
             android:text="CONTENT" />
 
         <TextView
@@ -27,6 +28,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?textAppearanceTitleSmall"
             android:textColor="?colorOnSecondaryContainer"
+            android:gravity="center_horizontal"
             android:text="TITLE" />
     </LinearLayout>
 

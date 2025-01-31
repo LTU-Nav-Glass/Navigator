@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -52,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
     // Compass
     protected RelativeLayout compass;
     protected ImageView compassDisk;
-    protected ImageView compassArrow;
+    protected RelativeLayout compassArrow;
+    protected TextView compassArrowText;
 
     // Navigation infos
     protected LinearLayout bottomSheet;
@@ -88,11 +90,11 @@ public class MainActivity extends AppCompatActivity {
         searchBar = findViewById(R.id.search_bar);
         searchView = findViewById(R.id.search_view);
         searchResults = findViewById(R.id.search_results);
-        searchAdapter = new SearchAdapter();
 
         compass = findViewById(R.id.compass);
         compassDisk = findViewById(R.id.compass_disk);
         compassArrow = findViewById(R.id.compass_arrow);
+        compassArrowText = findViewById(R.id.compass_arrow_text);
 
         bottomSheet = findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -105,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Recycler views
         searchResults.setLayoutManager(new LinearLayoutManager(this));
+        searchAdapter = new SearchAdapter(searchBarManager::search);
         searchResults.setAdapter(searchAdapter);
 
         navInfo.setLayoutManager(new LinearLayoutManager(this));

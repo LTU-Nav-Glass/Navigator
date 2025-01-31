@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import se.ltu.navigator.R;
 import se.ltu.navigator.navinfo.NavInfo;
@@ -15,8 +16,10 @@ import se.ltu.navigator.navinfo.NavInfo;
 public class SearchAdapter extends RecyclerView.Adapter<SearchViewHolder> {
 
     private String[] results;
+    private final Consumer<String> searcher;
 
-    public SearchAdapter() {
+    public SearchAdapter(Consumer<String> searcher) {
+        this.searcher = searcher;
         this.results = new String[0];
     }
 
@@ -25,7 +28,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchViewHolder> {
     public SearchViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // Creating view from XML
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_view, parent, false);
-        return new SearchViewHolder(itemView);
+        return new SearchViewHolder(itemView, searcher);
     }
 
     @Override
