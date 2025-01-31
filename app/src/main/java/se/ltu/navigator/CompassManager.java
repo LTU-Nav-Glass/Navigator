@@ -136,14 +136,14 @@ public class CompassManager implements SensorEventListener, UserLocationManager.
 
             if (currentLocation != null && targetLocation != null) {
                 NavInfo.CURRENT_LOCATION.setData(currentLocation.getLatitude() + ", " + currentLocation.getLongitude());
-                NavInfo.CURRENT_LOCATION.setData(targetLocation.getLatitude() + ", " + targetLocation.getLongitude());
+                NavInfo.TARGET_LOCATION.setData(targetLocation.getLatitude() + ", " + targetLocation.getLongitude());
                 NavInfo.DISTANCE.setData(currentLocation.distanceTo(targetLocation) + "m");
 
                 currentBearing = currentLocation.bearingTo(targetLocation);
                 NavInfo.BEARING.setData(currentBearing + "°");
 
                 // Animate the rotation of the compass (arrow)
-                RotateAnimation rotateArrow = new RotateAnimation(-lastBearing, -currentBearing, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                RotateAnimation rotateArrow = new RotateAnimation(lastBearing, currentBearing, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                 rotateArrow.setDuration(SAMPLING_PERIOD_US/1000);
                 rotateArrow.setInterpolator(new LinearInterpolator());
                 rotateArrow.setFillAfter(true);
