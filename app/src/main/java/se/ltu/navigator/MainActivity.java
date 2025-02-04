@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
         compassManager = new CompassManager(this);
         searchBarManager = new SearchBarManager(this);
         locationAPI = new LocationAPI(this);
+        floorPromptHelper = new FloorPromptHelper(this, compassManager, "Your Floor", "What floor are you on?"); //when initialized, automattically prompts user for floor
         fingerprintManager = new FingerprintManager(this);
         floorPromptHelper = new FloorPromptHelper(this, compassManager, "Your Floor", "What floor are you on?"); //when initialized, automattically prompts user for floor
 
@@ -115,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
         navInfo.setLayoutManager(new LinearLayoutManager(this));
         navInfo.setAdapter(new NavInfoAdapter());
+
     }
 
     /**
@@ -296,4 +298,5 @@ public class MainActivity extends AppCompatActivity {
     {
         ActivityCompat.requestPermissions(this, new String[] {permissionName}, permissionRequestCode);
     }
+
 }
