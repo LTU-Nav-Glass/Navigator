@@ -3,6 +3,11 @@ package se.ltu.navigator.util;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -17,11 +22,19 @@ import se.ltu.navigator.MainActivity;
 
 public class UserLocationManager
 {
-    private MainActivity mainActivity;
-    private LocationManager locationManager;
-    private LocationListener locationListener;
+    private static final String TAG = "UserLocationManager";
+    private final MainActivity mainActivity;
+
+    private final SensorManager sensorManager;
+
+    private final Sensor accelerometer;
+
+    private float lastZ;
+
+    private final LocationManager locationManager;
     private Location location;
     private double longitude, latitude, altitude;
+    private int floor;
 
     //these two variables will be used for updating user during movement
     private final long TIME_BETWEEN_UPDATES = 5000;
@@ -31,8 +44,12 @@ public class UserLocationManager
     {
         this.mainActivity = mainActivity;
         locationManager = (LocationManager) mainActivity.getSystemService(Context.LOCATION_SERVICE); //instantiated locationManager with the user's location information
-        locationManager = (LocationManager) mainActivity.getSystemService(Context.LOCATION_SERVICE);
-        startUpdates();
+
+        //Instantiating vars for vertical movement detection
+
+        lastZ = 0;
+        sensorManager = (SensorManager) mainActivity.getSystemService(Context.SENSOR_SERVICE);
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
 
     public double getLongitude()
@@ -48,6 +65,11 @@ public class UserLocationManager
     public double getAltitude()
     {
         return altitude;
+    }
+
+    public int getFloor()
+    {
+        return floor;
     }
 
     public Location getLocation()
@@ -66,7 +88,14 @@ public class UserLocationManager
         }
 
         locationManager.requestLocationUpdates(LocationManager.FUSED_PROVIDER, TIME_BETWEEN_UPDATES, MINIMUM_DISTANCE_CHANGE_FOR_UPDATES, this::setLocation);
-        //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, TIME_BETWEEN_UPDATES, MINIMUM_DISTANCE_CHANGE_FOR_UPDATES, this);
+
+        if (accelerometer != null)
+        {
+            //only registers sensorManager if accelerometer is present in the phone
+            //sensorManager.registerListener((SensorEventListener) mainActivity, accelerometer, SensorManager.SENSOR_DELAY_UI);
+            Log.d(TAG, "Runs registerListener");
+        }
+
     }
 
     /**
@@ -74,6 +103,7 @@ public class UserLocationManager
      */
     public void stopUpdates() {
         locationManager.removeUpdates(this::setLocation);
+        //sensorManager.unregisterListener((SensorListener) mainActivity);
     }
 
 
@@ -83,8 +113,34 @@ public class UserLocationManager
             return;
         }
 
-        setLocation(locationManager.getLastKnownLocation(locationManager.FUSED_PROVIDER)); //instantiate user based off phone's coordinates);
+        setLocation(locationManager.getLastKnownLocation(LocationManager.FUSED_PROVIDER)); //instantiate user based off phone's coordinates)
     }
+
+    /**
+     * This method updates the z coords of the user
+     * @param e
+     */
+    /**
+    public boolean detectZ(SensorEvent e)
+    {
+        float z = e.values[2]; //Z-axis acceleration
+
+        float deltaZ = z - lastZ;
+
+        if(deltaZ > 1.5) //Should indicate upwards movement
+            {
+                Log.d(TAG, "Up");
+                return true;
+            } else if(deltaZ < -1.5) //Should indicate downwards movement
+            {
+                Log.d(TAG, "Down");
+                return true;
+            }
+        lastZ = z;
+        return false;
+    }
+     NOT CURRENTLY IMPLEMENTED
+     **/
 
     public void setLongitude(double longitude)
     {
@@ -99,6 +155,12 @@ public class UserLocationManager
     public void setAltitude(double altitude)
     {
         this.altitude = altitude;
+    }
+
+    public void setFloor(int floor)
+    {
+        this.floor = floor;
+        Log.d(TAG, "Floor set to: " + this.floor);
     }
 
     public void setLocation(Location location) {

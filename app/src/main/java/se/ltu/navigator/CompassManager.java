@@ -80,6 +80,15 @@ public class CompassManager implements SensorEventListener {
     }
 
     /**
+     * Returns the UserLocationManager object
+     * @return
+     */
+    public UserLocationManager getUserLocationManager()
+    {
+        return this.userLocationManager;
+    }
+
+    /**
      * Called when there is a new sensor event.  Note that "on changed"
      * is somewhat of a misnomer, as this will also be called if we have a
      * new reading from a sensor with the exact same sensor values (but a
