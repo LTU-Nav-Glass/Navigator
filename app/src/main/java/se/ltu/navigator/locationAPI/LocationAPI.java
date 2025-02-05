@@ -128,10 +128,12 @@ public class LocationAPI {
 
                             // Create and return new Room object
                             Room location = new Room(id, longitude, latitude);
-                            rooms.add(location); // Optionally add to local list
+                            rooms.add(location);
 
                             // Write new location to locations.json
-                            writeLocationToFile(id, longitude, latitude);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                                writeLocationToFile(id, longitude, latitude);
+                            }
 
                             callback.onResult(location.getLocation());
                         } else {
