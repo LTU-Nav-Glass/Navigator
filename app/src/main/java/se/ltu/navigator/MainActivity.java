@@ -3,6 +3,8 @@ package se.ltu.navigator;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -29,6 +31,7 @@ import se.ltu.navigator.fingerprint.FingerprintManager;
 import se.ltu.navigator.locationAPI.LocationAPI;
 import se.ltu.navigator.navinfo.NavInfoAdapter;
 import se.ltu.navigator.search.SearchAdapter;
+import se.ltu.navigator.util.FloorPromptHelper;
 import se.ltu.navigator.util.UserLocationManager;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
      */
 
     private static final String TAG = "MainActivity"; //Tag usually indicates class log message comes from
-    //private appPermissionRequest permissionRequest;
 
     private final int REQUEST_PERMISSION_FINE_LOCATION = 1;
 
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     protected CompassManager compassManager;
     protected SearchBarManager searchBarManager;
     protected LocationAPI locationAPI;
+    protected FloorPromptHelper floorPromptHelper;
     protected FingerprintManager fingerprintManager;
 
     /**
@@ -104,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
         searchBarManager = new SearchBarManager(this);
         locationAPI = new LocationAPI(this);
         fingerprintManager = new FingerprintManager(this);
+        floorPromptHelper = new FloorPromptHelper(this, compassManager, "Your Floor", "What floor are you on?"); //when initialized, automattically prompts user for floor
 
         // Recycler views
         searchResults.setLayoutManager(new LinearLayoutManager(this));
@@ -112,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
         navInfo.setLayoutManager(new LinearLayoutManager(this));
         navInfo.setAdapter(new NavInfoAdapter());
+
     }
 
     /**
@@ -148,6 +153,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * This method measures when the sensor changes
+     * This is used in determining when to prompt user for input of floor
+     * @param e
+     */
+    /**
+    public void onSensorChange(SensorEvent e)
+    {
+
+        //update z param of userLocationManager
+        if(e.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
+        {
+
+            if(compassManager.getUserLocationManager().detectZ(e))
+            {
+                promptUserFloor();
+            }
+
+        }
+
+    }
+     NOT CURRENTLY IMPLEMENTED
+    **/
+
+
+
+    /**
      * This method instantiates the field variables of longitude, latitude, and the user's altitude
      *  ~ Currently the method sets user to the last known location but that may change when wanting to update in real time
      */
@@ -161,12 +192,6 @@ public class MainActivity extends AppCompatActivity {
             showPhoneStatePermission();
             return;
         }
-
-        // Logs tags of each number for testing
-//        Log.d(TAG, "Altitude: " + user.getAltitude()); //test to see how accurate it is
-//        Log.d(TAG, "Longitude: " + user.getLongitude());
-//        Log.d(TAG, "Latitude: " + user.getLatitude());
-
     }
 
     /**
@@ -233,6 +258,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Handles calls of FloorPromptHelper Object
+     */
+    public void promptUserFloor() {
+        floorPromptHelper.showInputDialog();
+    }
+
+    /**
      *
      * @param title
      * @param message
@@ -265,4 +297,5 @@ public class MainActivity extends AppCompatActivity {
     {
         ActivityCompat.requestPermissions(this, new String[] {permissionName}, permissionRequestCode);
     }
+
 }
