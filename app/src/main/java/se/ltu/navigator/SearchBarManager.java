@@ -40,6 +40,7 @@ public class SearchBarManager implements TextWatcher {
             mainActivity.searchBar.setText(search);
             mainActivity.searchView.hide();
             mainActivity.compassManager.setTargetLocation(location);
+            mainActivity.promptUserFloor();
         }
     }
 
