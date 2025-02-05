@@ -25,6 +25,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import se.ltu.navigator.databinding.ActivityMainBinding;
+import se.ltu.navigator.fingerprint.FingerprintManager;
 import se.ltu.navigator.locationAPI.LocationAPI;
 import se.ltu.navigator.navinfo.NavInfoAdapter;
 import se.ltu.navigator.search.SearchAdapter;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     protected CompassManager compassManager;
     protected SearchBarManager searchBarManager;
     protected LocationAPI locationAPI;
+    protected FingerprintManager fingerprintManager;
 
     /**
      * Method called when the view is created.
@@ -101,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
         compassManager = new CompassManager(this);
         searchBarManager = new SearchBarManager(this);
         locationAPI = new LocationAPI(this);
+        fingerprintManager = new FingerprintManager(this);
 
         // Recycler views
         searchResults.setLayoutManager(new LinearLayoutManager(this));
