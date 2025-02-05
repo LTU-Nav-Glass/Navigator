@@ -6,10 +6,8 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationRequest;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import se.ltu.navigator.MainActivity;
@@ -66,7 +64,6 @@ public class UserLocationManager
         }
 
         locationManager.requestLocationUpdates(LocationManager.FUSED_PROVIDER, TIME_BETWEEN_UPDATES, MINIMUM_DISTANCE_CHANGE_FOR_UPDATES, this::setLocation);
-        //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, TIME_BETWEEN_UPDATES, MINIMUM_DISTANCE_CHANGE_FOR_UPDATES, this);
     }
 
     /**
@@ -108,6 +105,6 @@ public class UserLocationManager
         latitude = location.getLatitude();
         altitude = location.getAltitude();
 
-        Log.i("LOC", "Localisation");
+        Log.i("ULM", "Updating localisation");
     }
 }
