@@ -31,6 +31,7 @@ import se.ltu.navigator.fingerprint.FingerprintManager;
 import se.ltu.navigator.locationAPI.LocationAPI;
 import se.ltu.navigator.navinfo.NavInfoAdapter;
 import se.ltu.navigator.search.SearchAdapter;
+import se.ltu.navigator.util.FloorPromptHelper;
 import se.ltu.navigator.util.UserLocationManager;
 
 public class MainActivity extends AppCompatActivity {
@@ -105,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
         compassManager = new CompassManager(this);
         searchBarManager = new SearchBarManager(this);
         locationAPI = new LocationAPI(this);
-        floorPromptHelper = new FloorPromptHelper(this, compassManager, "Your Floor", "What floor are you on?"); //when initialized, automattically prompts user for floor
         fingerprintManager = new FingerprintManager(this);
         floorPromptHelper = new FloorPromptHelper(this, compassManager, "Your Floor", "What floor are you on?"); //when initialized, automattically prompts user for floor
 
@@ -260,8 +260,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Handles calls of FloorPromptHelper Object
      */
-    public void promptUserFloor()
-    {
+    public void promptUserFloor() {
         floorPromptHelper.showInputDialog();
     }
 
