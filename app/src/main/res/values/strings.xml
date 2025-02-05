@@ -9,4 +9,6 @@
     <string name="title_bearing">Bearing</string>
     <string name="title_distance">Distance</string>
     <string name="title_azimuth">Azimuth</string>
+    <string name="title_fp">WiFi Fingerprinting</string>
+    <string name="desc_close_fp">Close</string>
 </resources>

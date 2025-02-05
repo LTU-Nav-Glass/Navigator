@@ -27,10 +27,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import se.ltu.navigator.databinding.ActivityMainBinding;
+import se.ltu.navigator.fingerprint.FingerprintManager;
 import se.ltu.navigator.locationAPI.LocationAPI;
 import se.ltu.navigator.navinfo.NavInfoAdapter;
 import se.ltu.navigator.search.SearchAdapter;
-import se.ltu.navigator.util.FloorPromptHelper;
 import se.ltu.navigator.util.UserLocationManager;
 
 public class MainActivity extends AppCompatActivity {
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     protected SearchBarManager searchBarManager;
     protected LocationAPI locationAPI;
     protected FloorPromptHelper floorPromptHelper;
-
+    protected FingerprintManager fingerprintManager;
 
     /**
      * Method called when the view is created.
@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
         compassManager = new CompassManager(this);
         searchBarManager = new SearchBarManager(this);
         locationAPI = new LocationAPI(this);
+        fingerprintManager = new FingerprintManager(this);
         floorPromptHelper = new FloorPromptHelper(this, compassManager, "Your Floor", "What floor are you on?"); //when initialized, automattically prompts user for floor
 
         // Recycler views
@@ -114,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
 
         navInfo.setLayoutManager(new LinearLayoutManager(this));
         navInfo.setAdapter(new NavInfoAdapter());
-
     }
 
     /**
@@ -296,5 +296,4 @@ public class MainActivity extends AppCompatActivity {
     {
         ActivityCompat.requestPermissions(this, new String[] {permissionName}, permissionRequestCode);
     }
-
 }
