@@ -12,7 +12,9 @@ import android.view.animation.RotateAnimation;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.TemporalUnit;
 
 import se.ltu.navigator.navinfo.NavInfo;
 import se.ltu.navigator.util.UserLocationManager;
@@ -22,7 +24,7 @@ import se.ltu.navigator.util.UserLocationManager;
  * locations.
  */
 public class CompassManager implements SensorEventListener {
-    public static final int SAMPLING_PERIOD_US = 10000;
+    public static final int SAMPLING_PERIOD_US = 20000;
 
     private final MainActivity mainActivity;
     private final SensorManager sensorManager;
@@ -122,10 +124,10 @@ public class CompassManager implements SensorEventListener {
             Location currentLocation = userLocationManager.getLocation();
             if (currentLocation != null) {
                 Instant instant = Instant.ofEpochMilli(currentLocation.getTime());
-                NavInfo.CURRENT_LOCATION.setData(currentLocation.getLatitude() + ",\n" + currentLocation.getLongitude() + "\n(at " + instant.toString() + ")");
+                NavInfo.CURRENT_LOCATION.setData(currentLocation.getLatitude() + ", " + currentLocation.getLongitude() + "\n(" + Duration.between(instant, Instant.now()).toSeconds() + "s ago)");
 
                 if (targetLocation != null) {
-                    NavInfo.TARGET_LOCATION.setData(targetLocation.getLatitude() + ",\n" + targetLocation.getLongitude());
+                    NavInfo.TARGET_LOCATION.setData(targetLocation.getLatitude() + ", " + targetLocation.getLongitude());
                     NavInfo.DISTANCE.setData(Math.round(currentLocation.distanceTo(targetLocation)) + "m");
 
                     currentBearing = currentLocation.bearingTo(targetLocation);
