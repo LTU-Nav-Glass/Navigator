@@ -57,7 +57,8 @@ public class LocationAPI {
                 String id = jsonObject.getString("id");
                 double longitude = jsonObject.getDouble("longitude");
                 double latitude = jsonObject.getDouble("latitude");
-                Room location = new Room(id, longitude, latitude);
+                int floor = jsonObject.getInt("floor");
+                Room location = new Room(id, longitude, latitude, floor);
                 locationList.add(location);
             }
         } catch (IOException | JSONException e) {
@@ -67,7 +68,7 @@ public class LocationAPI {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    private void writeLocationToFile(String id, double longitude, double latitude) {
+    private void writeLocationToFile(String id, double longitude, double latitude, int floor) {
         try {
             // Read existing locations
             AssetManager assetManager = context.getAssets();
@@ -81,6 +82,7 @@ public class LocationAPI {
             newLocation.put("id", id);
             newLocation.put("longitude", longitude);
             newLocation.put("latitude", latitude);
+            newLocation.put("floor", floor);
             jsonArray.put(newLocation);
 
             // Write updated JSON back to file
@@ -90,6 +92,17 @@ public class LocationAPI {
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    //method to get room object by id
+    //only pulls local data because it assumes any required online calls have already been made
+    public Room getRoomById(String id) {
+        for (Room r : rooms) {
+            if (r.getId().equals(id)) {
+                return r;
+            }
+        }
+        return null;
     }
 
     public void getLocationById(String locationId, Callback<Location> callback) {
@@ -124,15 +137,16 @@ public class LocationAPI {
                             JSONObject roomObject = roomsArray.getJSONObject(0);
                             double latitude = roomObject.getDouble("y");
                             double longitude = roomObject.getDouble("x");
+                            int floor = roomObject.getInt("level");
                             String id = roomObject.getString("name");
 
                             // Create and return new Room object
-                            Room location = new Room(id, longitude, latitude);
+                            Room location = new Room(id, longitude, latitude, floor);
                             rooms.add(location);
 
                             // Write new location to locations.json
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                                writeLocationToFile(id, longitude, latitude);
+                                writeLocationToFile(id, longitude, latitude, floor);
                             }
 
                             callback.onResult(location.getLocation());
