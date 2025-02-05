@@ -11,10 +11,8 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationRequest;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import se.ltu.navigator.MainActivity;
@@ -170,6 +168,6 @@ public class UserLocationManager
         latitude = location.getLatitude();
         altitude = location.getAltitude();
 
-        Log.i("LOC", "Localisation");
+        Log.i("ULM", "Updating localisation");
     }
 }
