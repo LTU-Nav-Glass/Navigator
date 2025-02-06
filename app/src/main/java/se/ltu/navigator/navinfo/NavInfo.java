@@ -6,6 +6,7 @@ import se.ltu.navigator.R;
 import se.ltu.navigator.util.ObservableString;
 
 public enum NavInfo {
+    LOCATION_ACCURACY(R.string.title_location_accuracy),
     CURRENT_LOCATION(R.string.title_current_location),
     TARGET_LOCATION(R.string.title_target_location),
     COMPASS_ACCURACY(R.string.title_compass_accuracy),

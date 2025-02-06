@@ -4,6 +4,7 @@
     <string name="desc_compass">Compass</string>
     <string name="desc_compass_arrow">Compass arrow</string>
     <string name="title_nav_info">Navigation information</string>
+    <string name="title_location_accuracy">Location Accuracy</string>
     <string name="title_current_location">Device Location</string>
     <string name="title_target_location">Target Location</string>
     <string name="title_bearing">Bearing</string>

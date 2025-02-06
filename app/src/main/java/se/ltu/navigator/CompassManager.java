@@ -134,10 +134,10 @@ public class CompassManager implements SensorEventListener {
             Location currentLocation = userLocationManager.getLocation();
             if (currentLocation != null) {
                 Instant instant = Instant.ofEpochMilli(currentLocation.getTime());
+                NavInfo.LOCATION_ACCURACY.setData(Math.round(currentLocation.getAccuracy()) + "m");
                 NavInfo.CURRENT_LOCATION.setData(currentLocation.getLatitude() + ", " + currentLocation.getLongitude() + "\n(" + Duration.between(instant, Instant.now()).toSeconds() + "s ago)");
 
                 if (targetLocation != null) {
-                    NavInfo.TARGET_LOCATION.setData(targetLocation.getLatitude() + ", " + targetLocation.getLongitude());
                     NavInfo.DISTANCE.setData(Math.round(currentLocation.distanceTo(targetLocation)) + "m");
 
                     currentBearing = currentLocation.bearingTo(targetLocation);
@@ -153,12 +153,17 @@ public class CompassManager implements SensorEventListener {
 
                     lastBearing = currentBearing;
                 } else {
-                    NavInfo.TARGET_LOCATION.setData("-");
                     NavInfo.BEARING.setData("-");
                     NavInfo.DISTANCE.setData("-");
                 }
             } else {
                 NavInfo.CURRENT_LOCATION.setData("-");
+            }
+
+            if (targetLocation != null) {
+                NavInfo.TARGET_LOCATION.setData(targetLocation.getLatitude() + ", " + targetLocation.getLongitude());
+            } else {
+                NavInfo.TARGET_LOCATION.setData("-");
             }
         }
     }
