@@ -28,7 +28,7 @@ import se.ltu.navigator.fingerprint.FingerprintManager;
 import se.ltu.navigator.location.LocationAPI;
 import se.ltu.navigator.navinfo.NavInfoAdapter;
 import se.ltu.navigator.search.SearchAdapter;
-import se.ltu.navigator.location.FloorPromptHelper;
+import se.ltu.navigator.dialog.FloorPromptHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
      * Handles calls of FloorPromptHelper Object
      */
     public void promptUserFloor() {
-        floorPromptHelper.showInputDialog();
+        floorPromptHelper.show();
     }
 
     /**
@@ -280,4 +280,7 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, new String[] {permissionName}, permissionRequestCode);
     }
 
+    public View getRoot() {
+        return binding.getRoot();
+    }
 }

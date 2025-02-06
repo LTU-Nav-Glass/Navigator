@@ -1,16 +1,14 @@
-package se.ltu.navigator.location;
+package se.ltu.navigator.dialog;
 
 import android.content.DialogInterface;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 import se.ltu.navigator.CompassManager;
@@ -20,20 +18,15 @@ import se.ltu.navigator.R;
 /*
  * Controls the pop-ups the user receives for flooring
  */
-public class FloorPromptHelper {
-
-    private final MainActivity mainActivity;
-    private final CompassManager compassManager;
+public class FloorPromptHelper extends DialogHelper {
     private EditText inputText;
 
-    public FloorPromptHelper(MainActivity mainActivity, CompassManager compassManager)
-    {
-        // Initiallize field vars
-        this.mainActivity = mainActivity;
-        this.compassManager = compassManager; //add method to access UserLocationManager object to change floor
+    public FloorPromptHelper(MainActivity mainActivity, CompassManager compassManager) {
+        super(mainActivity, compassManager);
     }
 
-    public void showInputDialog() {
+    @Override
+    public void show() {
         MaterialAlertDialogBuilder alert = new MaterialAlertDialogBuilder(mainActivity);
         alert.setIcon(R.drawable.baseline_not_listed_location_24);
         alert.setTitle(R.string.title_floor_prompt);
@@ -45,7 +38,9 @@ public class FloorPromptHelper {
             public void onClick(DialogInterface dialog, int whichButton) {
                 int floor = Integer.parseInt(inputText.getText().toString());
                 compassManager.getUserLocationManager().setFloor(floor);
-                Toast.makeText(mainActivity, "Your floor is " + floor, Toast.LENGTH_SHORT).show();
+                Snackbar.make(mainActivity.getRoot(), "Your floor is " + floor, Snackbar.LENGTH_SHORT)
+                        .setAnchorView(R.id.bottom_sheet)
+                        .show();
             }
         });
 

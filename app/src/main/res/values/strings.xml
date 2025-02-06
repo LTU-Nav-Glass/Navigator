@@ -9,6 +9,7 @@
     <string name="title_bearing">Bearing</string>
     <string name="title_distance">Distance</string>
     <string name="title_azimuth">Azimuth</string>
+    <string name="title_compass_accuracy">Compass Accuracy</string>
     <string name="title_input_floor_prompt">Floor</string>
     <string name="helper_input_floor_prompt">For ground level, put 0</string>
     <string name="title_floor_prompt">Your Floor</string>

@@ -10,6 +10,8 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
@@ -174,6 +176,35 @@ public class CompassManager implements SensorEventListener {
      */
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Ignore?
+        switch (accuracy) {
+            case SensorManager.SENSOR_STATUS_NO_CONTACT:
+                warnAccuracy();
+                NavInfo.COMPASS_ACCURACY.setData("NO CONTACT");
+                break;
+            case SensorManager.SENSOR_STATUS_UNRELIABLE:
+                warnAccuracy();
+                NavInfo.COMPASS_ACCURACY.setData("UNRELIABLE");
+                break;
+            case SensorManager.SENSOR_STATUS_ACCURACY_LOW:
+                warnAccuracy();
+                NavInfo.COMPASS_ACCURACY.setData("LOW");
+                break;
+            case SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM:
+                NavInfo.COMPASS_ACCURACY.setData("MEDIUM");
+                break;
+            case SensorManager.SENSOR_STATUS_ACCURACY_HIGH:
+                NavInfo.COMPASS_ACCURACY.setData("HIGH");
+                break;
+        }
+    }
+
+    /**
+     * Warn user about the compass accuracy.
+     */
+    private void warnAccuracy() {
+        Snackbar.make(mainActivity.getRoot(), "The compass may be inaccurate or unavailable", Snackbar.LENGTH_INDEFINITE)
+                .setAnchorView(R.id.bottom_sheet)
+                .setAction("Got it", v -> {})
+                .show();
     }
 }
