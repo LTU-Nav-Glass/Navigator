@@ -83,12 +83,18 @@
                     android:text="-" />
             </RelativeLayout>
         </RelativeLayout>
-        <org.mapsforge.map.android.view.MapView
-            android:id="@+id/mapView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@drawable/circular_mask" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="360dp"
+            android:layout_height="360dp"
+            app:cardCornerRadius="180dp"
+            android:layout_gravity="center">
+            <org.mapsforge.map.android.view.MapView
+                android:id="@+id/mapView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/circular_mask" />
+        </androidx.cardview.widget.CardView>
     </ViewSwitcher>
     <LinearLayout
         android:id="@+id/bottom_sheet"
