@@ -3,15 +3,12 @@ package se.ltu.navigator;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,11 +25,10 @@ import androidx.core.content.ContextCompat;
 
 import se.ltu.navigator.databinding.ActivityMainBinding;
 import se.ltu.navigator.fingerprint.FingerprintManager;
-import se.ltu.navigator.locationAPI.LocationAPI;
+import se.ltu.navigator.location.LocationAPI;
 import se.ltu.navigator.navinfo.NavInfoAdapter;
 import se.ltu.navigator.search.SearchAdapter;
-import se.ltu.navigator.util.FloorPromptHelper;
-import se.ltu.navigator.util.UserLocationManager;
+import se.ltu.navigator.location.FloorPromptHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -107,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         searchBarManager = new SearchBarManager(this);
         locationAPI = new LocationAPI(this);
         fingerprintManager = new FingerprintManager(this);
-        floorPromptHelper = new FloorPromptHelper(this, compassManager, "Your Floor", "What floor are you on?"); //when initialized, automattically prompts user for floor
+        floorPromptHelper = new FloorPromptHelper(this, compassManager); //when initialized, automattically prompts user for floor
 
         // Recycler views
         searchResults.setLayoutManager(new LinearLayoutManager(this));
@@ -137,19 +133,6 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 
         this.compassManager.stopMonitoring();
-    }
-
-    /**
-     * Method called when a key is typed in the search bar.
-     *
-     * @param v The view of the event.
-     * @param keyCode The code of the key typed.
-     * @param event The corresponding event.
-     * @return True to consume the action, false otherwise.
-     */
-    private boolean onSearchKeyTyped(View v, int keyCode, KeyEvent event) {
-        // TODO: Update the recycler view `searchResults` with the room list
-        return false;
     }
 
     /**
@@ -210,12 +193,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Controls what happens when the user agrees or disagrees to the permission prompt when opening the app
      *
      * @param requestCode
      * @param permissions
      * @param grantResults
-     *
-     * Controls what happens when the user agrees or disagrees to the permission prompt when opening the app
      */
     public void onRequestPermissionResult(int requestCode, String permissions[], int[] grantResults)
     {
@@ -265,12 +247,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * This method shows the explanation of why the permissions are needed
      *
      * @param title
      * @param message
      * @param permission
      * @param permissionRequestCode
-     * This method shows the explanation of why the permissions are needed
      */
     private void showExplanation(String title, String message, final String permission, final int permissionRequestCode)
     {
@@ -288,10 +270,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * This method initially prompts the user for permissions
      *
      * @param permissionName
      * @param permissionRequestCode
-     * This method initially prompts the user for permissions
      */
     private void requestPermission(String permissionName, int permissionRequestCode)
     {

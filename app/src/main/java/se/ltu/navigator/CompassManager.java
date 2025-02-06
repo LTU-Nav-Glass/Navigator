@@ -14,10 +14,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.TemporalUnit;
 
 import se.ltu.navigator.navinfo.NavInfo;
-import se.ltu.navigator.util.UserLocationManager;
+import se.ltu.navigator.location.UserLocationManager;
 
 /**
  * Compass logic manager responsible to change arrow and compass angle according to provided

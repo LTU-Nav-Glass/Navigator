@@ -1,4 +1,4 @@
-package se.ltu.navigator.locationAPI;
+package se.ltu.navigator.location;
 
 import android.location.Location;
 

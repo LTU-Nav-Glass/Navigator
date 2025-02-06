@@ -1,15 +1,11 @@
-package se.ltu.navigator.util;
+package se.ltu.navigator.location;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorListener;
 import android.hardware.SensorManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.util.Log;
 
@@ -168,6 +164,6 @@ public class UserLocationManager
         latitude = location.getLatitude();
         altitude = location.getAltitude();
 
-        Log.i("ULM", "Updating localisation");
+        Log.i(TAG, "Updating localisation");
     }
 }

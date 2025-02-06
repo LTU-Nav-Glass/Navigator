@@ -9,6 +9,10 @@
     <string name="title_bearing">Bearing</string>
     <string name="title_distance">Distance</string>
     <string name="title_azimuth">Azimuth</string>
-    <string name="title_fp">WiFi Fingerprinting</string>
-    <string name="desc_close_fp">Close</string>
+    <string name="title_input_floor_prompt">Floor</string>
+    <string name="helper_input_floor_prompt">For ground level, put 0</string>
+    <string name="title_floor_prompt">Your Floor</string>
+    <string name="message_floor_prompt">To help you navigate correctly, enter the Floor Number you are currently located on.</string>
+    <string name="floor_prompt_positive">Confirm</string>
+    <string name="floor_prompt_negative">Cancel</string>
 </resources>
