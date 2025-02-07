@@ -41,6 +41,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 import se.ltu.navigator.databinding.ActivityMainBinding;
+import se.ltu.navigator.dialog.FloorPromptHelper;
 import se.ltu.navigator.fingerprint.FingerprintManager;
 import se.ltu.navigator.location.LocationAPI;
 import se.ltu.navigator.navinfo.NavInfoAdapter;
