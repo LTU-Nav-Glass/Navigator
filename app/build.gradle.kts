@@ -46,4 +46,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation(libs.okhttp)
+    implementation("org.mapsforge:mapsforge-map-android:0.23.0")
+    implementation("org.mapsforge:mapsforge-map:0.23.0")
+    implementation("org.mapsforge:mapsforge-map-reader:0.23.0")
+    implementation("org.mapsforge:mapsforge-core:0.23.0")
 }

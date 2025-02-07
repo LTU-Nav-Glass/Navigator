@@ -1,6 +1,5 @@
 package se.ltu.navigator;
 
-import android.location.Location;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -34,14 +33,16 @@ public class SearchBarManager implements TextWatcher {
      * @param search The location name.
      */
     public void search(String search) {
-        Location location = mainActivity.locationAPI.getLocationById(search);
-
-        if (location != null) {
-            mainActivity.searchBar.setText(search);
-            mainActivity.searchView.hide();
-            mainActivity.compassManager.setTargetLocation(location);
-            mainActivity.promptUserFloor();
-        }
+        mainActivity.locationAPI.getLocationById(search, location -> {
+            if (location != null) {
+                mainActivity.runOnUiThread(() -> {
+                    mainActivity.searchBar.setText(search);
+                    mainActivity.searchView.hide();
+                    mainActivity.compassManager.setTargetLocation(location);
+                    mainActivity.promptUserFloor();
+                });
+            }
+        });
     }
 
     @Override

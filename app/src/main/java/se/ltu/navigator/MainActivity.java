@@ -3,14 +3,17 @@ package se.ltu.navigator;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,12 +26,25 @@ import com.google.android.material.search.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import org.mapsforge.core.model.LatLong;
+import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
+import org.mapsforge.map.android.util.AndroidUtil;
+import org.mapsforge.map.android.view.MapView;
+import org.mapsforge.map.reader.MapFile;
+import org.mapsforge.map.layer.cache.TileCache;
+import org.mapsforge.map.layer.renderer.TileRendererLayer;
+import org.mapsforge.map.rendertheme.ExternalRenderTheme;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+
 import se.ltu.navigator.databinding.ActivityMainBinding;
 import se.ltu.navigator.fingerprint.FingerprintManager;
 import se.ltu.navigator.location.LocationAPI;
 import se.ltu.navigator.navinfo.NavInfoAdapter;
 import se.ltu.navigator.search.SearchAdapter;
-import se.ltu.navigator.dialog.FloorPromptHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -59,6 +75,12 @@ public class MainActivity extends AppCompatActivity {
     protected BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
     protected RecyclerView navInfo;
 
+    // Map Stuff
+    protected ViewSwitcher mapSwitcher;
+    protected Button mapButton;
+
+    protected MapView mapView;
+
     /*
      * Logic
      */
@@ -81,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        AndroidGraphicFactory.createInstance(getApplication());
+
         // Binding
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -98,6 +122,16 @@ public class MainActivity extends AppCompatActivity {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         navInfo = findViewById(R.id.nav_info);
 
+        //Map Stuff
+        mapSwitcher = findViewById(R.id.map_switcher);
+        mapButton = findViewById(R.id.map_button);
+
+        mapView = findViewById(R.id.mapView);
+        mapView.setClickable(false);
+        mapView.getMapScaleBar().setVisible(false);
+        mapView.setBuiltInZoomControls(false);
+        mapSetup();
+
         // Initialize modules
         compassManager = new CompassManager(this);
         searchBarManager = new SearchBarManager(this);
@@ -113,6 +147,54 @@ public class MainActivity extends AppCompatActivity {
         navInfo.setLayoutManager(new LinearLayoutManager(this));
         navInfo.setAdapter(new NavInfoAdapter());
 
+        mapButton.setOnClickListener(v -> {
+            mapSwitcher.showNext();
+        });
+    }
+
+    private void mapSetup() {
+        try {
+            AssetManager assetManager = getAssets();
+            InputStream inputStream = assetManager.open("planet_22.13,65.615_22.151,65.621.map");
+            File tempFile = File.createTempFile("temp_map", ".map", getCacheDir());
+            FileOutputStream outputStream = new FileOutputStream(tempFile);
+
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+
+            outputStream.close();
+            inputStream.close();
+
+            TileCache tileCache = AndroidUtil.createTileCache(this, "mapcache",
+                    mapView.getModel().displayModel.getTileSize(), 1f,
+                    mapView.getModel().frameBufferModel.getOverdrawFactor());
+
+            MapFile mapData = new MapFile(tempFile);
+
+            TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache,
+                    mapData, mapView.getModel().mapViewPosition,
+                    AndroidGraphicFactory.INSTANCE);
+
+            File renderThemeFile = new File(getCacheDir(), "default.xml");
+            try (InputStream renderThemeStream = assetManager.open("default.xml");
+                 FileOutputStream renderThemeOutputStream = new FileOutputStream(renderThemeFile)) {
+                while ((length = renderThemeStream.read(buffer)) > 0) {
+                    renderThemeOutputStream.write(buffer, 0, length);
+                }
+            }
+
+            tileRendererLayer.setXmlRenderTheme(new ExternalRenderTheme(renderThemeFile));
+
+
+            mapView.getLayerManager().getLayers().add(tileRendererLayer);
+            mapView.setCenter(new LatLong(65.618, 22.141));
+            mapView.setZoomLevel((byte) 18);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

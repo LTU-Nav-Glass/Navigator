@@ -2,16 +2,19 @@
   {
     "id": "test",
     "longitude": 10.0,
-    "latitude": 11.0
+    "latitude": 11.0,
+    "floor": 1
   },
   {
     "id": "A2011",
     "longitude": 22.137618480752703,
-    "latitude": 65.61760290996648
+    "latitude": 65.61760290996648,
+    "floor": 2
   },
   {
     "id": "A3583",
     "longitude": 22.1376286924418382,
-    "latitude": 65.61689198827665
+    "latitude": 65.61689198827665,
+    "floor": 3
   }
 ]
