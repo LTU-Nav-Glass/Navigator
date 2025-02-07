@@ -13,6 +13,7 @@ import android.view.animation.RotateAnimation;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
+import org.mapsforge.core.model.LatLong;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -136,6 +137,8 @@ public class CompassManager implements SensorEventListener {
                 Instant instant = Instant.ofEpochMilli(currentLocation.getTime());
                 NavInfo.LOCATION_ACCURACY.setData(Math.round(currentLocation.getAccuracy()) + "m");
                 NavInfo.CURRENT_LOCATION.setData(currentLocation.getLatitude() + ", " + currentLocation.getLongitude() + "\n(" + Duration.between(instant, Instant.now()).toSeconds() + "s ago)");
+
+                mainActivity.mapView.setCenter(new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude()));
 
                 if (targetLocation != null) {
                     NavInfo.DISTANCE.setData(Math.round(currentLocation.distanceTo(targetLocation)) + "m");
