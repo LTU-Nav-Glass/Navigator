@@ -12,6 +12,8 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,8 +45,8 @@ public class LocationAPI {
     private List<Room> loadLocations() {
         List<Room> locationList = new ArrayList<>();
         try {
-            AssetManager assetManager = context.getAssets();
-            InputStream inputStream = assetManager.open("locations.json");
+            File file = new File(context.getFilesDir(), "locations.json");
+            InputStream inputStream = new FileInputStream(file);
             int size = inputStream.available();
             byte[] buffer = new byte[size];
             inputStream.read(buffer);
@@ -69,10 +71,14 @@ public class LocationAPI {
 
     @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private void writeLocationToFile(String id, double longitude, double latitude, int floor) {
+        if (getRoomById(id) != null) {
+            return; // Location already exists
+        }
+        rooms.add(new Room(id, longitude, latitude, floor));
         try {
             // Read existing locations
-            AssetManager assetManager = context.getAssets();
-            InputStream inputStream = assetManager.open("locations.json");
+            File file = new File(context.getFilesDir(), "locations.json");
+            InputStream inputStream = new FileInputStream(file);
             String jsonString = new Scanner(inputStream, StandardCharsets.UTF_8).useDelimiter("\\A").next();
             inputStream.close();
 
@@ -142,7 +148,6 @@ public class LocationAPI {
 
                             // Create and return new Room object
                             Room location = new Room(id, longitude, latitude, floor);
-                            rooms.add(location);
 
                             // Write new location to locations.json
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
