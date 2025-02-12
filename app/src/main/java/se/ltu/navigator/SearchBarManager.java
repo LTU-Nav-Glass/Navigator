@@ -2,8 +2,10 @@ package se.ltu.navigator;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 
 public class SearchBarManager implements TextWatcher {
     private MainActivity mainActivity;
@@ -23,7 +25,7 @@ public class SearchBarManager implements TextWatcher {
      * @return True to consume the action, false otherwise.
      */
     private boolean onSearchAction(View v, int actionID, KeyEvent event) {
-        this.search(mainActivity.searchView.getText().toString());
+        if (actionID == EditorInfo.IME_NULL) this.search(mainActivity.searchView.getText().toString());
         return false;
     }
 
@@ -33,6 +35,8 @@ public class SearchBarManager implements TextWatcher {
      * @param search The location name.
      */
     public void search(String search) {
+        mainActivity.searchProgress.setVisibility(View.VISIBLE);
+        mainActivity.searchProgress.setIndeterminate(true);
         mainActivity.locationAPI.getLocationById(search, location -> {
             if (location != null) {
                 mainActivity.runOnUiThread(() -> {
@@ -42,6 +46,10 @@ public class SearchBarManager implements TextWatcher {
                     mainActivity.promptUserFloor();
                 });
             }
+            mainActivity.runOnUiThread(() -> {
+                mainActivity.searchProgress.setIndeterminate(false);
+                mainActivity.searchProgress.setVisibility(View.GONE);
+            });
         });
     }
 

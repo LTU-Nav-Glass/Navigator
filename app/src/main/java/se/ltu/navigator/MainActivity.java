@@ -15,12 +15,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.search.SearchBar;
 import com.google.android.material.search.SearchView;
 import androidx.core.app.ActivityCompat;
@@ -60,8 +64,10 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
 
     // Search
+    protected AppBarLayout appBar;
     protected SearchBar searchBar;
     protected SearchView searchView;
+    protected LinearProgressIndicator searchProgress;
     protected RecyclerView searchResults;
     protected SearchAdapter searchAdapter;
 
@@ -110,8 +116,10 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        appBar = findViewById(R.id.app_bar);
         searchBar = findViewById(R.id.search_bar);
         searchView = findViewById(R.id.search_view);
+        searchProgress = findViewById(R.id.search_progress);
         searchResults = findViewById(R.id.search_results);
 
         compass = findViewById(R.id.compass);
@@ -147,6 +155,20 @@ public class MainActivity extends AppCompatActivity {
 
         navInfo.setLayoutManager(new LinearLayoutManager(this));
         navInfo.setAdapter(new NavInfoAdapter());
+
+        // Disable "Drag" for AppBarLayout
+        // https://stackoverflow.com/questions/34108501/how-to-disable-scrolling-of-appbarlayout-in-coordinatorlayout
+        if (appBar.getLayoutParams() != null) {
+            CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) appBar.getLayoutParams();
+            AppBarLayout.Behavior appBarLayoutBehaviour = new AppBarLayout.Behavior();
+            appBarLayoutBehaviour.setDragCallback(new AppBarLayout.Behavior.DragCallback() {
+                @Override
+                public boolean canDrag(@NonNull AppBarLayout appBarLayout) {
+                    return false;
+                }
+            });
+            layoutParams.setBehavior(appBarLayoutBehaviour);
+        }
 
         mapButton.setOnClickListener(v -> {
             mapSwitcher.showNext();
