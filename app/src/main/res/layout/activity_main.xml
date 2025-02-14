@@ -59,7 +59,7 @@
         android:gravity="center">
 
         <ViewSwitcher
-            android:id="@+id/map_switcher"
+            android:id="@+id/compass"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_gravity="center"
@@ -70,13 +70,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-
             <RelativeLayout
-                android:id="@+id/compass"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center">
-
+                android:layout_height="wrap_content">
                 <ImageView
                     android:id="@+id/compass_disk"
                     android:layout_width="match_parent"

@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     protected SearchAdapter searchAdapter;
 
     // Compass
-    protected RelativeLayout compass;
+    protected ViewSwitcher compass;
     protected ImageView compassDisk;
     protected RelativeLayout compassArrow;
     protected TextView compassArrowText;
@@ -86,10 +86,6 @@ public class MainActivity extends AppCompatActivity {
     protected LinearLayout bottomSheet;
     protected BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
     protected RecyclerView navInfo;
-
-    // Map Stuff
-    protected ViewSwitcher mapSwitcher;
-    protected Button mapButton;
 
     protected MapView mapView;
 
@@ -136,10 +132,6 @@ public class MainActivity extends AppCompatActivity {
         bottomSheet = findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         navInfo = findViewById(R.id.nav_info);
-
-        //Map Stuff
-        mapSwitcher = findViewById(R.id.map_switcher);
-        //mapButton = findViewById(R.id.map_button);
 
         mapView = findViewById(R.id.mapView);
         mapView.setClickable(false);
@@ -229,12 +221,12 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public boolean onDoubleTap(@NonNull MotionEvent e) {
-                    mapSwitcher.showNext();
+                    compass.showNext();
                     return true;
                 }
             });
 
-            mapSwitcher.setOnTouchListener((v, event) -> detector.onTouchEvent(event));
+            compass.setOnTouchListener((v, event) -> detector.onTouchEvent(event));
         } catch (IOException e) {
             e.printStackTrace();
         }
