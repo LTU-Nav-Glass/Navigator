@@ -25,7 +25,7 @@ public class SearchBarManager implements TextWatcher {
      * @return True to consume the action, false otherwise.
      */
     private boolean onSearchAction(View v, int actionID, KeyEvent event) {
-        if (actionID == EditorInfo.IME_NULL) this.search(mainActivity.searchView.getText().toString());
+        if (event != null) this.search(mainActivity.searchView.getText().toString());
         return false;
     }
 
