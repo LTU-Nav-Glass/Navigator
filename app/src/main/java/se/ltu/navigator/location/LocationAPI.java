@@ -113,10 +113,18 @@ public class LocationAPI {
         return null;
     }
 
-    public void getLocationById(String locationId, Callback<Location> callback) {
+    public void getLocationById(String roomId, Callback<Location> callback) {
+        getRoomById(roomId, room -> {
+            if (room != null) {
+                callback.onResult(room.getLocation());
+            }
+        });
+    }
+
+    public void getRoomById(String roomId, Callback<Room> callback) {
         for (Room r : rooms) {
-            if (r.getId().equals(locationId)) {
-                callback.onResult(r.getLocation());
+            if (r.getId().equals(roomId)) {
+                callback.onResult(r);
                 return;
             }
         }
@@ -125,7 +133,7 @@ public class LocationAPI {
             OkHttpClient client = new OkHttpClient();
             try {
                 // Create URL with query parameters
-                String urlString = String.format("https://map.ltu.se/api/data.json?l=LANG&q=%s&c=LUL", locationId);
+                String urlString = String.format("https://map.ltu.se/api/data.json?l=LANG&q=%s&c=LUL", roomId);
                 Request request = new Request.Builder()
                         .url(urlString)
                         .get()
@@ -149,14 +157,14 @@ public class LocationAPI {
                             String id = roomObject.getString("name");
 
                             // Create and return new Room object
-                            Room location = new Room(id, longitude, latitude, floor);
+                            Room room = new Room(id, longitude, latitude, floor);
 
                             // Write new location to locations.json
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                                 writeLocationToFile(id, longitude, latitude, floor);
                             }
 
-                            callback.onResult(location.getLocation());
+                            callback.onResult(room);
                         } else {
                             callback.onResult(null);
                         }
