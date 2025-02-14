@@ -8,8 +8,7 @@
     </item>
     <item>
         <shape android:shape="oval">
-            <stroke android:width="6dp" android:color="?colorOnSecondaryContainer" />
-            <solid android:color="@android:color/transparent" />
+            <solid android:color="?colorTertiaryContainer" />
         </shape>
     </item>
 </selector>

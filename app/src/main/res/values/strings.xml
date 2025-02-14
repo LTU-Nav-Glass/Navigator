@@ -17,4 +17,7 @@
     <string name="message_floor_prompt">To help you navigate correctly, enter the Floor Number you are currently located on.</string>
     <string name="floor_prompt_positive">Confirm</string>
     <string name="floor_prompt_negative">Cancel</string>
+    <string name="button_toggle_map">Map</string>
+    <string name="title_floor">Floor</string>
+    <string name="title_target_floor">Target Floor</string>
 </resources>

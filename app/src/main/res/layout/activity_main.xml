@@ -39,71 +39,91 @@
         </ScrollView>
     </com.google.android.material.search.SearchView>
 
-    <Button
-        android:id="@+id/map_button"
+    <TextView
+        android:id="@+id/floor_indicator"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginVertical="160dp"
         android:layout_marginEnd="30dp"
-        android:layout_gravity="right"
-        android:text="Toggle Map"
-        android:textColor="?colorOnSecondaryContainer"
+        android:layout_gravity="end|bottom"
+        android:gravity="center"
+        android:text="-"
+        android:textColor="?colorOnTertiaryContainer"
         android:textAppearance="?textAppearanceTitleSmall"
         android:background="@drawable/compass_button" />
 
-    <ViewSwitcher
-        android:id="@+id/map_switcher"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:inAnimation="@android:anim/fade_in"
-        android:outAnimation="@android:anim/fade_out">
+        android:gravity="center">
 
-        <RelativeLayout
-            android:id="@+id/compass"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center">
-            <ImageView
-                android:id="@+id/compass_disk"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/desc_compass"
-                android:src="@drawable/compass" />
+        <ViewSwitcher
+            android:id="@+id/map_switcher"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:inAnimation="@android:anim/fade_in"
+            android:outAnimation="@android:anim/fade_out"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
             <RelativeLayout
-                android:id="@+id/compass_arrow"
-                android:layout_width="wrap_content"
+                android:id="@+id/compass"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center">
+
                 <ImageView
-                    android:id="@+id/compass_arrow_image"
+                    android:id="@+id/compass_disk"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:contentDescription="@string/desc_compass_arrow"
-                    android:src="@drawable/compass_arrow" />
-                <TextView
-                    android:id="@+id/compass_arrow_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:textColor="?colorSecondaryContainer"
-                    android:textAppearance="?textAppearanceTitleLarge"
-                    android:text="-" />
-            </RelativeLayout>
-        </RelativeLayout>
+                    android:contentDescription="@string/desc_compass"
+                    android:src="@drawable/compass" />
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="360dp"
-            android:layout_height="360dp"
-            app:cardCornerRadius="180dp"
-            android:layout_gravity="center">
-            <org.mapsforge.map.android.view.MapView
-                android:id="@+id/mapView"
+                <RelativeLayout
+                    android:id="@+id/compass_arrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+
+                    <ImageView
+                        android:id="@+id/compass_arrow_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/desc_compass_arrow"
+                        android:src="@drawable/compass_arrow" />
+
+                    <TextView
+                        android:id="@+id/compass_arrow_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="-"
+                        android:textAppearance="?textAppearanceTitleLarge"
+                        android:textColor="?colorSecondaryContainer" />
+                </RelativeLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/circular_mask" />
-        </androidx.cardview.widget.CardView>
-    </ViewSwitcher>
+                android:layout_gravity="center"
+                android:background="@drawable/disk"
+                android:clipToOutline="true"
+                android:layout_margin="22dp">
+
+                <org.mapsforge.map.android.view.MapView
+                    android:id="@+id/mapView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
+        </ViewSwitcher>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <LinearLayout
         android:id="@+id/bottom_sheet"
         style="@style/Widget.Material3.BottomSheet"

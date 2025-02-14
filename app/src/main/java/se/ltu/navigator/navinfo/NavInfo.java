@@ -12,7 +12,9 @@ public enum NavInfo {
     COMPASS_ACCURACY(R.string.title_compass_accuracy),
     AZIMUTH(R.string.title_azimuth),
     BEARING(R.string.title_bearing),
-    DISTANCE(R.string.title_distance);
+    DISTANCE(R.string.title_distance),
+    FLOOR(R.string.title_floor),
+    TARGET_FLOOR(R.string.title_target_floor);
 
     private final int title;
     private final ObservableString data;

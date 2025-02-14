@@ -12,6 +12,7 @@ import android.util.Log;
 import androidx.core.app.ActivityCompat;
 
 import se.ltu.navigator.MainActivity;
+import se.ltu.navigator.navinfo.NavInfo;
 
 
 public class UserLocationManager
@@ -154,6 +155,7 @@ public class UserLocationManager
     public void setFloor(int floor)
     {
         this.floor = floor;
+        NavInfo.FLOOR.setData(Integer.toString(floor));
         Log.d(TAG, "Floor set to: " + this.floor);
     }
 

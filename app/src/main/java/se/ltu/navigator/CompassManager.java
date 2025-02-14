@@ -57,6 +57,10 @@ public class CompassManager implements SensorEventListener {
             mainActivity.compassArrowText.setText((String) arg);
         });
 
+        NavInfo.FLOOR.registerListener((obs, arg) -> {
+            mainActivity.compassFloorIndicator.setText((String) arg);
+        });
+
         userLocationManager = new UserLocationManager(mainActivity);
     }
 
@@ -165,6 +169,7 @@ public class CompassManager implements SensorEventListener {
 
             if (targetLocation != null) {
                 NavInfo.TARGET_LOCATION.setData(targetLocation.getLatitude() + ", " + targetLocation.getLongitude());
+                // TODO: Update the target floor
             } else {
                 NavInfo.TARGET_LOCATION.setData("-");
             }

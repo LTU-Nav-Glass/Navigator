@@ -100,8 +100,10 @@ public class LocationAPI {
         }
     }
 
-    //method to get room object by id
-    //only pulls local data because it assumes any required online calls have already been made
+    /** Get room object by id only pulls local data because it assumes any required online calls have already been made*
+     * @param id the room ID
+     * @return the room
+     */
     public Room getRoomById(String id) {
         for (Room r : rooms) {
             if (r.getId().equals(id)) {

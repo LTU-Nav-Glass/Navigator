@@ -1,10 +1,15 @@
 [versions]
 agp = "8.8.0"
+android_maskable_layout = "v1.3.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.6.1"
+mapsforgeCore = "0.23.0"
+mapsforgeMap = "0.23.0"
+mapsforgeMapAndroid = "0.23.0"
 mapsforgeMapAndroidVersion = "0.14.0"
+mapsforgeMapReader = "0.23.0"
 material = "1.10.0"
 constraintlayout = "2.1.4"
 lifecycleLivedataKtx = "2.8.7"
@@ -14,13 +19,18 @@ navigationUi = "2.6.0"
 okhttp = "4.12.0"
 
 [libraries]
+android_maskable_layout = { module = "com.github.christophesmet:android_maskable_layout", version.ref = "android_maskable_layout" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 mapsforge-core = { module = "org.mapsforge:mapsforge-core", version.ref = "mapsforgeMapAndroidVersion" }
+mapsforge-core-v0230 = { module = "org.mapsforge:mapsforge-core", version.ref = "mapsforgeCore" }
+mapsforge-map-android-v0230 = { module = "org.mapsforge:mapsforge-map-android", version.ref = "mapsforgeMapAndroid" }
 mapsforge-map-reader = { module = "org.mapsforge:mapsforge-map-reader", version.ref = "mapsforgeMapAndroidVersion" }
 mapsforge-map = { module = "org.mapsforge:mapsforge-map", version.ref = "mapsforgeMapAndroidVersion" }
+mapsforge-map-reader-v0230 = { module = "org.mapsforge:mapsforge-map-reader", version.ref = "mapsforgeMapReader" }
+mapsforge-map-v0230 = { module = "org.mapsforge:mapsforge-map", version.ref = "mapsforgeMap" }
 mapsforge-mapsforge-map-android = { module = "org.mapsforge:mapsforge-map-android", version.ref = "mapsforgeMapAndroidVersion" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }

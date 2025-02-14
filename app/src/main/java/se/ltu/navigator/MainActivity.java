@@ -1,11 +1,15 @@
 package se.ltu.navigator;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -76,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     protected ImageView compassDisk;
     protected RelativeLayout compassArrow;
     protected TextView compassArrowText;
+    protected TextView compassFloorIndicator;
 
     // Navigation infos
     protected LinearLayout bottomSheet;
@@ -126,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
         compassDisk = findViewById(R.id.compass_disk);
         compassArrow = findViewById(R.id.compass_arrow);
         compassArrowText = findViewById(R.id.compass_arrow_text);
+        compassFloorIndicator = findViewById(R.id.floor_indicator);
 
         bottomSheet = findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -133,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Map Stuff
         mapSwitcher = findViewById(R.id.map_switcher);
-        mapButton = findViewById(R.id.map_button);
+        //mapButton = findViewById(R.id.map_button);
 
         mapView = findViewById(R.id.mapView);
         mapView.setClickable(false);
@@ -169,12 +175,9 @@ public class MainActivity extends AppCompatActivity {
             });
             layoutParams.setBehavior(appBarLayoutBehaviour);
         }
-
-        mapButton.setOnClickListener(v -> {
-            mapSwitcher.showNext();
-        });
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void mapSetup() {
         try {
             AssetManager assetManager = getAssets();
@@ -215,6 +218,23 @@ public class MainActivity extends AppCompatActivity {
             mapView.getLayerManager().getLayers().add(tileRendererLayer);
             mapView.setCenter(new LatLong(65.618, 22.141));
             mapView.setZoomLevel((byte) 18);
+
+            // Detecting double tap
+            final GestureDetector detector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+
+                @Override
+                public boolean onDown(@NonNull MotionEvent e) {
+                    return true;
+                }
+
+                @Override
+                public boolean onDoubleTap(@NonNull MotionEvent e) {
+                    mapSwitcher.showNext();
+                    return true;
+                }
+            });
+
+            mapSwitcher.setOnTouchListener((v, event) -> detector.onTouchEvent(event));
         } catch (IOException e) {
             e.printStackTrace();
         }
