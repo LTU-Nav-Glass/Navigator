@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -47,6 +48,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 
 import se.ltu.navigator.databinding.ActivityMainBinding;
 import se.ltu.navigator.dialog.FloorPromptHelper;
@@ -64,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity"; //Tag usually indicates class log message comes from
 
     private final int REQUEST_PERMISSION_FINE_LOCATION = 1;
+    private final int REQUEST_PERMISSION_BODY_SENSOR = 2;
 
     private ActivityMainBinding binding;
 
@@ -253,32 +256,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * This method measures when the sensor changes
-     * This is used in determining when to prompt user for input of floor
-     * @param e
-     */
-    /**
-    public void onSensorChange(SensorEvent e)
-    {
-
-        //update z param of userLocationManager
-        if(e.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
-        {
-
-            if(compassManager.getUserLocationManager().detectZ(e))
-            {
-                promptUserFloor();
-            }
-
-        }
-
-    }
-     NOT CURRENTLY IMPLEMENTED
-    **/
-
-
-
-    /**
      * This method instantiates the field variables of longitude, latitude, and the user's altitude
      *  ~ Currently the method sets user to the last known location but that may change when wanting to update in real time
      */
@@ -288,7 +265,9 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         //Checks if permissions were enabled
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.BODY_SENSORS) != PackageManager.PERMISSION_GRANTED) {
             showPhoneStatePermission();
             return;
         }
@@ -318,17 +297,30 @@ public class MainActivity extends AppCompatActivity {
      */
     public void onRequestPermissionResult(int requestCode, String permissions[], int[] grantResults)
     {
-        switch (requestCode)
+
+        for (int i = 0; i < permissions.length; i++)
         {
-            case REQUEST_PERMISSION_FINE_LOCATION:
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                {
-                    Toast.makeText(MainActivity.this, "Permission Granted!", Toast.LENGTH_SHORT).show();
-                } else
-                {
-                    Toast.makeText(MainActivity.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
-                }
+            switch (requestCode)
+            {
+                case REQUEST_PERMISSION_FINE_LOCATION:
+                    if (grantResults.length > 0
+                            && grantResults[i] == PackageManager.PERMISSION_GRANTED)
+                    {
+                        Toast.makeText(MainActivity.this, "Permission Granted!", Toast.LENGTH_SHORT).show();
+                    } else
+                    {
+                        Toast.makeText(MainActivity.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
+                    }
+                case REQUEST_PERMISSION_BODY_SENSOR:
+                    if (grantResults.length > 0
+                            && grantResults[i] == PackageManager.PERMISSION_GRANTED)
+                    {
+                        Toast.makeText(MainActivity.this, "Permission Granted!", Toast.LENGTH_SHORT).show();
+                    } else
+                    {
+                        Toast.makeText(MainActivity.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
+                    }
+            }
         }
     }
 
@@ -337,21 +329,44 @@ public class MainActivity extends AppCompatActivity {
      */
     public void showPhoneStatePermission()
     {
-        int permissionCheck = ContextCompat.checkSelfPermission(
+        // local variables for permission checking
+        int permission_loc_check = ContextCompat.checkSelfPermission(
                 this, Manifest.permission.ACCESS_FINE_LOCATION);
-        //Conditional to check if perms are granted
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED)
+
+        int permission_sensor_check = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.BODY_SENSORS);
+
+
+
+        //Conditional to check if location perms are granted
+        if (permission_loc_check != PackageManager.PERMISSION_GRANTED)
         {
             if (ActivityCompat.shouldShowRequestPermissionRationale(
                     this, Manifest.permission.ACCESS_FINE_LOCATION))
             {
-                showExplanation("Permission Needed", "Rationale", Manifest.permission.READ_PHONE_STATE, REQUEST_PERMISSION_FINE_LOCATION);
+                showExplanation("Permission Needed", "Need access to location to navigate.", Manifest.permission.READ_PHONE_STATE, REQUEST_PERMISSION_FINE_LOCATION);
             } else
             {
                 requestPermission(Manifest.permission.ACCESS_FINE_LOCATION, REQUEST_PERMISSION_FINE_LOCATION);
             }
         } else {
-            Toast.makeText(MainActivity.this, "Permission (already) Granted!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "Location Permission (already) Granted!", Toast.LENGTH_SHORT).show();
+        }
+
+        //Conditional to check if sensor perms are granted
+        if (permission_sensor_check != PackageManager.PERMISSION_GRANTED)
+        {
+            if(ActivityCompat.shouldShowRequestPermissionRationale(
+                    this, Manifest.permission.BODY_SENSORS))
+            {
+                showExplanation("Permission Needed", "Need sensor data to measure floorings of navigation. Please go to your settings and enable body sensors.", Manifest.permission.READ_PHONE_STATE, REQUEST_PERMISSION_BODY_SENSOR);
+            } else
+            {
+                requestPermission(Manifest.permission.BODY_SENSORS, REQUEST_PERMISSION_BODY_SENSOR);
+            }
+        } else
+        {
+            Toast.makeText(MainActivity.this, "Sensor Permission (already) Granted!", Toast.LENGTH_SHORT).show();
         }
 
     }
