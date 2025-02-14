@@ -1,14 +1,16 @@
 package se.ltu.navigator.location;
 
 import android.content.Context;
+
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.res.AssetManager;
 import android.location.Location;
 import android.os.Build;
-
-import androidx.annotation.RequiresApi;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,14 +20,12 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class LocationAPI {
@@ -41,15 +41,19 @@ public class LocationAPI {
     }
 
     private List<Room> loadLocations() {
+        File file = new File(context.getFilesDir(), "locations.json");
+
         List<Room> locationList = new ArrayList<>();
         try {
-            File file = new File(context.getFilesDir(), "locations.json");
-            InputStream inputStream = new FileInputStream(file);
-            int size = inputStream.available();
-            byte[] buffer = new byte[size];
-            inputStream.read(buffer);
+            InputStream inputStream;
+            if (file.exists()) {
+                inputStream = new FileInputStream(file);
+            } else {
+                inputStream = context.getAssets().open("locations.json");
+            }
+
+            String jsonString = IOUtils.toString(inputStream);
             inputStream.close();
-            String jsonString = new String(buffer, StandardCharsets.UTF_8);
 
             JSONArray jsonArray = new JSONArray(jsonString);
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -67,7 +71,6 @@ public class LocationAPI {
         return locationList;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private void writeLocationToFile(String id, double longitude, double latitude, int floor) {
         if (getRoomById(id) != null) {
             return; // Location already exists
@@ -76,8 +79,15 @@ public class LocationAPI {
         try {
             // Read existing locations
             File file = new File(context.getFilesDir(), "locations.json");
-            InputStream inputStream = new FileInputStream(file);
-            String jsonString = new Scanner(inputStream, StandardCharsets.UTF_8).useDelimiter("\\A").next();
+
+            InputStream inputStream;
+            if (file.exists()) {
+                inputStream = new FileInputStream(file);
+            } else {
+                inputStream = context.getAssets().open("locations.json");
+            }
+
+            String jsonString = IOUtils.toString(inputStream);
             inputStream.close();
 
             // Parse JSON and add new location
@@ -166,9 +176,7 @@ public class LocationAPI {
                             Room room = new Room(id, longitude, latitude, floor);
 
                             // Write new location to locations.json
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                                writeLocationToFile(id, longitude, latitude, floor);
-                            }
+                            writeLocationToFile(id, longitude, latitude, floor);
 
                             callback.onResult(room);
                         } else {
