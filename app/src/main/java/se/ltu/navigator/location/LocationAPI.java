@@ -24,6 +24,7 @@ import java.util.Scanner;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -100,9 +101,9 @@ public class LocationAPI {
         }
     }
 
-    /** Get room object by id only pulls local data because it assumes any required online calls have already been made*
-     * @param id the room ID
-     * @return the room
+    /**
+     * @param id The room ID.
+     * @return The room pulled from local storage (it doesn't fetch information online).
      */
     public Room getRoomById(String id) {
         for (Room r : rooms) {
@@ -113,6 +114,10 @@ public class LocationAPI {
         return null;
     }
 
+    /**
+     * @param roomId The room ID.
+     * @param callback Callback invoked with room location object fetched from the LTU Map database.
+     */
     public void getLocationById(String roomId, Callback<Location> callback) {
         getRoomById(roomId, room -> {
             if (room != null) {
@@ -121,6 +126,10 @@ public class LocationAPI {
         });
     }
 
+    /**
+     * @param roomId The room ID.
+     * @param callback Callback invoked with room object fetched from the LTU Map database.
+     */
     public void getRoomById(String roomId, Callback<Room> callback) {
         for (Room r : rooms) {
             if (r.getId().equals(roomId)) {
@@ -195,6 +204,8 @@ public class LocationAPI {
         return matchingRooms;
     }
 
+    // Not important, but this is a duplicate of the Java Standard Library's Supplier
+    // @see java.util.function.Supplier
     public interface Callback<T> {
         void onResult(T result);
     }

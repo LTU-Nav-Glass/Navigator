@@ -2,10 +2,8 @@ package se.ltu.navigator;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 
 public class SearchBarManager implements TextWatcher {
     private MainActivity mainActivity;
@@ -37,12 +35,12 @@ public class SearchBarManager implements TextWatcher {
     public void search(String search) {
         mainActivity.searchProgress.setVisibility(View.VISIBLE);
         mainActivity.searchProgress.setIndeterminate(true);
-        mainActivity.locationAPI.getLocationById(search, location -> {
-            if (location != null) {
+        mainActivity.locationAPI.getRoomById(search, room -> {
+            if (room != null) {
                 mainActivity.runOnUiThread(() -> {
                     mainActivity.searchBar.setText(search);
                     mainActivity.searchView.hide();
-                    mainActivity.compassManager.setTargetLocation(location);
+                    mainActivity.compassManager.setTarget(room);
                     mainActivity.promptUserFloor();
                 });
             }

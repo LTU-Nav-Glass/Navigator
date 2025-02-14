@@ -1,6 +1,7 @@
 package se.ltu.navigator;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -17,7 +18,9 @@ import org.mapsforge.core.model.LatLong;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 
+import se.ltu.navigator.location.Room;
 import se.ltu.navigator.navinfo.NavInfo;
 import se.ltu.navigator.location.UserLocationManager;
 
@@ -33,17 +36,19 @@ public class CompassManager implements SensorEventListener {
     private final Sensor rotationSensor;
 
     // Data
-    private Location targetLocation;
+    private Room target;
     private final float[] rotationMatrix = new float[16];
     private final float[] orientationVector = new float[3];
     private float currentAzimuth;
     private float lastAzimuth;
     private float currentBearing;
     private float lastBearing;
-    private UserLocationManager userLocationManager;
+    private final UserLocationManager userLocationManager;
 
     public CompassManager(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
+        userLocationManager = new UserLocationManager(mainActivity);
+
         sensorManager = ((SensorManager) mainActivity.getSystemService(Context.SENSOR_SERVICE));
         rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
 
@@ -53,15 +58,27 @@ public class CompassManager implements SensorEventListener {
         rotationMatrix[ 8] = 1;
         rotationMatrix[12] = 1;
 
-        NavInfo.DISTANCE.registerListener((obs, arg) -> {
-            mainActivity.compassArrowText.setText((String) arg);
-        });
+        NavInfo.DISTANCE.registerListener((obs, arg) -> mainActivity.compassArrowText.setText((String) arg));
 
         NavInfo.FLOOR.registerListener((obs, arg) -> {
             mainActivity.compassFloorIndicator.setText((String) arg);
-        });
 
-        userLocationManager = new UserLocationManager(mainActivity);
+            if (Objects.equals(arg, "-")) {
+                mainActivity.compassFloorIndicator.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                return;
+            }
+
+            int current = this.userLocationManager.getFloor();
+            int target = this.target.getFloor();
+
+            if (current < target) {
+                mainActivity.compassFloorIndicator.setCompoundDrawablesWithIntrinsicBounds(R.drawable.rounded_arrow_warm_up_24, 0, 0, 0);
+            } else if (current > target) {
+                mainActivity.compassFloorIndicator.setCompoundDrawablesWithIntrinsicBounds(R.drawable.rounded_arrow_cool_down_24, 0, 0, 0);
+            } else {
+                mainActivity.compassFloorIndicator.setCompoundDrawablesWithIntrinsicBounds(R.drawable.rounded_check_small_24, 0, 0, 0);
+            }
+        });
     }
 
     /**
@@ -81,10 +98,10 @@ public class CompassManager implements SensorEventListener {
     }
 
     /**
-     * @param targetLocation The current location of the target.
+     * @param target The new target room.
      */
-    public void setTargetLocation(@NotNull Location targetLocation) {
-        this.targetLocation = targetLocation;
+    public void setTarget(@NotNull Room target) {
+        this.target = target;
     }
 
     /**
@@ -144,10 +161,10 @@ public class CompassManager implements SensorEventListener {
 
                 mainActivity.mapView.setCenter(new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude()));
 
-                if (targetLocation != null) {
-                    NavInfo.DISTANCE.setData(Math.round(currentLocation.distanceTo(targetLocation)) + "m");
+                if (target != null) {
+                    NavInfo.DISTANCE.setData(Math.round(currentLocation.distanceTo(target.getLocation())) + "m");
 
-                    currentBearing = currentLocation.bearingTo(targetLocation);
+                    currentBearing = currentLocation.bearingTo(target.getLocation());
                     NavInfo.BEARING.setData(Math.round(currentBearing) + "°");
 
                     // Animate the rotation of the compass (arrow)
@@ -167,11 +184,12 @@ public class CompassManager implements SensorEventListener {
                 NavInfo.CURRENT_LOCATION.setData("-");
             }
 
-            if (targetLocation != null) {
-                NavInfo.TARGET_LOCATION.setData(targetLocation.getLatitude() + ", " + targetLocation.getLongitude());
-                // TODO: Update the target floor
+            if (target != null) {
+                NavInfo.TARGET_LOCATION.setData(target.getLocation().getLatitude() + ", " + target.getLocation().getLongitude());
+                NavInfo.TARGET_FLOOR.setData(Integer.toString(target.getFloor()));
             } else {
                 NavInfo.TARGET_LOCATION.setData("-");
+                NavInfo.TARGET_FLOOR.setData("-");
             }
         }
     }
