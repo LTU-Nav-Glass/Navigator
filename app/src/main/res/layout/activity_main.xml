@@ -8,7 +8,8 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:liftOnScroll="true">
         <com.google.android.material.search.SearchBar
             android:id="@+id/search_bar"
             android:layout_width="match_parent"
@@ -29,14 +30,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone" />
-        <ScrollView
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/search_results"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/search_results"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </ScrollView>
+            android:layout_height="wrap_content" />
     </com.google.android.material.search.SearchView>
 
     <TextView
@@ -146,8 +143,8 @@
             android:id="@+id/nav_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="200dp">
-        </androidx.recyclerview.widget.RecyclerView>
+            android:minHeight="200dp"
+            android:nestedScrollingEnabled="false" />
     </LinearLayout>
 
     <LinearLayout
