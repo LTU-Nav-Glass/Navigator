@@ -13,7 +13,10 @@ import android.view.animation.RotateAnimation;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
+import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.model.LatLong;
+import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
+import org.mapsforge.map.layer.overlay.Marker;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -41,6 +44,7 @@ public class CompassManager implements SensorEventListener {
     private float currentBearing;
     private float lastBearing;
     private UserLocationManager userLocationManager;
+    private Marker targetMarker;
 
     public CompassManager(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -85,6 +89,23 @@ public class CompassManager implements SensorEventListener {
      */
     public void setTargetLocation(@NotNull Location targetLocation) {
         this.targetLocation = targetLocation;
+        addTargetMarker(targetLocation);
+    }
+
+    /**
+     * Adds a marker to the mapView at the target location.
+     * @param targetLocation The location to place the marker.
+     */
+    private void addTargetMarker(Location targetLocation) {
+        if (targetMarker != null) {
+            mainActivity.mapView.getLayerManager().getLayers().remove(targetMarker);
+        }
+
+        LatLong targetLatLong = new LatLong(targetLocation.getLatitude(), targetLocation.getLongitude());
+        Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(mainActivity.getDrawable(R.drawable.marker_icon));
+        targetMarker = new Marker(targetLatLong, bitmap, 0, 0);
+
+        mainActivity.mapView.getLayerManager().getLayers().add(targetMarker);
     }
 
     /**
