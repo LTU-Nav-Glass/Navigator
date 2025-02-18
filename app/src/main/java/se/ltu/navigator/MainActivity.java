@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;

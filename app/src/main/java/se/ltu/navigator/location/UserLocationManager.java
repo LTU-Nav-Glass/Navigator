@@ -104,6 +104,42 @@ public class UserLocationManager {
 
     public void setTargetLocation(Location targetLocation) {this.targetLocation = targetLocation;}
 
+    public float getLastPressure(){ return lastPressure;}
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setAltitude(double altitude) {
+        this.altitude = altitude;
+    }
+
+    public void setFloor(int floor) {
+        this.floor = floor;
+
+        // resets pressure to new floor's pressure when changing floor
+        userSensorManager.setLastPressure();
+    }
+
+    public void setLastPressure(float pressure)
+    {
+        lastPressure = pressure;
+    }
+
+    public void setLocation(Location location) {
+        if (location == null) return;
+        this.location = location;
+        longitude = location.getLongitude();
+        latitude = location.getLatitude();
+        altitude = location.getAltitude();
+
+        Log.i(TAG, "Updating localisation");
+    }
+
     /**
      * Starts location updates.
      */
