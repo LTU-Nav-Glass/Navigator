@@ -26,6 +26,7 @@ public class UserLocationManager {
 
     private final LocationManager locationManager;
     private Location location;
+    private Location targetLocation;
     private double longitude, latitude, altitude;
     private int floor;
 
@@ -65,6 +66,8 @@ public class UserLocationManager {
 
     public float getLastPressure(){ return lastPressure;}
 
+    public Location getTargetLocation(){return targetLocation;}
+
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
@@ -98,6 +101,8 @@ public class UserLocationManager {
 
         Log.i(TAG, "Updating localisation");
     }
+
+    public void setTargetLocation(Location targetLocation) {this.targetLocation = targetLocation;}
 
     /**
      * Starts location updates.

@@ -85,6 +85,7 @@ public class CompassManager implements SensorEventListener {
      */
     public void setTargetLocation(@NotNull Location targetLocation) {
         this.targetLocation = targetLocation;
+        userLocationManager.setTargetLocation(targetLocation);
     }
 
     /**

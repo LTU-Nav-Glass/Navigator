@@ -11,17 +11,20 @@ import se.ltu.navigator.MainActivity;
 public class UserSensorManager
 {
     private static final String TAG = "UserSensorManager";
-    private final float CHANGE_IN_FLOOR_PRESSURE = 10;
+    private final float CHANGE_IN_FLOOR_PRESSURE = 0.34F;
+    private final float PRESSURE_CHANGE_THRESHOLD = 0.04F;
+   private final long FLOOR_CHANGE_TIMESTAMP = 3000;
 
     private final MainActivity mainActivity;
     private UserLocationManager userLocationManager;
     private final SensorManager sensorManager;
     private Sensor barometer;
-    private Sensor accelerometer;
 
-    private float lastY;
-    private float currentPressure;
-
+    private int floorDirection = 0;
+    private long lastTimestamp;
+    private float[] currentPressures = new float[10];
+    private int pIndex = 0;
+    private float deltaP;
     private boolean resetPressure = true;
 
 
@@ -30,9 +33,7 @@ public class UserSensorManager
         this.mainActivity = mainActivity;
         this.userLocationManager = userLocationManager;
 
-        lastY = 0;
         sensorManager = (SensorManager) mainActivity.getSystemService(mainActivity.getApplicationContext().SENSOR_SERVICE);
-        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         barometer = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
     }
 
@@ -41,10 +42,6 @@ public class UserSensorManager
         if (barometer != null) {
             //only registers sensorManager if accelerometer is present in the phone
             sensorManager.registerListener(sensorEventListener, barometer, SensorManager.SENSOR_DELAY_NORMAL);
-        }
-        if (accelerometer != null)
-        {
-            sensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         }
     }
 
@@ -55,13 +52,7 @@ public class UserSensorManager
 
     public float getPressure()
     {
-        Log.d(TAG, "currentPressure: " + currentPressure);
-        return currentPressure;
-    }
-
-    public float getAcceleration()
-    {
-        return 0;
+        return currentPressures[pIndex];
     }
 
     /**
@@ -80,34 +71,35 @@ public class UserSensorManager
         public void onSensorChanged(SensorEvent event) {
             if (event.sensor.getType() == Sensor.TYPE_PRESSURE) { //barometer
                 // Do work
-                currentPressure = event.values[0];
+                currentPressures[pIndex] = event.values[0];
+                if(pIndex == currentPressures.length - 1)
+                    pIndex = 0;
+                else
+                    pIndex++;
 
                 if (resetPressure) //only sets LastPressure when its the first time getting to a floor
                 {
-                    userLocationManager.setLastPressure(currentPressure);
+                    userLocationManager.setLastPressure(currentPressures[pIndex]);
+                    Log.d("Barometer","set user pressure to " + currentPressures[pIndex]);
+
+                    // reset conditional values
+                    lastTimestamp = event.timestamp;
+                    deltaP = 0;
                     resetPressure = false;
                 }
 
-                Log.d("Barometer", "Floor " + userLocationManager.getFloor() + " pressure: " + currentPressure);
-
-                if (detectPressureChange(event))
+                // Measure if the pressure changed and if the user has reached the target floor
+                if (detectNewFloor(event))
                 {
-                    mainActivity.promptUserFloor();
-                    //if accurate --> userLocationManager.setFloor(+-1)
+                    int userFloor = userLocationManager.getFloor();
+
+                    userLocationManager.setLastPressure(currentPressures[pIndex]);
+                    userLocationManager.setFloor(userFloor+floorDirection);
+                    Log.d("Barometer","User floor is now: " + userLocationManager.getFloor());
                 }
 
-            } else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                // Do work
-                /**
-                if(detectY(event))
-                {
-                    //may need to pause updates
-                    //mainActivity.promptUserFloor();
-                }
-                 **/
             }
         }
-
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
             if (sensor.getType() == Sensor.TYPE_PRESSURE)
@@ -123,46 +115,54 @@ public class UserSensorManager
 
     /**
      * This method takes in the sensor event (barometer) and measures if the difference b/w the lastPressure versus currentPressure to be enough for a floor change
-     * @param e
+     * @param e - current barometer sensor event
      * @return
      */
     // This method (when accurate) can be adapted to return +-1 and increment/decrement user floor
     private boolean detectPressureChange(SensorEvent e)
     {
-
         //Measure difference b/w startingP & currentP
-        float deltaP = userLocationManager.getLastPressure() - currentPressure;
+        deltaP = userLocationManager.getLastPressure() - currentPressures[pIndex];
 
-        //Log.d(TAG, "Change in pressure: " + deltaP);
+        //automatically change floor
+        if(deltaP > CHANGE_IN_FLOOR_PRESSURE)
+        {
+            floorDirection = 1;
+        }
+        else if(deltaP < -CHANGE_IN_FLOOR_PRESSURE)
+        {
+            floorDirection = -1;
+        }
 
-        return deltaP > CHANGE_IN_FLOOR_PRESSURE || deltaP < -(CHANGE_IN_FLOOR_PRESSURE); //estimating that 5 may be the right number
+        return Math.abs(deltaP) > Math.abs(CHANGE_IN_FLOOR_PRESSURE);
     }
 
     /**
-     * This method updates the y coords of the user
+     * This method returns true if the user has been on a new floor
+     * NEEDED IMPROVEMENT: Measure if user needs to change anymore floors
+     *      - If the user does and moves up multiple flights in succession --> app calibrates to wrong floor
      * @param e
+     * @return
      */
-    // This method is for testing accuracy of acceleration, if barometer is accurate enough, then this method will not be needed
-    private boolean detectY(SensorEvent e)
+    private boolean detectNewFloor(SensorEvent e)
     {
-
-        //CAUSES APP TO CRASH
-        float y = e.values[2]; //Y-axis acceleration
-
-        float deltaY = y - lastY;
-
-        if(deltaY > 1.5)
+        //Measure if there is stability in currentPressure
+        boolean pressureStable = true;
+        for (int i = 1; i < currentPressures.length; i++)
         {
-
-            Log.d(TAG, "Up");
-            return true;
-        } else if(deltaY < -1.5)
-        {
-            Log.d(TAG, "Down");
-            return true;
+            if(Math.abs(currentPressures[i-1] - currentPressures[i]) > PRESSURE_CHANGE_THRESHOLD)
+            {
+                pressureStable = false;
+                break;
+            }
         }
-        lastY = y;
 
-        return false;
+        //Measure for pressure consistency on new floor
+        long currentTimestamp = e.timestamp;
+        long deltaTime = currentTimestamp - lastTimestamp;
+
+        return detectPressureChange(e)
+                && pressureStable //|| Math.abs(userLocationManager.getTargetLocation().PLACEHOLDER-getRoom().getFloor() - userLocationManager.getFloor()) > 1)
+                    && deltaTime >= FLOOR_CHANGE_TIMESTAMP;
     }
 }
