@@ -294,27 +294,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Method called when an action (other than typing) is performed on the search bar.
-     *
-     * @param v The view of the event.
-     * @param actionID The code of the action.
-     * @param event The corresponding event.
-     * @return True to consume the action, false otherwise.
-     */
-    private boolean onSearchAction(View v, int actionID, KeyEvent event) {
-        // TODO: Verify the name of the room before setting text
-        searchBar.setText(searchView.getText());
-        searchView.hide();
-        return false;
-    }
-
+    // Is this still used?
     /**
      * Controls what happens when the user agrees or disagrees to the permission prompt when opening the app
-     *
-     * @param requestCode
-     * @param permissions
-     * @param grantResults
      */
     public void onRequestPermissionResult(int requestCode, String permissions[], int[] grantResults)
     {
@@ -365,11 +347,6 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * This method shows the explanation of why the permissions are needed
-     *
-     * @param title
-     * @param message
-     * @param permission
-     * @param permissionRequestCode
      */
     private void showExplanation(String title, String message, final String permission, final int permissionRequestCode)
     {
@@ -388,9 +365,6 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * This method initially prompts the user for permissions
-     *
-     * @param permissionName
-     * @param permissionRequestCode
      */
     private void requestPermission(String permissionName, int permissionRequestCode)
     {

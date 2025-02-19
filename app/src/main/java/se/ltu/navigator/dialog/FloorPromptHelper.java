@@ -15,6 +15,9 @@ import se.ltu.navigator.CompassManager;
 import se.ltu.navigator.MainActivity;
 import se.ltu.navigator.R;
 
+// TODO: Add security to prevent two prompt to be displayed at the same time
+// It will be useful when we add the floor change detection (which can trigger a prompt)
+
 /*
  * Controls the pop-ups the user receives for flooring
  */

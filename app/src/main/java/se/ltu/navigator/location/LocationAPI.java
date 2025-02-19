@@ -1,16 +1,16 @@
 package se.ltu.navigator.location;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.AssetManager;
+
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.res.AssetManager;
 import android.location.Location;
 import android.os.Build;
-
-import androidx.annotation.RequiresApi;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,14 +20,12 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class LocationAPI {
@@ -43,15 +41,19 @@ public class LocationAPI {
     }
 
     private List<Room> loadLocations() {
+        File file = new File(context.getFilesDir(), "locations.json");
+
         List<Room> locationList = new ArrayList<>();
         try {
-            File file = new File(context.getFilesDir(), "locations.json");
-            InputStream inputStream = new FileInputStream(file);
-            int size = inputStream.available();
-            byte[] buffer = new byte[size];
-            inputStream.read(buffer);
+            InputStream inputStream;
+            if (file.exists()) {
+                inputStream = new FileInputStream(file);
+            } else {
+                inputStream = context.getAssets().open("locations.json");
+            }
+
+            String jsonString = IOUtils.toString(inputStream);
             inputStream.close();
-            String jsonString = new String(buffer, StandardCharsets.UTF_8);
 
             JSONArray jsonArray = new JSONArray(jsonString);
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -69,7 +71,6 @@ public class LocationAPI {
         return locationList;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private void writeLocationToFile(String id, double longitude, double latitude, int floor) {
         if (getRoomById(id) != null) {
             return; // Location already exists
@@ -78,8 +79,15 @@ public class LocationAPI {
         try {
             // Read existing locations
             File file = new File(context.getFilesDir(), "locations.json");
-            InputStream inputStream = new FileInputStream(file);
-            String jsonString = new Scanner(inputStream, StandardCharsets.UTF_8).useDelimiter("\\A").next();
+
+            InputStream inputStream;
+            if (file.exists()) {
+                inputStream = new FileInputStream(file);
+            } else {
+                inputStream = context.getAssets().open("locations.json");
+            }
+
+            String jsonString = IOUtils.toString(inputStream);
             inputStream.close();
 
             // Parse JSON and add new location
@@ -100,9 +108,9 @@ public class LocationAPI {
         }
     }
 
-    /** Get room object by id only pulls local data because it assumes any required online calls have already been made*
-     * @param id the room ID
-     * @return the room
+    /**
+     * @param id The room ID.
+     * @return The room pulled from local storage (it doesn't fetch information online).
      */
     public Room getRoomById(String id) {
         for (Room r : rooms) {
@@ -113,10 +121,26 @@ public class LocationAPI {
         return null;
     }
 
-    public void getLocationById(String locationId, Callback<Location> callback) {
+    /**
+     * @param roomId The room ID.
+     * @param callback Callback invoked with room location object fetched from the LTU Map database.
+     */
+    public void getLocationById(String roomId, Callback<Location> callback) {
+        getRoomById(roomId, room -> {
+            if (room != null) {
+                callback.onResult(room.getLocation());
+            }
+        });
+    }
+
+    /**
+     * @param roomId The room ID.
+     * @param callback Callback invoked with room object fetched from the LTU Map database.
+     */
+    public void getRoomById(String roomId, Callback<Room> callback) {
         for (Room r : rooms) {
-            if (r.getId().equals(locationId)) {
-                callback.onResult(r.getLocation());
+            if (r.getId().equals(roomId)) {
+                callback.onResult(r);
                 return;
             }
         }
@@ -125,7 +149,7 @@ public class LocationAPI {
             OkHttpClient client = new OkHttpClient();
             try {
                 // Create URL with query parameters
-                String urlString = String.format("https://map.ltu.se/api/data.json?l=LANG&q=%s&c=LUL", locationId);
+                String urlString = String.format("https://map.ltu.se/api/data.json?l=LANG&q=%s&c=LUL", roomId);
                 Request request = new Request.Builder()
                         .url(urlString)
                         .get()
@@ -149,14 +173,12 @@ public class LocationAPI {
                             String id = roomObject.getString("name");
 
                             // Create and return new Room object
-                            Room location = new Room(id, longitude, latitude, floor);
+                            Room room = new Room(id, longitude, latitude, floor);
 
                             // Write new location to locations.json
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                                writeLocationToFile(id, longitude, latitude, floor);
-                            }
+                            writeLocationToFile(id, longitude, latitude, floor);
 
-                            callback.onResult(location.getLocation());
+                            callback.onResult(room);
                         } else {
                             callback.onResult(null);
                         }
@@ -187,6 +209,8 @@ public class LocationAPI {
         return matchingRooms;
     }
 
+    // Not important, but this is a duplicate of the Java Standard Library's Supplier
+    // @see java.util.function.Supplier
     public interface Callback<T> {
         void onResult(T result);
     }
