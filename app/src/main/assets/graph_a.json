@@ -1,0 +1,17 @@
+{
+  "id": "A1",
+  "longitude": 22.137618480752703,
+  "latitude": 65.61760290996648,
+  "floor": 2,
+  "type": "HALLWAY",
+  "edges": [
+      {
+          "id": "A2",
+          "distance": 10.0
+      },
+      {
+          "id": "A3",
+          "distance": 20.0
+      }
+    ]
+}
