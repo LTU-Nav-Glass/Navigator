@@ -4,6 +4,9 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -11,85 +14,116 @@ import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 
+import java.util.ArrayList;
+
 import se.ltu.navigator.MainActivity;
 import se.ltu.navigator.navinfo.NavInfo;
 
 
-public class UserLocationManager
-{
+public class UserLocationManager {
     private static final String TAG = "UserLocationManager";
     private final MainActivity mainActivity;
 
-    private final SensorManager sensorManager;
-
-    private final Sensor accelerometer;
-
-    private float lastZ;
-
     private final LocationManager locationManager;
     private Location location;
+    private Location targetLocation;
     private double longitude, latitude, altitude;
     private int floor;
+
+    private float lastPressure;
+
+    private UserSensorManager userSensorManager;
 
     //these two variables will be used for updating user during movement
     private final long TIME_BETWEEN_UPDATES = 5000;
     private final float MINIMUM_DISTANCE_CHANGE_FOR_UPDATES = 0;
 
-    public UserLocationManager(MainActivity mainActivity)
-    {
+    public UserLocationManager(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
-        locationManager = (LocationManager) mainActivity.getSystemService(Context.LOCATION_SERVICE); //instantiated locationManager with the user's location information
-
-        //Instantiating vars for vertical movement detection
-
-        lastZ = 0;
-        sensorManager = (SensorManager) mainActivity.getSystemService(Context.SENSOR_SERVICE);
-        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        locationManager = (LocationManager) mainActivity.getSystemService(mainActivity.getApplicationContext().LOCATION_SERVICE); //instantiated locationManager with the user's location information
+        userSensorManager = new UserSensorManager(this, mainActivity);
     }
 
-    public double getLongitude()
-    {
+    public double getLongitude() {
         return longitude;
     }
 
-    public double getLatitude()
-    {
+    public double getLatitude() {
         return latitude;
     }
 
-    public double getAltitude()
-    {
+    public double getAltitude() {
         return altitude;
     }
 
-    public int getFloor()
-    {
+    public int getFloor() {
         return floor;
     }
 
-    public Location getLocation()
-    {
+    public Location getLocation() {
         return location;
+    }
+
+    public float getLastPressure(){ return lastPressure;}
+
+    public Location getTargetLocation(){return targetLocation;}
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setAltitude(double altitude) {
+        this.altitude = altitude;
+    }
+
+    public void setFloor(int floor) {
+        this.floor = floor;
+
+        // resets pressure to new floor's pressure when changing floor
+        userSensorManager.setLastPressure();
+    }
+
+    public void setTargetLocation(Location targetLocation) {this.targetLocation = targetLocation;}
+
+
+    public void setLastPressure(float pressure)
+    {
+        lastPressure = pressure;
+    }
+
+    public void setLocation(Location location) {
+        if (location == null) return;
+        this.location = location;
+        longitude = location.getLongitude();
+        latitude = location.getLatitude();
+        altitude = location.getAltitude();
+
+        Log.i(TAG, "Updating localisation");
     }
 
     /**
      * Starts location updates.
      */
     public void startUpdates() {
-        // Check for permissions
-        if (ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        // Check for permissions (location & sensors)
+        if (ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.BODY_SENSORS) != PackageManager.PERMISSION_GRANTED) {
             mainActivity.showPhoneStatePermission();
             return;
         }
 
         locationManager.requestLocationUpdates(LocationManager.FUSED_PROVIDER, TIME_BETWEEN_UPDATES, MINIMUM_DISTANCE_CHANGE_FOR_UPDATES, this::setLocation);
 
-        if (accelerometer != null)
-        {
-            //only registers sensorManager if accelerometer is present in the phone
-            //sensorManager.registerListener((SensorEventListener) mainActivity, accelerometer, SensorManager.SENSOR_DELAY_UI);
-            Log.d(TAG, "Runs registerListener");
-        }
+        userSensorManager.registerSensors();
+
+        // Initializes lastPressure
+        lastPressure = userSensorManager.getPressure();
+        Log.d(TAG, "Last Pressure: " + lastPressure);
 
     }
 
@@ -98,11 +132,11 @@ public class UserLocationManager
      */
     public void stopUpdates() {
         locationManager.removeUpdates(this::setLocation);
-        //sensorManager.unregisterListener((SensorListener) mainActivity);
+        userSensorManager.pauseSensors();
     }
 
 
-    public void update(){
+    public void update() {
         if (ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             mainActivity.showPhoneStatePermission();
             return;
@@ -111,61 +145,4 @@ public class UserLocationManager
         setLocation(locationManager.getLastKnownLocation(LocationManager.FUSED_PROVIDER)); //instantiate user based off phone's coordinates)
     }
 
-    /**
-     * This method updates the z coords of the user
-     * @param e
-     */
-    /**
-    public boolean detectZ(SensorEvent e)
-    {
-        float z = e.values[2]; //Z-axis acceleration
-
-        float deltaZ = z - lastZ;
-
-        if(deltaZ > 1.5) //Should indicate upwards movement
-            {
-                Log.d(TAG, "Up");
-                return true;
-            } else if(deltaZ < -1.5) //Should indicate downwards movement
-            {
-                Log.d(TAG, "Down");
-                return true;
-            }
-        lastZ = z;
-        return false;
-    }
-     NOT CURRENTLY IMPLEMENTED
-     **/
-
-    public void setLongitude(double longitude)
-    {
-        this.longitude = longitude;
-    }
-
-    public void setLatitude(double latitude)
-    {
-        this.latitude = latitude;
-    }
-
-    public void setAltitude(double altitude)
-    {
-        this.altitude = altitude;
-    }
-
-    public void setFloor(int floor)
-    {
-        this.floor = floor;
-        NavInfo.FLOOR.setData(Integer.toString(floor));
-        Log.d(TAG, "Floor set to: " + this.floor);
-    }
-
-    public void setLocation(Location location) {
-        if(location == null) return;
-        this.location = location;
-        longitude = location.getLongitude();
-        latitude = location.getLatitude();
-        altitude = location.getAltitude();
-
-        Log.i(TAG, "Updating localisation");
-    }
 }
