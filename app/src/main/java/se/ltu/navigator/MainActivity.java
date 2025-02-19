@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     protected ImageView compassDisk;
     protected RelativeLayout compassArrow;
     protected TextView compassArrowText;
+    protected LinearLayout compassFloorIndicatorWrapper;
     protected TextView compassFloorIndicator;
 
     // Navigation infos
@@ -127,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
         compassDisk = findViewById(R.id.compass_disk);
         compassArrow = findViewById(R.id.compass_arrow);
         compassArrowText = findViewById(R.id.compass_arrow_text);
+        compassFloorIndicatorWrapper = findViewById(R.id.floor_indicator_wrapper);
         compassFloorIndicator = findViewById(R.id.floor_indicator);
 
         bottomSheet = findViewById(R.id.bottom_sheet);
@@ -167,6 +169,8 @@ public class MainActivity extends AppCompatActivity {
             });
             layoutParams.setBehavior(appBarLayoutBehaviour);
         }
+
+        compassFloorIndicatorWrapper.setOnClickListener(v -> floorPromptHelper.show());
     }
 
     @SuppressLint("ClickableViewAccessibility")

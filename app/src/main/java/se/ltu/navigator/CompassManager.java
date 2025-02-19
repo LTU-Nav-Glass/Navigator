@@ -21,6 +21,7 @@ import org.mapsforge.map.layer.overlay.Marker;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.Observer;
 
 import se.ltu.navigator.location.Room;
 import se.ltu.navigator.navinfo.NavInfo;
@@ -66,22 +67,32 @@ public class CompassManager implements SensorEventListener {
         NavInfo.FLOOR.registerListener((obs, arg) -> {
             mainActivity.compassFloorIndicator.setText((String) arg);
 
-            if (Objects.equals(arg, "-")) {
+            if (Objects.equals(arg, "-") || this.target == null) {
                 mainActivity.compassFloorIndicator.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                return;
-            }
-
-            int current = this.userLocationManager.getFloor();
-            int target = this.target.getFloor();
-
-            if (current < target) {
-                mainActivity.compassFloorIndicator.setCompoundDrawablesWithIntrinsicBounds(R.drawable.rounded_arrow_warm_up_24, 0, 0, 0);
-            } else if (current > target) {
-                mainActivity.compassFloorIndicator.setCompoundDrawablesWithIntrinsicBounds(R.drawable.rounded_arrow_cool_down_24, 0, 0, 0);
             } else {
-                mainActivity.compassFloorIndicator.setCompoundDrawablesWithIntrinsicBounds(R.drawable.rounded_check_small_24, 0, 0, 0);
+                updateFloorIcon();
             }
         });
+
+        NavInfo.TARGET_FLOOR.registerListener((obs, arg) -> updateFloorIcon());
+    }
+
+    private void updateFloorIcon() {
+        if (this.target == null) {
+            mainActivity.compassFloorIndicator.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            return;
+        }
+
+        int current = this.userLocationManager.getFloor();
+        int target = this.target.getFloor();
+
+        if (current < target) {
+            mainActivity.compassFloorIndicator.setCompoundDrawablesWithIntrinsicBounds(R.drawable.rounded_arrow_warm_up_24, 0, 0, 0);
+        } else if (current > target) {
+            mainActivity.compassFloorIndicator.setCompoundDrawablesWithIntrinsicBounds(R.drawable.rounded_arrow_cool_down_24, 0, 0, 0);
+        } else {
+            mainActivity.compassFloorIndicator.setCompoundDrawablesWithIntrinsicBounds(R.drawable.rounded_check_small_24, 0, 0, 0);
+        }
     }
 
     /**

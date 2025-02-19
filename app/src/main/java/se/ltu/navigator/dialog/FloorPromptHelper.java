@@ -15,21 +15,22 @@ import se.ltu.navigator.CompassManager;
 import se.ltu.navigator.MainActivity;
 import se.ltu.navigator.R;
 
-// TODO: Add security to prevent two prompt to be displayed at the same time
-// It will be useful when we add the floor change detection (which can trigger a prompt)
-
 /*
  * Controls the pop-ups the user receives for flooring
  */
 public class FloorPromptHelper extends DialogHelper {
     private EditText inputText;
+    private boolean isVisible;
 
     public FloorPromptHelper(MainActivity mainActivity, CompassManager compassManager) {
         super(mainActivity, compassManager);
+        isVisible = false;
     }
 
     @Override
     public void show() {
+        if (isVisible) return;
+
         MaterialAlertDialogBuilder alert = new MaterialAlertDialogBuilder(mainActivity);
         alert.setIcon(R.drawable.baseline_not_listed_location_24);
         alert.setTitle(R.string.title_floor_prompt);
@@ -55,6 +56,7 @@ public class FloorPromptHelper extends DialogHelper {
         });
 
         AlertDialog dialog = alert.show();
+        dialog.setOnCancelListener(v -> isVisible = false);
 
         inputText = ((TextInputLayout) dialog.findViewById(R.id.floor_prompt_input)).getEditText();
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
