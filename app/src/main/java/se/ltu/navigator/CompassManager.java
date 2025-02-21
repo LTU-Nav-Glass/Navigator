@@ -20,10 +20,13 @@ import org.mapsforge.map.layer.overlay.Marker;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 import java.util.Observer;
 
 import se.ltu.navigator.location.Room;
+import se.ltu.navigator.navigation.NavTool;
+import se.ltu.navigator.navigation.Node;
 import se.ltu.navigator.navinfo.NavInfo;
 import se.ltu.navigator.location.UserLocationManager;
 
@@ -48,10 +51,12 @@ public class CompassManager implements SensorEventListener {
     private float lastBearing;
     private final UserLocationManager userLocationManager;
     private Marker targetMarker;
+    private NavTool navTool;
 
     public CompassManager(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
         userLocationManager = new UserLocationManager(mainActivity);
+        navTool = new NavTool(mainActivity);
 
         sensorManager = ((SensorManager) mainActivity.getSystemService(Context.SENSOR_SERVICE));
         rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
@@ -117,6 +122,12 @@ public class CompassManager implements SensorEventListener {
     public void setTarget(@NotNull Room target) {
         this.target = target;
         addTargetMarker(target.getLocation());
+
+        // Testing Code Subject to Change
+//        List<Node> path = navTool.findPath(userLocationManager.getLocation().getLongitude(), userLocationManager.getLocation().getLatitude(), target);
+//        for (Node node : path) {
+//            addMarker(node);
+//        }
     }
 
     /**
@@ -133,6 +144,17 @@ public class CompassManager implements SensorEventListener {
         targetMarker = new Marker(targetLatLong, bitmap, 0, 0);
 
         mainActivity.mapView.getLayerManager().getLayers().add(targetMarker);
+    }
+
+    /**
+     * Function for testing only which adds a marker to the mapView at a given Node
+     * @param node The node to place the marker.
+     */
+    public void addMarker(Node node) {
+        LatLong latLong = new LatLong(node.getLatitude(), node.getLongitude());
+        Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(mainActivity.getDrawable(R.drawable.marker_icon));
+        Marker marker = new Marker(latLong, bitmap, 0, 0);
+        mainActivity.mapView.getLayerManager().getLayers().add(marker);
     }
 
     /**

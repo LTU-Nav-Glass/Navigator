@@ -129,6 +129,9 @@ public class Graph {
             }
             for (String edge : node.getEdges()) {
                 Node adjacentNode = nodes.get(edge);
+                if(adjacentNode == null) {
+                    System.out.println("Invalid Edge: " + edge);
+                }
                 if (adjacentNode.getType() == Node.Type.STAIRS) {
                     continue;
                 }

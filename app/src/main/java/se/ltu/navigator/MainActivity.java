@@ -214,8 +214,13 @@ public class MainActivity extends AppCompatActivity {
 
 
             mapView.getLayerManager().getLayers().add(tileRendererLayer);
-            mapView.setCenter(new LatLong(65.618, 22.141));
+            mapView.setCenter(new LatLong(65.61743265662683, 22.13666340920496));
             mapView.setZoomLevel((byte) 18);
+            //enable zooming and panning on the map view for testing purposes
+//            mapView.setClickable(true);
+//            mapView.setBuiltInZoomControls(true);
+//            mapView.setZoomLevelMin((byte) 15);
+//            mapView.setZoomLevelMax((byte) 20);
 
             // Detecting double tap
             final GestureDetector detector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {

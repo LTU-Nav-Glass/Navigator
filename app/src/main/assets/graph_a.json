@@ -179,7 +179,7 @@
     "floor": 2,
     "type": "CORRIDOR",
     "edges": [
-      "SW_CORRIDOR_2",
+      "SE_CORRIDOR_2",
       "S_MID_STAIRS_1",
       "S_MID_CORRIDOR_2",
       "N_MID_CORRIDOR_2"
