@@ -83,9 +83,9 @@ public class Graph {
                 break;
             }
 
-            for (Node.Edge edge : currentNode.getEdges()) {
-                Node adjacentNode = nodes.get(edge.getId());
-                double newDist = distances.get(currentNode.getId()) + edge.getDistance();
+            for (String edge : currentNode.getEdges()) {
+                Node adjacentNode = nodes.get(edge);
+                double newDist = distances.get(currentNode.getId()) + haversineDistance(currentNode.getLongitude(), currentNode.getLatitude(), adjacentNode.getLongitude(), adjacentNode.getLatitude());
 
                 if (newDist < distances.get(adjacentNode.getId())) {
                     distances.put(adjacentNode.getId(), newDist);
@@ -124,8 +124,14 @@ public class Graph {
         double closestLatitude = 0;
 
         for (Node node : nodes.values()) {
-            for (Node.Edge edge : node.getEdges()) {
-                Node adjacentNode = nodes.get(edge.getId());
+            if (node.getType() == Node.Type.STAIRS) {
+                continue;
+            }
+            for (String edge : node.getEdges()) {
+                Node adjacentNode = nodes.get(edge);
+                if (adjacentNode.getType() == Node.Type.STAIRS) {
+                    continue;
+                }
                 double[] closestPoint = findClosestPointOnEdge(node, adjacentNode, longitude, latitude);
                 double distance = haversineDistance(longitude, latitude, closestPoint[0], closestPoint[1]);
 
@@ -143,25 +149,20 @@ public class Graph {
             Node tempNode = new Node(newNodeId, closestLongitude, closestLatitude, closestNode1[0].getFloor(), Node.Type.TEMP, new ArrayList<>());
             nodes.put(newNodeId, tempNode);
 
-            double distanceToNode1 = haversineDistance(closestLongitude, closestLatitude, closestNode1[0].getLongitude(), closestNode1[0].getLatitude());
-            double distanceToNode2 = haversineDistance(closestLongitude, closestLatitude, closestNode2[0].getLongitude(), closestNode2[0].getLatitude());
+            tempNode.getEdges().add(closestNode1[0].getId());
+            tempNode.getEdges().add(closestNode2[0].getId());
 
-            tempNode.getEdges().add(new Node.Edge(closestNode1[0].getId(), distanceToNode1));
-            tempNode.getEdges().add(new Node.Edge(closestNode2[0].getId(), distanceToNode2));
+            closestNode1[0].getEdges().removeIf(edge -> edge.equals(closestNode2[0].getId()));
+            closestNode2[0].getEdges().removeIf(edge -> edge.equals(closestNode1[0].getId()));
 
-            closestNode1[0].getEdges().removeIf(edge -> edge.getId().equals(closestNode2[0].getId()));
-            closestNode2[0].getEdges().removeIf(edge -> edge.getId().equals(closestNode1[0].getId()));
-
-            closestNode1[0].getEdges().add(new Node.Edge(newNodeId, distanceToNode1));
-            closestNode2[0].getEdges().add(new Node.Edge(newNodeId, distanceToNode2));
+            closestNode1[0].getEdges().add(newNodeId);
+            closestNode2[0].getEdges().add(newNodeId);
 
             if (inputNodeId != null) {
                 Node inputNode = new Node(inputNodeId, longitude, latitude, closestNode1[0].getFloor(), Node.Type.ROOM, new ArrayList<>());
                 nodes.put(inputNodeId, inputNode);
-
-                double distanceToTempNode = haversineDistance(longitude, latitude, closestLongitude, closestLatitude);
-                inputNode.getEdges().add(new Node.Edge(newNodeId, distanceToTempNode));
-                tempNode.getEdges().add(new Node.Edge(inputNodeId, distanceToTempNode));
+                inputNode.getEdges().add(newNodeId);
+                tempNode.getEdges().add(inputNodeId);
             }
         }
     }
@@ -184,31 +185,29 @@ public class Graph {
         // Remove temporary nodes and reconnect edges
         for (String tempNodeId : tempNodeIds) {
             Node tempNode = nodes.get(tempNodeId);
-            List<Node.Edge> tempEdges = tempNode.getEdges();
+            List<String> tempEdges = tempNode.getEdges();
 
             if (tempEdges.size() >= 2) {
                 // We can assume that there are always two edges because a temp node
                 // is always inserted between two nodes
-                Node.Edge edge1 = tempEdges.get(0);
-                Node.Edge edge2 = tempEdges.get(1);
+                String edge1 = tempEdges.get(0);
+                String edge2 = tempEdges.get(1);
 
-                Node node1 = nodes.get(edge1.getId());
-                Node node2 = nodes.get(edge2.getId());
+                Node node1 = nodes.get(edge1);
+                Node node2 = nodes.get(edge2);
 
-                double newDistance = edge1.getDistance() + edge2.getDistance();
+                node1.getEdges().removeIf(edge -> edge.equals(tempNodeId));
+                node2.getEdges().removeIf(edge -> edge.equals(tempNodeId));
 
-                node1.getEdges().removeIf(edge -> edge.getId().equals(tempNodeId));
-                node2.getEdges().removeIf(edge -> edge.getId().equals(tempNodeId));
-
-                node1.getEdges().add(new Node.Edge(node2.getId(), newDistance));
-                node2.getEdges().add(new Node.Edge(node1.getId(), newDistance));
+                node1.getEdges().add(node2.getId());
+                node2.getEdges().add(node1.getId());
 
                 // Check for a room node
                 if (tempEdges.size() == 3) {
-                    Node.Edge edge3 = tempEdges.get(2);
-                    Node roomNode = nodes.get(edge3.getId());
+                    String edge3 = tempEdges.get(2);
+                    Node roomNode = nodes.get(edge3);
 
-                    roomNode.getEdges().removeIf(edge -> edge.getId().equals(tempNodeId));
+                    roomNode.getEdges().removeIf(edge -> edge.equals(tempNodeId));
 
                     if (roomNode.getType() == Node.Type.ROOM) {
                         roomNodeIdsToRemove.add(roomNode.getId());

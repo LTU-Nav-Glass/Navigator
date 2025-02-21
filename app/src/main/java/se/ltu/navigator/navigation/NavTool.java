@@ -39,6 +39,7 @@ public class NavTool {
      * @param room The room the user wants to go to.
      * @return The path the user should take. The first node is the user's current location and the
      * last node is the destination.
+     * TODO: Add Support for multiple graphs (ie buildings)
      */
     public List<Node> findPath(double longitude, double latitude, Room room) {
         List<Node> path = new ArrayList<>();

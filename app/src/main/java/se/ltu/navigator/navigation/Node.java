@@ -15,10 +15,10 @@ public class Node {
     private double longitude;
     private double latitude;
     private int floor;
-    private List<Edge> edges;
+    private List<String> edges;
     private Type type;
 
-    public Node(String id, double longitude, double latitude, int floor, Type type, List<Edge> edges) {
+    public Node(String id, double longitude, double latitude, int floor, Type type, List<String> edges) {
         this.id = id;
         this.longitude = longitude;
         this.latitude = latitude;
@@ -63,41 +63,14 @@ public class Node {
         this.floor = floor;
     }
 
-    public List<Edge> getEdges() {
+    public List<String> getEdges() {
         return edges;
     }
 
-    public void setEdges(List<Edge> edges) {
+    public void setEdges(List<String> edges) {
         this.edges = edges;
     }
     public void setType(Type type) {
         this.type = type;
-    }
-
-    public static class Edge {
-        private String id;
-        private double distance;
-
-        public Edge(String id, double distance) {
-            this.id = id;
-            this.distance = distance;
-        }
-
-        // Getters and setters
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public double getDistance() {
-            return distance;
-        }
-
-        public void setDistance(double distance) {
-            this.distance = distance;
-        }
     }
 }
