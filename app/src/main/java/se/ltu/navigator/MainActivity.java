@@ -158,6 +158,8 @@ public class MainActivity extends AppCompatActivity {
         navInfo.setLayoutManager(new LinearLayoutManager(this));
         navInfo.setAdapter(new NavInfoAdapter());
 
+        compassFloorIndicatorWrapper.setOnClickListener(v -> floorPromptHelper.show());
+
         // Disable "Drag" for AppBarLayout
         // https://stackoverflow.com/questions/34108501/how-to-disable-scrolling-of-appbarlayout-in-coordinatorlayout
         if (appBar.getLayoutParams() != null) {
@@ -171,10 +173,9 @@ public class MainActivity extends AppCompatActivity {
             });
             layoutParams.setBehavior(appBarLayoutBehaviour);
         }
-
-        compassFloorIndicatorWrapper.setOnClickListener(v -> floorPromptHelper.show());
     }
 
+    // setting up the initial mapView -> further logic takes place in CompassManager
     @SuppressLint("ClickableViewAccessibility")
     private void mapSetup() {
         try {
@@ -258,10 +259,7 @@ public class MainActivity extends AppCompatActivity {
         this.compassManager.stopMonitoring();
     }
 
-    /**
-     * This method instantiates the field variables of longitude, latitude, and the user's altitude
-     *  ~ Currently the method sets user to the last known location but that may change when wanting to update in real time
-     */
+
     @Override
     public void onStart()
     {
@@ -272,42 +270,9 @@ public class MainActivity extends AppCompatActivity {
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this, Manifest.permission.BODY_SENSORS) != PackageManager.PERMISSION_GRANTED) {
             showPhoneStatePermission();
-            return;
         }
     }
 
-    // Is this still used?
-    /**
-     * Controls what happens when the user agrees or disagrees to the permission prompt when opening the app
-     */
-    public void onRequestPermissionResult(int requestCode, String permissions[], int[] grantResults)
-    {
-
-        for (int i = 0; i < permissions.length; i++)
-        {
-            switch (requestCode)
-            {
-                case REQUEST_PERMISSION_FINE_LOCATION:
-                    if (grantResults.length > 0
-                            && grantResults[i] == PackageManager.PERMISSION_GRANTED)
-                    {
-                        Toast.makeText(MainActivity.this, "Permission Granted!", Toast.LENGTH_SHORT).show();
-                    } else
-                    {
-                        Toast.makeText(MainActivity.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
-                    }
-                case REQUEST_PERMISSION_BODY_SENSOR:
-                    if (grantResults.length > 0
-                            && grantResults[i] == PackageManager.PERMISSION_GRANTED)
-                    {
-                        Toast.makeText(MainActivity.this, "Permission Granted!", Toast.LENGTH_SHORT).show();
-                    } else
-                    {
-                        Toast.makeText(MainActivity.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
-                    }
-            }
-        }
-    }
 
     /**
      * This method is run when the app is created and shows the current phone state and displays what permissions are needed

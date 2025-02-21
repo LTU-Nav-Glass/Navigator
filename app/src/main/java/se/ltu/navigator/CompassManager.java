@@ -29,7 +29,7 @@ import se.ltu.navigator.location.UserLocationManager;
 
 /**
  * Compass logic manager responsible to change arrow and compass angle according to provided
- * locations.
+ * locations - also updates information for mapView
  */
 public class CompassManager implements SensorEventListener {
     public static final int SAMPLING_PERIOD_US = 20000;
@@ -61,6 +61,8 @@ public class CompassManager implements SensorEventListener {
         rotationMatrix[ 4] = 1;
         rotationMatrix[ 8] = 1;
         rotationMatrix[12] = 1;
+
+        // register Listeners for changes in NavInfo that require further actions or updates
 
         NavInfo.DISTANCE.registerListener((obs, arg) -> mainActivity.compassArrowText.setText((String) arg));
 
@@ -190,6 +192,7 @@ public class CompassManager implements SensorEventListener {
                 NavInfo.LOCATION_ACCURACY.setData(Math.round(currentLocation.getAccuracy()) + "m");
                 NavInfo.CURRENT_LOCATION.setData(currentLocation.getLatitude() + ", " + currentLocation.getLongitude() + "\n(" + Duration.between(instant, Instant.now()).toSeconds() + "s ago)");
 
+                // centering the map layout on the newly detected location
                 mainActivity.mapView.setCenter(new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude()));
 
                 if (target != null) {
@@ -198,7 +201,7 @@ public class CompassManager implements SensorEventListener {
                     currentBearing = currentLocation.bearingTo(target.getLocation());
                     NavInfo.BEARING.setData(Math.round(currentBearing) + "°");
 
-                    // Animate the rotation of the compass (arrow)
+                    // Animate the rotation of the compass arrow
                     RotateAnimation rotateArrow = new RotateAnimation(lastBearing, currentBearing, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                     rotateArrow.setDuration(SAMPLING_PERIOD_US / 1000);
                     rotateArrow.setInterpolator(new LinearInterpolator());

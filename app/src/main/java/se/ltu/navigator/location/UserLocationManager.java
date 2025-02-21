@@ -1,23 +1,14 @@
 package se.ltu.navigator.location;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorListener;
-import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 
-import java.util.ArrayList;
-
 import se.ltu.navigator.MainActivity;
-import se.ltu.navigator.navinfo.NavInfo;
 
 
 public class UserLocationManager {
@@ -84,7 +75,7 @@ public class UserLocationManager {
         this.floor = floor;
 
         // resets pressure to new floor's pressure when changing floor
-        userSensorManager.setLastPressure();
+        userSensorManager.allowLastPressureReset();
     }
 
     public void setTargetLocation(Location targetLocation) {this.targetLocation = targetLocation;}
@@ -142,7 +133,8 @@ public class UserLocationManager {
             return;
         }
 
-        setLocation(locationManager.getLastKnownLocation(LocationManager.FUSED_PROVIDER)); //instantiate user based off phone's coordinates)
+        //instantiate user based off phone's coordinates
+        setLocation(locationManager.getLastKnownLocation(LocationManager.FUSED_PROVIDER));
     }
 
 }

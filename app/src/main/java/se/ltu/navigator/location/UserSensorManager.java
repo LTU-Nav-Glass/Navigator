@@ -58,7 +58,7 @@ public class UserSensorManager
     /**
      * This method resets the reset boolean indicating that the lastPressure can be reset in the userLocationManager object
      */
-    public void setLastPressure()
+    public void allowLastPressureReset()
     {
         resetPressure = true;
     }
