@@ -1,5 +1,7 @@
 package se.ltu.navigator.navigation;
 
+import android.location.Location;
+
 import java.util.List;
 
 public class Node {
@@ -11,17 +13,19 @@ public class Node {
         EXIT,
         TEMP
     }
+
     private String id;
-    private double longitude;
-    private double latitude;
+    private Location location;
     private int floor;
     private List<String> edges;
     private Type type;
 
     public Node(String id, double longitude, double latitude, int floor, Type type, List<String> edges) {
         this.id = id;
-        this.longitude = longitude;
-        this.latitude = latitude;
+        this.location = new Location("");
+        this.location.setLongitude(longitude);
+        this.location.setLatitude(latitude);
+        this.location.setAccuracy(0);
         this.floor = floor;
         this.type = type;
         this.edges = edges;
@@ -36,23 +40,12 @@ public class Node {
         this.id = id;
     }
 
-    public double getLongitude() {
-        return longitude;
+    public Location getLocation() {
+        return location;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
-    public double getLatitude() {
-        return latitude;
-    }
-    public Type getType() {
-        return type;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public int getFloor() {
@@ -70,6 +63,11 @@ public class Node {
     public void setEdges(List<String> edges) {
         this.edges = edges;
     }
+
+    public Type getType() {
+        return type;
+    }
+
     public void setType(Type type) {
         this.type = type;
     }

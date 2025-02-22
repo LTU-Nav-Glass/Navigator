@@ -11,6 +11,7 @@ public class NavTool {
 
     private static final String[] GRAPH_FILES = { "graph_a.json" };
     private Graph[] graphs;
+    private List<Node> path;
 
     public NavTool(Context context) {
         this.graphs = loadGraphs(context, GRAPH_FILES);
@@ -37,11 +38,15 @@ public class NavTool {
      * @param longitude The longitude of the user.
      * @param latitude The latitude of the user.
      * @param room The room the user wants to go to.
-     * @return The path the user should take. The first node is the user's current location and the
      * last node is the destination.
      * TODO: Add Support for multiple graphs (ie buildings)
      */
-    public List<Node> findPath(double longitude, double latitude, Room room) {
+    public void findPath(double longitude, double latitude, Room room) {
+        //temporary check to only generate paths for A building
+        if (room.getId().toLowerCase().charAt(0) != 'a') {
+            this.path = null;
+            return;
+        }
         List<Node> path = new ArrayList<>();
         for (Graph graph : graphs) {
             graph.insertNodeAtClosestEdge(room.getLocation().getLongitude(), room.getLocation().getLatitude(), room.getId(), room.getId()+"_temp");
@@ -50,6 +55,36 @@ public class NavTool {
         for (Graph graph : graphs) {
             graph.cleanGraph();
         }
+        this.path = path;
+    }
+
+    /**
+     * Get the full path.
+     * @return The path.
+     */
+    public List<Node> getPath() {
         return path;
+    }
+
+    /**
+     * Get the next node in the path.
+     * @return The next node.
+     */
+    public Node popFromPath() {
+        if (!path.isEmpty()) {
+            return path.remove(0);
+        }
+        return null;
+    }
+
+    /**
+     * Get the next node in the path without removing it.
+     * @return The next node.
+     */
+    public Node peekFromPath() {
+        if (!path.isEmpty()) {
+            return path.get(0);
+        }
+        return null;
     }
 }

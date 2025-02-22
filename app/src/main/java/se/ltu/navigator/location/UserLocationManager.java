@@ -101,6 +101,7 @@ public class UserLocationManager {
         longitude = location.getLongitude();
         latitude = location.getLatitude();
         altitude = location.getAltitude();
+        mainActivity.onLocationChanged(longitude, latitude, altitude);
 
         Log.i(TAG, "Updating localisation");
     }

@@ -2,6 +2,7 @@ package se.ltu.navigator.navigation;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.location.Location;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -60,11 +61,9 @@ public class Graph {
      * TODO: the building the user should be directed to the nearest entrance.
      */
     public List<Node> findShortestPath(double startLongitude, double startLatitude, String targetNodeId) {
-        // Insert a temporary node at the closest edge to the starting position
         String tempNodeId = "temp_start";
         insertNodeAtClosestEdge(startLongitude, startLatitude, null, tempNodeId);
 
-        // Use Dijkstra's algorithm to find the shortest path
         Map<String, Double> distances = new HashMap<>();
         Map<String, String> previousNodes = new HashMap<>();
         PriorityQueue<NodeDistance> priorityQueue = new PriorityQueue<>(Comparator.comparingDouble(NodeDistance::getDistance));
@@ -85,7 +84,7 @@ public class Graph {
 
             for (String edge : currentNode.getEdges()) {
                 Node adjacentNode = nodes.get(edge);
-                double newDist = distances.get(currentNode.getId()) + haversineDistance(currentNode.getLongitude(), currentNode.getLatitude(), adjacentNode.getLongitude(), adjacentNode.getLatitude());
+                double newDist = distances.get(currentNode.getId()) + currentNode.getLocation().distanceTo(adjacentNode.getLocation());
 
                 if (newDist < distances.get(adjacentNode.getId())) {
                     distances.put(adjacentNode.getId(), newDist);
@@ -95,14 +94,12 @@ public class Graph {
             }
         }
 
-        // Reconstruct the shortest path
         List<Node> path = new ArrayList<>();
         for (String at = targetNodeId; at != null; at = previousNodes.get(at)) {
             path.add(nodes.get(at));
         }
         Collections.reverse(path);
 
-        // Clean up the temporary node
         nodes.remove(tempNodeId);
 
         return path;
@@ -123,20 +120,27 @@ public class Graph {
         double closestLongitude = 0;
         double closestLatitude = 0;
 
+        Location tempLocation = new Location("");
+        tempLocation.setLongitude(longitude);
+        tempLocation.setLatitude(latitude);
+
         for (Node node : nodes.values()) {
             if (node.getType() == Node.Type.STAIRS) {
                 continue;
             }
             for (String edge : node.getEdges()) {
                 Node adjacentNode = nodes.get(edge);
-                if(adjacentNode == null) {
+                if (adjacentNode == null) {
                     System.out.println("Invalid Edge: " + edge);
                 }
                 if (adjacentNode.getType() == Node.Type.STAIRS) {
                     continue;
                 }
                 double[] closestPoint = findClosestPointOnEdge(node, adjacentNode, longitude, latitude);
-                double distance = haversineDistance(longitude, latitude, closestPoint[0], closestPoint[1]);
+                Location closestLocation = new Location("");
+                closestLocation.setLongitude(closestPoint[0]);
+                closestLocation.setLatitude(closestPoint[1]);
+                double distance = tempLocation.distanceTo(closestLocation);
 
                 if (distance < minDistance) {
                     minDistance = distance;
@@ -236,10 +240,10 @@ public class Graph {
      * @return The coordinates of the point on the edge closest to the given point.
      */
     private double[] findClosestPointOnEdge(Node node1, Node node2, double longitude, double latitude) {
-        double x1 = node1.getLongitude();
-        double y1 = node1.getLatitude();
-        double x2 = node2.getLongitude();
-        double y2 = node2.getLatitude();
+        double x1 = node1.getLocation().getLongitude();
+        double y1 = node1.getLocation().getLatitude();
+        double x2 = node2.getLocation().getLongitude();
+        double y2 = node2.getLocation().getLatitude();
 
         double A = longitude - x1;
         double B = latitude - y1;
@@ -264,25 +268,6 @@ public class Graph {
         }
 
         return new double[]{closestX, closestY};
-    }
-
-    /**
-     * Calculate the distance between two points on the Earth's surface using the Haversine formula.
-     * @param lon1 The longitude of the first point.
-     * @param lat1 The latitude of the first point.
-     * @param lon2 The longitude of the second point.
-     * @param lat2 The latitude of the second point.
-     * @return The distance between the two points in kilometers.
-     */
-    private double haversineDistance(double lon1, double lat1, double lon2, double lat2) {
-        final int R = 6371; // Radius of the Earth in kilometers
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
     }
 
     public Node getNodeById(String id) {
