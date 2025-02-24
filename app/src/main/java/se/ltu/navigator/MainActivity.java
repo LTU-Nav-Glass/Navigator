@@ -6,12 +6,9 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.GestureDetector;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -47,11 +44,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 
 import se.ltu.navigator.databinding.ActivityMainBinding;
 import se.ltu.navigator.dialog.FloorPromptHelper;
-import se.ltu.navigator.fingerprint.FingerprintManager;
 import se.ltu.navigator.navinfo.NavInfoAdapter;
 import se.ltu.navigator.search.SearchAdapter;
 
@@ -99,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
     protected CompassManager compassManager;
     protected SearchBarManager searchBarManager;
     protected FloorPromptHelper floorPromptHelper;
-    protected FingerprintManager fingerprintManager;
 
     /**
      * Method called when the view is created.
@@ -144,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
         // Initialize modules
         compassManager = new CompassManager(this);
         searchBarManager = new SearchBarManager(this);
-        fingerprintManager = new FingerprintManager(this);
         floorPromptHelper = new FloorPromptHelper(this, compassManager); //when initialized, automattically prompts user for floor
 
         // Recycler views

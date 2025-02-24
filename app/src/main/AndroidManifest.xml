@@ -20,11 +20,6 @@
     ~ Permission for body sensors (barometer)
     -->
     <uses-permission android:name="android.permission.BODY_SENSORS"/>
-    <!--
-    ~ Permissions for WiFi fingerprinting
-    -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
     <application
         android:allowBackup="true"
