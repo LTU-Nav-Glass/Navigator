@@ -52,7 +52,6 @@ import java.util.ArrayList;
 import se.ltu.navigator.databinding.ActivityMainBinding;
 import se.ltu.navigator.dialog.FloorPromptHelper;
 import se.ltu.navigator.fingerprint.FingerprintManager;
-import se.ltu.navigator.location.LocationAPI;
 import se.ltu.navigator.navinfo.NavInfoAdapter;
 import se.ltu.navigator.search.SearchAdapter;
 
@@ -99,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
     // Modules
     protected CompassManager compassManager;
     protected SearchBarManager searchBarManager;
-    protected LocationAPI locationAPI;
     protected FloorPromptHelper floorPromptHelper;
     protected FingerprintManager fingerprintManager;
 
@@ -146,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
         // Initialize modules
         compassManager = new CompassManager(this);
         searchBarManager = new SearchBarManager(this);
-        locationAPI = new LocationAPI(this);
         fingerprintManager = new FingerprintManager(this);
         floorPromptHelper = new FloorPromptHelper(this, compassManager); //when initialized, automattically prompts user for floor
 
