@@ -226,7 +226,8 @@
     "edges": [
       "S_MID_CORRIDOR_2",
       "SW_CORNER_STAIRS",
-      "NW_CORRIDOR_1"
+      "NW_CORRIDOR_1",
+      "SW_BOX_TL"
     ]
   },
   {
@@ -237,6 +238,128 @@
     "type": "STAIRS",
     "edges": [
       "SW_CORNER"
+    ]
+  },
+  {
+    "id": "SW_BOX_TL",
+    "longitude": 22.13672343104397,
+    "latitude": 65.61647396898283,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "SW_CORNER",
+      "SW_BOX_TR",
+      "SW_BOX_BL"
+    ]
+  },
+  {
+    "id": "SW_BOX_TR",
+    "longitude": 22.136825988660622,
+    "latitude": 65.6164903587139,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "SW_BOX_TL",
+      "SW_BOX_BR"
+    ]
+  },
+  {
+    "id": "SW_BOX_BR",
+    "longitude": 22.13690786933843,
+    "latitude": 65.61641250739926,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "SW_BOX_TR",
+      "SW_BOX_BL",
+      "BOTTOM_LONG_CORRIDOR_MID"
+    ]
+  },
+  {
+    "id": "SW_BOX_BL",
+    "longitude": 22.1367978680238,
+    "latitude": 65.6163944103497,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "SW_BOX_BR",
+      "SW_BOX_TL",
+      "SW_BOX_STAIRS"
+    ]
+  },
+  {
+    "id": "SW_BOX_STAIRS",
+    "longitude": 22.136725912276628,
+    "latitude": 65.61639645907293,
+    "floor": 2,
+    "type": "STAIRS",
+    "edges": [
+      "SW_BOX_BL"
+    ]
+  },
+  {
+    "id": "BOTTOM_LONG_CORRIDOR_MID",
+    "longitude": 22.13737955890122,
+    "latitude": 65.61648744520464,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "SW_BOX_BR",
+      "BLCM_STAIRS",
+      "ALPHA_BL_CORNER"
+    ]
+  },
+  {
+    "id": "BLCM_STAIRS",
+    "longitude": 22.137347070547914,
+    "latitude": 65.61651994648533,
+    "floor": 2,
+    "type": "STAIRS",
+    "edges": [
+      "BOTTOM_LONG_CORRIDOR_MID"
+    ]
+  },
+  {
+    "id": "ALPHA_BL_CORNER",
+    "longitude": 22.13825415579663,
+    "latitude": 65.61662676305339,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "BOTTOM_LONG_CORRIDOR_MID"
+    ]
+  },
+  {
+    "id": "ALPHA_BR_WEIRD_1",
+    "longitude": 22.138863385832018,
+    "latitude": 65.6167262227848,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "ALPHA_BL_CORNER",
+      "ALPHA_BR_WEIRD_2"
+    ]
+  },
+  {
+    "id": "ALPHA_BR_WEIRD_2",
+    "longitude": 22.138926417739576,
+    "latitude": 65.61680733379552,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "ALPHA_BR_WEIRD_1",
+      "ALPHA_TR_CORNER"
+    ]
+  },
+  {
+    "id": "ALPHA_TR_CORNER",
+    "longitude": 22.13863848491983,
+    "latitude": 65.61709711852961,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "ALPHA_BR_WEIRD_2",
+      "ALPHA_BL_CORNER"
     ]
   }
 ]
