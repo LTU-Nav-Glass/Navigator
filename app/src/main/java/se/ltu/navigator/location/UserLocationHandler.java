@@ -11,8 +11,8 @@ import androidx.core.app.ActivityCompat;
 import se.ltu.navigator.MainActivity;
 
 
-public class UserLocationManager {
-    private static final String TAG = "UserLocationManager";
+public class UserLocationHandler {
+    private static final String TAG = "UserLocationHandler";
     private final MainActivity mainActivity;
 
     private final LocationManager locationManager;
@@ -23,16 +23,16 @@ public class UserLocationManager {
 
     private float lastPressure;
 
-    private UserSensorManager userSensorManager;
+    private UserSensorHandler userSensorHandler;
 
     //these two variables will be used for updating user during movement
     private final long TIME_BETWEEN_UPDATES = 5000;
     private final float MINIMUM_DISTANCE_CHANGE_FOR_UPDATES = 0;
 
-    public UserLocationManager(MainActivity mainActivity) {
+    public UserLocationHandler(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
         locationManager = (LocationManager) mainActivity.getSystemService(mainActivity.getApplicationContext().LOCATION_SERVICE); //instantiated locationManager with the user's location information
-        userSensorManager = new UserSensorManager(this, mainActivity);
+        userSensorHandler = new UserSensorHandler(this, mainActivity);
     }
 
     public double getLongitude() {
@@ -75,7 +75,7 @@ public class UserLocationManager {
         this.floor = floor;
 
         // resets pressure to new floor's pressure when changing floor
-        userSensorManager.allowLastPressureReset();
+        userSensorHandler.allowLastPressureReset();
     }
 
     public void setTargetLocation(Location targetLocation) {this.targetLocation = targetLocation;}
@@ -110,10 +110,10 @@ public class UserLocationManager {
 
         locationManager.requestLocationUpdates(LocationManager.FUSED_PROVIDER, TIME_BETWEEN_UPDATES, MINIMUM_DISTANCE_CHANGE_FOR_UPDATES, this::setLocation);
 
-        userSensorManager.registerSensors();
+        userSensorHandler.registerSensors();
 
         // Initializes lastPressure
-        lastPressure = userSensorManager.getPressure();
+        lastPressure = userSensorHandler.getPressure();
         Log.d(TAG, "Last Pressure: " + lastPressure);
 
     }
@@ -123,7 +123,7 @@ public class UserLocationManager {
      */
     public void stopUpdates() {
         locationManager.removeUpdates(this::setLocation);
-        userSensorManager.pauseSensors();
+        userSensorHandler.pauseSensors();
     }
 
 
