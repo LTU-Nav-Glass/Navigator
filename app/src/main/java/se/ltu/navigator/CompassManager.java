@@ -116,24 +116,31 @@ public class CompassManager implements SensorEventListener {
      */
     public void setTarget(@NotNull Room target) {
         this.target = target;
-        addTargetMarker(target.getLocation());
+        //addTargetMarker(target.getLocation());
     }
 
+    public Room getTarget(){return target;}
+
     /**
+     *
      * Adds a marker to the mapView at the target location.
      * @param targetLocation The location to place the marker.
      */
+    /** FOR TESTING PURPOSES, DISABLE TARGET MARKERS
     private void addTargetMarker(Location targetLocation) {
         if (targetMarker != null) {
-            mainActivity.mapView.getLayerManager().getLayers().remove(targetMarker);
+            //mainActivity.mapView.getLayerManager().getLayers().remove(targetMarker);
+            mainActivity.mapManager.getMapView().getLayerManager().getLayers().remove(targetMarker);
         }
 
         LatLong targetLatLong = new LatLong(targetLocation.getLatitude(), targetLocation.getLongitude());
         Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(mainActivity.getDrawable(R.drawable.marker_icon));
         targetMarker = new Marker(targetLatLong, bitmap, 0, 0);
 
-        mainActivity.mapView.getLayerManager().getLayers().add(targetMarker);
+        //mainActivity.mapView.getLayerManager().getLayers().remove(targetMarker);
+        mainActivity.mapManager.getMapView().getLayerManager().getLayers().add(targetMarker);
     }
+     **/
 
     /**
      * Returns the UserLocationManager object
@@ -190,7 +197,12 @@ public class CompassManager implements SensorEventListener {
                 NavInfo.LOCATION_ACCURACY.setData(Math.round(currentLocation.getAccuracy()) + "m");
                 NavInfo.CURRENT_LOCATION.setData(currentLocation.getLatitude() + ", " + currentLocation.getLongitude() + "\n(" + Duration.between(instant, Instant.now()).toSeconds() + "s ago)");
 
-                mainActivity.mapView.setCenter(new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude()));
+                if(mainActivity.mapManager.useLTUMap())
+                {
+                    mainActivity.mapManager.getMapView().setCenter(new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude()));
+                } else { //use .pdf
+                    // unsure which object to use to set center
+                }
 
                 if (target != null) {
                     NavInfo.DISTANCE.setData(Math.round(currentLocation.distanceTo(target.getLocation())) + "m");

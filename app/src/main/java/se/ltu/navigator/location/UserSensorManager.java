@@ -134,13 +134,11 @@ public class UserSensorManager
             floorDirection = -1;
         }
 
-        return Math.abs(deltaP) > Math.abs(CHANGE_IN_FLOOR_PRESSURE);
+        return Math.abs(deltaP) > CHANGE_IN_FLOOR_PRESSURE;
     }
 
     /**
      * This method returns true if the user has been on a new floor
-     * NEEDED IMPROVEMENT: Measure if user needs to change anymore floors
-     *      - If the user does and moves up multiple flights in succession --> app calibrates to wrong floor
      * @param e
      * @return
      */
@@ -161,8 +159,8 @@ public class UserSensorManager
         long currentTimestamp = e.timestamp;
         long deltaTime = currentTimestamp - lastTimestamp;
 
-        return detectPressureChange(e)
-                && pressureStable //|| Math.abs(userLocationManager.getTargetLocation().PLACEHOLDER-getRoom().getFloor() - userLocationManager.getFloor()) > 1)
-                    && deltaTime >= FLOOR_CHANGE_TIMESTAMP;
+        return detectPressureChange(e) &&
+        ((pressureStable && deltaTime >= FLOOR_CHANGE_TIMESTAMP)
+                || (mainActivity.getCompassManager().getTarget().getFloor() - userLocationManager.getFloor() > 1));
     }
 }
