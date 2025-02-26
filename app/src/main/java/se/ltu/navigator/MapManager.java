@@ -30,8 +30,6 @@ import se.ltu.navigator.location.UserLocationManager;
 public class MapManager {
     private static final String TAG = "MapManager";
     private final String LTU_MAP_FILENAME = "planet_22.13,65.615_22.151,65.621.map";
-    //private final int PDF_WIDTH = 2480;
-    //private final int PDF_HEIGHT = 3508;
     private CompassManager compassManager;
     private UserLocationManager userLocationManager;
     private MainActivity mainActivity;
@@ -40,9 +38,11 @@ public class MapManager {
     private PdfRenderer pdfRenderer;
     private Bitmap pdfBitmap;
     private ImageView pdfImageView;
-
     private ArrayList<ArrayList<String>> asset_filenames; // Holds array of building map filenames
+    private double[][] building_bounds;
+    private int current_building_index;
     private String currentFilename;
+
     public MapManager(MainActivity mainActivity, CompassManager compassManager) {
         this.mainActivity = mainActivity;
         this.compassManager = compassManager;
@@ -50,15 +50,35 @@ public class MapManager {
         assetManager = mainActivity.getAssets();
         userLocationManager = compassManager.getUserLocationManager();
         asset_filenames = new ArrayList<>();
+        building_bounds = new double[5][4 * 2]; // 5 buildings each with 4 corners with latitude and longitude
         initMapList();
+        initBuildingBoundaries();
 
         currentFilename = LTU_MAP_FILENAME; //set to LTU map first
+        current_building_index = -1; //-1 indicates user is outside
     }
 
-    public void mapSetupHandler()
-    {
-        switch(currentFilename)
-        {
+    /**
+     * This method measures the user's coordinates and displays the correct map
+     */
+    public void switchMap() {
+        current_building_index = getUserBuilding();
+        String lastFilename = currentFilename;
+
+        if (current_building_index == -1)
+            currentFilename = LTU_MAP_FILENAME;
+        else {
+            // Check that user's current floor works
+            currentFilename = asset_filenames.get(current_building_index).get(0);
+            Log.d(TAG, currentFilename);
+        }
+        if (lastFilename.compareTo(currentFilename) != 0)
+            mapSetupHandler();
+    }
+
+    // ISSUE, DOES NOT SWITCH BACK TO COMPASS
+    public void mapSetupHandler() {
+        switch (currentFilename) {
             case LTU_MAP_FILENAME:
                 mapLTUSetup();
                 break;
@@ -71,26 +91,26 @@ public class MapManager {
     /**
      * This method switches the current map displayed on app when user changes floors
      */
-    public void switchCurrentFloor(int floor)
-    {
-        if(floor < 0 || floor > 3)
-            return;
+    public void switchCurrentFloor(int floorDir) {
 
-        String building = currentFilename.substring(0,1);
+        String building = currentFilename.substring(0, 1);
+        int current_filename_index = asset_filenames.indexOf(currentFilename);
 
-        if(building.compareTo("A") == 0)
-        {
-            currentFilename = asset_filenames.get(0).get(floor-1);
+        if (building.compareTo("A") == 0) {
+            currentFilename = asset_filenames.get(current_building_index).get(current_filename_index + floorDir);
         } else if (building.compareTo("B") == 0) // No maps available for other buildings but is here for transparency for implementing in the future
         {
 
         }
     }
 
-    public MapView getMapView(){return mapView;}
-    public Bitmap getPDFBitmap(){return pdfBitmap;}
-    public String getCurrentFilename(){return currentFilename;}
-    public boolean useLTUMap(){return currentFilename.compareTo(LTU_MAP_FILENAME) == 0;}
+    public MapView getMapView() {
+        return mapView;
+    }
+
+    public boolean useLTUMap() {
+        return currentFilename.compareTo(LTU_MAP_FILENAME) == 0;
+    }
 
     private void mapLTUSetup() {
         try {
@@ -151,22 +171,19 @@ public class MapManager {
         }
     }
 
-    private void mapPDFSetup()
-    {
+    private void mapPDFSetup() {
         try {
             // display pdfImageView to mapView
             pdfImageView = mainActivity.findViewById(R.id.pdfImageView);
             File tempFile = File.createTempFile("temp_pdf", ".pdf", mainActivity.getCacheDir());
 
-            if(tempFile.exists())
-            {
+            if (tempFile.exists()) {
                 InputStream inputStream = assetManager.open(currentFilename);
                 FileOutputStream outputStream = new FileOutputStream(tempFile);
 
                 byte[] buffer = new byte[1024];
                 int size = inputStream.read(buffer);
-                while(size != -1)
-                {
+                while (size != -1) {
                     outputStream.write(buffer, 0, size);
                     size = inputStream.read(buffer);
                 }
@@ -194,8 +211,11 @@ public class MapManager {
 
     }
 
-    private void initMapList()
-    {
+    private void resetMap() {
+
+    }
+
+    private void initMapList() {
         // A Hus
         ArrayList<String> a_Hus = new ArrayList();
         a_Hus.add("A-huset1.pdf");
@@ -212,14 +232,63 @@ public class MapManager {
     }
 
     /**
-     * This method measures if the user is currently in a building
-     * @return true or false based off if the user is in a building or not
+     * This method initializes the boundaries of each building to measure if the user is in the general area
+     * This simplifies each building to 4 corners and creates a square area around (even though the buildings are more complex shapes)
+     * The even indexes are the longitude while the odd are latitude
      */
-    private boolean inBuilding()
-    {
-        // Can manually compare user coordinates with coordinates of buildings to see if they are in range
+    private void initBuildingBoundaries() {
+        // A Hus
+        //NW Corner
+        building_bounds[0][0] = 65.61736064369937;
+        building_bounds[0][1] = 22.13577732432116;
+        //NE Corner
+        building_bounds[0][2] = 65.61772920710077;
+        building_bounds[0][3] = 22.138151464469043;
+        //SW Corner
+        building_bounds[0][4] = 65.61633136857452;
+        building_bounds[0][5] = 22.136729625661815;
+        //SE Corner
+        building_bounds[0][6] = 65.61672997863523;
+        building_bounds[0][7] = 22.1391037658097;
 
-        return true;
+        // B
     }
 
+    /**
+     * This method measures if the user is within the set bounds of each building
+     *
+     * @return integer identifying which building user is in, -1 if user is not in a building
+     */
+    private int getUserBuilding()
+    {
+
+        double userLong = userLocationManager.getLongitude();
+        double userLat = userLocationManager.getLatitude();
+
+        //Test case for random loc in A Hus
+        userLong = 65.61718591551842;
+        userLat = 22.136828823718133;
+
+        for(int hus_index = 0; hus_index < building_bounds.length; hus_index++)
+        {
+            // Measure if user is within bounds of longitude
+            if(userLong < building_bounds[hus_index][0]
+                    && userLong < building_bounds[hus_index][2]
+                    && userLong > building_bounds[hus_index][4]
+                    && userLong > building_bounds[hus_index][6])
+            {
+                // Measure if user is within bounds of latitude
+                if(userLat > building_bounds[hus_index][1]
+                        && userLat > building_bounds[hus_index][5]
+                        && userLat < building_bounds[hus_index][3]
+                        && userLat < building_bounds[hus_index][7])
+                {
+                    return hus_index;
+                }
+            }
+
+        }
+
+        return -1; //returns if user is not in a building
+    }
 }

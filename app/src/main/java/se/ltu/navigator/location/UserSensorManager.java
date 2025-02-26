@@ -95,6 +95,8 @@ public class UserSensorManager
 
                     userLocationManager.setLastPressure(currentPressures[pIndex]);
                     userLocationManager.setFloor(userFloor+floorDirection);
+                    mainActivity.getMapManager().switchCurrentFloor(floorDirection);
+
                     Log.d("Barometer","User floor is now: " + userLocationManager.getFloor());
                 }
 

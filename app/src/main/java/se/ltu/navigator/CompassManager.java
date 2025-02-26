@@ -197,12 +197,16 @@ public class CompassManager implements SensorEventListener {
                 NavInfo.LOCATION_ACCURACY.setData(Math.round(currentLocation.getAccuracy()) + "m");
                 NavInfo.CURRENT_LOCATION.setData(currentLocation.getLatitude() + ", " + currentLocation.getLongitude() + "\n(" + Duration.between(instant, Instant.now()).toSeconds() + "s ago)");
 
+                mainActivity.mapManager.switchMap();
                 if(mainActivity.mapManager.useLTUMap())
                 {
                     mainActivity.mapManager.getMapView().setCenter(new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude()));
                 } else { //use .pdf
                     // unsure which object to use to set center
                 }
+
+                // Switch current display of map based off user location
+
 
                 if (target != null) {
                     NavInfo.DISTANCE.setData(Math.round(currentLocation.distanceTo(target.getLocation())) + "m");

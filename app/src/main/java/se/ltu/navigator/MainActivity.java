@@ -358,4 +358,5 @@ public class MainActivity extends AppCompatActivity {
         return binding.getRoot();
     }
     public CompassManager getCompassManager(){return compassManager;}
+    public MapManager getMapManager(){return mapManager;}
 }
