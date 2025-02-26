@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Array;
 import java.util.ArrayList;
 
 import se.ltu.navigator.location.UserLocationManager;
@@ -40,7 +41,7 @@ public class MapManager {
     private Bitmap pdfBitmap;
     private ImageView pdfImageView;
 
-    private ArrayList<String> asset_filenames; // Holds array of building map filenames
+    private ArrayList<ArrayList<String>> asset_filenames; // Holds array of building map filenames
     private String currentFilename;
     public MapManager(MainActivity mainActivity, CompassManager compassManager) {
         this.mainActivity = mainActivity;
@@ -51,12 +52,11 @@ public class MapManager {
         asset_filenames = new ArrayList<>();
         initMapList();
 
-        //currentFilename = LTU_MAP_FILENAME; //set to LTU map first
+        currentFilename = LTU_MAP_FILENAME; //set to LTU map first
     }
 
     public void mapSetupHandler()
     {
-        currentFilename = asset_filenames.get(0);
         switch(currentFilename)
         {
             case LTU_MAP_FILENAME:
@@ -65,6 +65,25 @@ public class MapManager {
             default:
                 mapPDFSetup();
                 break;
+        }
+    }
+
+    /**
+     * This method switches the current map displayed on app when user changes floors
+     */
+    public void switchCurrentFloor(int floor)
+    {
+        if(floor < 0 || floor > 3)
+            return;
+
+        String building = currentFilename.substring(0,1);
+
+        if(building.compareTo("A") == 0)
+        {
+            currentFilename = asset_filenames.get(0).get(floor-1);
+        } else if (building.compareTo("B") == 0) // No maps available for other buildings but is here for transparency for implementing in the future
+        {
+
         }
     }
 
@@ -135,28 +154,14 @@ public class MapManager {
     private void mapPDFSetup()
     {
         try {
-            Log.d(TAG,"Start pdfSetup");
             // display pdfImageView to mapView
             pdfImageView = mainActivity.findViewById(R.id.pdfImageView);
-            Log.d(TAG, "init ImageView");
-
-            Log.d(TAG, currentFilename);
-
             File tempFile = File.createTempFile("temp_pdf", ".pdf", mainActivity.getCacheDir());
-            Log.d(TAG, "init tempFile");
 
             if(tempFile.exists())
             {
-                Log.d(TAG, "!tempFile.exist()");
-
-                // Stores pdfs from Vector_Pdf File
-                String[] vectorAssets = assetManager.list("Vector_Pdfs");
-
                 InputStream inputStream = assetManager.open(currentFilename);
-                Log.d(TAG, "init input");
-
                 FileOutputStream outputStream = new FileOutputStream(tempFile);
-                Log.d(TAG, "init output");
 
                 byte[] buffer = new byte[1024];
                 int size = inputStream.read(buffer);
@@ -165,7 +170,6 @@ public class MapManager {
                     outputStream.write(buffer, 0, size);
                     size = inputStream.read(buffer);
                 }
-                Log.d(TAG, "fill output");
 
                 inputStream.close();
                 outputStream.close();
@@ -182,7 +186,6 @@ public class MapManager {
             //Display bitmap to ImageView
             pdfImageView.setImageBitmap(pdfBitmap);
 
-
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -194,29 +197,18 @@ public class MapManager {
     private void initMapList()
     {
         // A Hus
-        asset_filenames.add("A-huset1.pdf");
-        asset_filenames.add("A-huset2.pdf");
-        asset_filenames.add("A-huset3.pdf");
-    }
+        ArrayList<String> a_Hus = new ArrayList();
+        a_Hus.add("A-huset1.pdf");
+        a_Hus.add("A-huset2.pdf");
+        a_Hus.add("A-huset3.pdf");
 
-    /**
-     * This method returns the building that the target room is in
-     * @return filename of the map for the building
-     */
-    public String setTargetBuildingFloor()
-    {
-        //Look at target
-            //Use to determine building & floor
-        return null;
-    }
+        // B Hus
+        ArrayList<String> b_Hus = new ArrayList<>();
 
-    /**
-     * This method switches the current map displayed on app
-     */
-    private void switchMap()
-    {
-        // Use user current location to compare to different buildings
-        // For right now, only compare user to A building & everything else
+        // ...etc
+
+        asset_filenames.add(a_Hus);
+        asset_filenames.add(b_Hus);
     }
 
     /**
