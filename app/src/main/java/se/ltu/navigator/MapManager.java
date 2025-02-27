@@ -37,7 +37,7 @@ public class MapManager {
     private MapView mapView;
     private PdfRenderer pdfRenderer;
     private Bitmap pdfBitmap;
-    private ImageView pdfImageView;
+    protected ImageView pdfImageView;
     private ArrayList<ArrayList<String>> asset_filenames; // Holds array of building map filenames
     private double[][] building_bounds;
     private int current_building_index;
@@ -69,7 +69,7 @@ public class MapManager {
             currentFilename = LTU_MAP_FILENAME;
         else {
             // Check that user's current floor works
-            currentFilename = asset_filenames.get(current_building_index).get(0);
+            currentFilename = asset_filenames.get(current_building_index).get(1);
             Log.d(TAG, currentFilename);
         }
         if (lastFilename.compareTo(currentFilename) != 0)
@@ -97,7 +97,12 @@ public class MapManager {
         int current_filename_index = asset_filenames.indexOf(currentFilename);
 
         if (building.compareTo("A") == 0) {
-            currentFilename = asset_filenames.get(current_building_index).get(current_filename_index + floorDir);
+            try {
+                currentFilename = asset_filenames.get(current_building_index).get(current_filename_index + floorDir);
+            }
+            catch (IndexOutOfBoundsException e) {
+
+            }
         } else if (building.compareTo("B") == 0) // No maps available for other buildings but is here for transparency for implementing in the future
         {
 
@@ -203,14 +208,10 @@ public class MapManager {
             //Display bitmap to ImageView
             pdfImageView.setImageBitmap(pdfBitmap);
 
-            pdfImageView.setScaleX(10);
-            pdfImageView.setScaleY(10);
+            pdfImageView.setScaleX(3);
+            pdfImageView.setScaleY(3);
 
             pdfImageView.setRotation(-21);
-
-            pdfImageView.setX(300);
-            pdfImageView.setY(500);
-
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);

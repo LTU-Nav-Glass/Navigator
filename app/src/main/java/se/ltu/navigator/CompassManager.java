@@ -29,7 +29,7 @@ import se.ltu.navigator.location.UserLocationManager;
 
 /**
  * Compass logic manager responsible to change arrow and compass angle according to provided
- * locations.
+ * locations - also updates information for mapView
  */
 public class CompassManager implements SensorEventListener {
     public static final int SAMPLING_PERIOD_US = 20000;
@@ -48,9 +48,17 @@ public class CompassManager implements SensorEventListener {
     private float lastBearing;
     private final UserLocationManager userLocationManager;
     private Marker targetMarker;
+    private double centerOfABuildingLat;
+    private double centerOfABuildingLong;
+    private float scalingFactor;
 
     public CompassManager(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
+
+        this.centerOfABuildingLat = 65.618253; // 65.617153
+        this.centerOfABuildingLong = 22.138150;
+        this.scalingFactor = 600000;
+
         userLocationManager = new UserLocationManager(mainActivity);
 
         sensorManager = ((SensorManager) mainActivity.getSystemService(Context.SENSOR_SERVICE));
@@ -61,6 +69,8 @@ public class CompassManager implements SensorEventListener {
         rotationMatrix[ 4] = 1;
         rotationMatrix[ 8] = 1;
         rotationMatrix[12] = 1;
+
+        // register Listeners for changes in NavInfo that require further actions or updates
 
         NavInfo.DISTANCE.registerListener((obs, arg) -> mainActivity.compassArrowText.setText((String) arg));
 
@@ -201,6 +211,8 @@ public class CompassManager implements SensorEventListener {
 
                 mainActivity.mapManager.getMapView().setCenter(new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude()));
 
+                updateMapPosition(mainActivity, currentLocation);
+
 
 
                 if (target != null) {
@@ -209,7 +221,7 @@ public class CompassManager implements SensorEventListener {
                     currentBearing = currentLocation.bearingTo(target.getLocation());
                     NavInfo.BEARING.setData(Math.round(currentBearing) + "°");
 
-                    // Animate the rotation of the compass (arrow)
+                    // Animate the rotation of the compass arrow
                     RotateAnimation rotateArrow = new RotateAnimation(lastBearing, currentBearing, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                     rotateArrow.setDuration(SAMPLING_PERIOD_US / 1000);
                     rotateArrow.setInterpolator(new LinearInterpolator());
@@ -234,6 +246,11 @@ public class CompassManager implements SensorEventListener {
                 NavInfo.TARGET_FLOOR.setData("-");
             }
         }
+    }
+
+    private void updateMapPosition(MainActivity mainActivity, Location currentLocation) {
+        mainActivity.getMapManager().pdfImageView.setY(this.scalingFactor*(float)(this.centerOfABuildingLat - 65.61749260609082));
+        mainActivity.getMapManager().pdfImageView.setX(this.scalingFactor*(float)(this.centerOfABuildingLong - 22.137084348154577)); // 22.137084348154577
     }
 
     /**
