@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -49,8 +48,6 @@ import java.io.InputStream;
 
 import se.ltu.navigator.databinding.ActivityMainBinding;
 import se.ltu.navigator.dialog.FloorPromptHelper;
-import se.ltu.navigator.fingerprint.FingerprintManager;
-import se.ltu.navigator.location.LocationAPI;
 import se.ltu.navigator.navinfo.NavInfoAdapter;
 import se.ltu.navigator.search.SearchAdapter;
 
@@ -64,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final int REQUEST_PERMISSION_FINE_LOCATION = 1;
     private final int REQUEST_PERMISSION_BODY_SENSOR = 2;
-    
+
     private ActivityMainBinding binding;
 
     // Search
@@ -95,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
     // Modules
     protected CompassManager compassManager;
     protected SearchBarManager searchBarManager;
-    protected LocationAPI locationAPI;
     protected FloorPromptHelper floorPromptHelper;
     protected MapManager mapManager;
     protected FingerprintManager fingerprintManager;
@@ -137,8 +133,6 @@ public class MainActivity extends AppCompatActivity {
         // Initialize modules
         compassManager = new CompassManager(this);
         searchBarManager = new SearchBarManager(this);
-        locationAPI = new LocationAPI(this);
-        fingerprintManager = new FingerprintManager(this);
         floorPromptHelper = new FloorPromptHelper(this, compassManager); //when initialized, automattically prompts user for floor
 
         // mapView initialization
@@ -153,6 +147,8 @@ public class MainActivity extends AppCompatActivity {
         navInfo.setLayoutManager(new LinearLayoutManager(this));
         navInfo.setAdapter(new NavInfoAdapter());
 
+        compassFloorIndicatorWrapper.setOnClickListener(v -> floorPromptHelper.show());
+
         // Disable "Drag" for AppBarLayout
         // https://stackoverflow.com/questions/34108501/how-to-disable-scrolling-of-appbarlayout-in-coordinatorlayout
         if (appBar.getLayoutParams() != null) {
@@ -166,10 +162,9 @@ public class MainActivity extends AppCompatActivity {
             });
             layoutParams.setBehavior(appBarLayoutBehaviour);
         }
-
-        compassFloorIndicatorWrapper.setOnClickListener(v -> floorPromptHelper.show());
     }
 
+    // setting up the initial mapView -> further logic takes place in CompassManager
     @SuppressLint("ClickableViewAccessibility")
     private void mapSetup() {
         try {
@@ -223,10 +218,7 @@ public class MainActivity extends AppCompatActivity {
         this.compassManager.stopMonitoring();
     }
 
-    /**
-     * This method instantiates the field variables of longitude, latitude, and the user's altitude
-     *  ~ Currently the method sets user to the last known location but that may change when wanting to update in real time
-     */
+
     @Override
     public void onStart()
     {
@@ -237,42 +229,9 @@ public class MainActivity extends AppCompatActivity {
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this, Manifest.permission.BODY_SENSORS) != PackageManager.PERMISSION_GRANTED) {
             showPhoneStatePermission();
-            return;
         }
     }
 
-    // Is this still used?
-    /**
-     * Controls what happens when the user agrees or disagrees to the permission prompt when opening the app
-     */
-    public void onRequestPermissionResult(int requestCode, String permissions[], int[] grantResults)
-    {
-
-        for (int i = 0; i < permissions.length; i++)
-        {
-            switch (requestCode)
-            {
-                case REQUEST_PERMISSION_FINE_LOCATION:
-                    if (grantResults.length > 0
-                            && grantResults[i] == PackageManager.PERMISSION_GRANTED)
-                    {
-                        Toast.makeText(MainActivity.this, "Permission Granted!", Toast.LENGTH_SHORT).show();
-                    } else
-                    {
-                        Toast.makeText(MainActivity.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
-                    }
-                case REQUEST_PERMISSION_BODY_SENSOR:
-                    if (grantResults.length > 0
-                            && grantResults[i] == PackageManager.PERMISSION_GRANTED)
-                    {
-                        Toast.makeText(MainActivity.this, "Permission Granted!", Toast.LENGTH_SHORT).show();
-                    } else
-                    {
-                        Toast.makeText(MainActivity.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
-                    }
-            }
-        }
-    }
 
     /**
      * This method is run when the app is created and shows the current phone state and displays what permissions are needed

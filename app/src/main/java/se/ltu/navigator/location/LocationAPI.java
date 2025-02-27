@@ -7,10 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.res.AssetManager;
 import android.location.Location;
-import android.os.Build;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,14 +33,14 @@ public class LocationAPI {
 
     public LocationAPI(Context c) {
         context = c;
-        rooms = loadLocations();
+        rooms = loadRooms();
         executorService = Executors.newSingleThreadExecutor();
     }
 
-    private List<Room> loadLocations() {
+    private List<Room> loadRooms() {
         File file = new File(context.getFilesDir(), "locations.json");
 
-        List<Room> locationList = new ArrayList<>();
+        List<Room> roomList = new ArrayList<>();
         try {
             InputStream inputStream;
             if (file.exists()) {
@@ -62,20 +59,20 @@ public class LocationAPI {
                 double longitude = jsonObject.getDouble("longitude");
                 double latitude = jsonObject.getDouble("latitude");
                 int floor = jsonObject.getInt("floor");
-                Room location = new Room(id, longitude, latitude, floor);
-                locationList.add(location);
+                Room room = new Room(id, longitude, latitude, floor);
+                roomList.add(room);
             }
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
-        return locationList;
+        return roomList;
     }
 
-    private void writeLocationToFile(String id, double longitude, double latitude, int floor) {
-        if (getRoomById(id) != null) {
+    private void writeRoomToFile(Room room) {
+        if (getRoomById(room.getId()) != null) {
             return; // Location already exists
         }
-        rooms.add(new Room(id, longitude, latitude, floor));
+        rooms.add(room);
         try {
             // Read existing locations
             File file = new File(context.getFilesDir(), "locations.json");
@@ -92,12 +89,12 @@ public class LocationAPI {
 
             // Parse JSON and add new location
             JSONArray jsonArray = new JSONArray(jsonString);
-            JSONObject newLocation = new JSONObject();
-            newLocation.put("id", id);
-            newLocation.put("longitude", longitude);
-            newLocation.put("latitude", latitude);
-            newLocation.put("floor", floor);
-            jsonArray.put(newLocation);
+            JSONObject newRoom = new JSONObject();
+            newRoom.put("id", room.getId());
+            newRoom.put("longitude", room.getLocation().getLongitude());
+            newRoom.put("latitude", room.getLocation().getLatitude());
+            newRoom.put("floor", room.getFloor());
+            jsonArray.put(newRoom);
 
             // Write updated JSON back to file
             try (FileOutputStream outputStream = context.openFileOutput("locations.json", Context.MODE_PRIVATE)) {
@@ -109,6 +106,7 @@ public class LocationAPI {
     }
 
     /**
+     * Should only be used when certain that room has already been fetched to local database
      * @param id The room ID.
      * @return The room pulled from local storage (it doesn't fetch information online).
      */
@@ -123,12 +121,14 @@ public class LocationAPI {
 
     /**
      * @param roomId The room ID.
-     * @param callback Callback invoked with room location object fetched from the LTU Map database.
+     * @param callback Callback invoked with location object fetched from the LTU Map database.
      */
     public void getLocationById(String roomId, Callback<Location> callback) {
         getRoomById(roomId, room -> {
             if (room != null) {
                 callback.onResult(room.getLocation());
+            } else {
+                callback.onResult(null);
             }
         });
     }
@@ -155,10 +155,8 @@ public class LocationAPI {
                         .get()
                         .build();
 
-//                System.out.println("Request URL: " + urlString);
                 // Execute the request
                 try (Response response = client.newCall(request).execute()) {
-//                    System.out.println("Response code: " + response.code());
                     if (response.isSuccessful() && response.body() != null) {
                         String jsonResponse = response.body().string();
 
@@ -175,8 +173,8 @@ public class LocationAPI {
                             // Create and return new Room object
                             Room room = new Room(id, longitude, latitude, floor);
 
-                            // Write new location to locations.json
-                            writeLocationToFile(id, longitude, latitude, floor);
+                            // Write new room to locations.json
+                            writeRoomToFile(room);
 
                             callback.onResult(room);
                         } else {

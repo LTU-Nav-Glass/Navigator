@@ -8,15 +8,15 @@ import android.util.Log;
 
 import se.ltu.navigator.MainActivity;
 
-public class UserSensorManager
+public class UserSensorHandler
 {
-    private static final String TAG = "UserSensorManager";
+    private static final String TAG = "UserSensorHandler";
     private final float CHANGE_IN_FLOOR_PRESSURE = 0.34F;
     private final float PRESSURE_CHANGE_THRESHOLD = 0.04F;
    private final long FLOOR_CHANGE_TIMESTAMP = 3000;
 
     private final MainActivity mainActivity;
-    private UserLocationManager userLocationManager;
+    private UserLocationHandler userLocationHandler;
     private final SensorManager sensorManager;
     private Sensor barometer;
 
@@ -28,10 +28,10 @@ public class UserSensorManager
     private boolean resetPressure = true;
 
 
-    public UserSensorManager(UserLocationManager userLocationManager, MainActivity mainActivity)
+    public UserSensorHandler(UserLocationHandler userLocationHandler, MainActivity mainActivity)
     {
         this.mainActivity = mainActivity;
-        this.userLocationManager = userLocationManager;
+        this.userLocationHandler = userLocationHandler;
 
         sensorManager = (SensorManager) mainActivity.getSystemService(mainActivity.getApplicationContext().SENSOR_SERVICE);
         barometer = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
@@ -56,9 +56,9 @@ public class UserSensorManager
     }
 
     /**
-     * This method resets the reset boolean indicating that the lastPressure can be reset in the userLocationManager object
+     * This method resets the reset boolean indicating that the lastPressure can be reset in the userLocationHandler object
      */
-    public void setLastPressure()
+    public void allowLastPressureReset()
     {
         resetPressure = true;
     }
@@ -79,7 +79,7 @@ public class UserSensorManager
 
                 if (resetPressure) //only sets LastPressure when its the first time getting to a floor
                 {
-                    userLocationManager.setLastPressure(currentPressures[pIndex]);
+                    userLocationHandler.setLastPressure(currentPressures[pIndex]);
                     Log.d("Barometer","set user pressure to " + currentPressures[pIndex]);
 
                     // reset conditional values
@@ -91,12 +91,11 @@ public class UserSensorManager
                 // Measure if the pressure changed and if the user has reached the target floor
                 if (detectNewFloor(event))
                 {
-                    int userFloor = userLocationManager.getFloor();
+                    int userFloor = userLocationHandler.getFloor();
 
-                    userLocationManager.setLastPressure(currentPressures[pIndex]);
-                    userLocationManager.setFloor(userFloor+floorDirection);
-
-                    Log.d("Barometer","User floor is now: " + userLocationManager.getFloor());
+                    userLocationHandler.setLastPressure(currentPressures[pIndex]);
+                    userLocationHandler.setFloor(userFloor+floorDirection);
+                    Log.d("Barometer","User floor is now: " + userLocationHandler.getFloor());
                 }
 
             }
@@ -123,7 +122,7 @@ public class UserSensorManager
     private boolean detectPressureChange(SensorEvent e)
     {
         //Measure difference b/w startingP & currentP
-        deltaP = userLocationManager.getLastPressure() - currentPressures[pIndex];
+        deltaP = userLocationHandler.getLastPressure() - currentPressures[pIndex];
 
         //automatically change floor
         if(deltaP > CHANGE_IN_FLOOR_PRESSURE)

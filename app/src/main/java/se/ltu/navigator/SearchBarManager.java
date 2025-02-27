@@ -5,11 +5,16 @@ import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 
+import se.ltu.navigator.location.LocationAPI;
+
 public class SearchBarManager implements TextWatcher {
     private MainActivity mainActivity;
 
+    private LocationAPI locationAPI;
+
     public SearchBarManager(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
+        locationAPI = new LocationAPI(mainActivity);
         mainActivity.searchView.getEditText().addTextChangedListener(this);
         mainActivity.searchView.getEditText().setOnEditorActionListener(this::onSearchAction);
     }
@@ -35,7 +40,7 @@ public class SearchBarManager implements TextWatcher {
     public void search(String search) {
         mainActivity.searchProgress.setVisibility(View.VISIBLE);
         mainActivity.searchProgress.setIndeterminate(true);
-        mainActivity.locationAPI.getRoomById(search, room -> {
+        this.locationAPI.getRoomById(search, room -> {
             if (room != null) {
                 mainActivity.runOnUiThread(() -> {
                     mainActivity.searchBar.setText(search);
@@ -58,7 +63,7 @@ public class SearchBarManager implements TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        mainActivity.searchAdapter.setResults(mainActivity.locationAPI.findLocationsByPartialId(mainActivity.searchView.getText().toString()));
+        mainActivity.searchAdapter.setResults(this.locationAPI.findLocationsByPartialId(mainActivity.searchView.getText().toString()));
     }
 
     @Override

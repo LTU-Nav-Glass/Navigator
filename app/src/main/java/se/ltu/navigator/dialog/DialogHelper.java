@@ -15,7 +15,7 @@ public abstract class DialogHelper {
     public DialogHelper(MainActivity mainActivity, CompassManager compassManager) {
         // Initialize field vars
         this.mainActivity = mainActivity;
-        this.compassManager = compassManager; //add method to access UserLocationManager object to change floor
+        this.compassManager = compassManager; //add method to access UserLocationHandler object to change floor
     }
 
     /**
