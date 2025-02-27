@@ -20,6 +20,7 @@ import org.mapsforge.map.layer.overlay.Marker;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,6 +44,7 @@ public class CompassManager implements SensorEventListener {
     // Data
     private Node target;
     private Room destination;
+    private ArrayList<Marker> pathMarkers = new ArrayList<>();
     private final float[] rotationMatrix = new float[16];
     private final float[] orientationVector = new float[3];
     private float currentAzimuth;
@@ -139,6 +141,7 @@ public class CompassManager implements SensorEventListener {
         if (next != null) {
             this.target = next;
             //TODO: update path visualization
+            updatePathMarkers();
         } else {
             this.target = destination;
         }
@@ -166,6 +169,25 @@ public class CompassManager implements SensorEventListener {
         targetMarker = new Marker(targetLatLong, bitmap, 0, 0);
 
         mainActivity.mapView.getLayerManager().getLayers().add(targetMarker);
+    }
+
+    /**
+     * Takes a list of Nodes and adds markers to the mapView at each Node's location.
+     * Also removes any markers that were previously added. Stores markers in pathMarkers.
+     */
+    private void updatePathMarkers() {
+        for (Marker marker : pathMarkers) {
+            mainActivity.mapView.getLayerManager().getLayers().remove(marker);
+        }
+        pathMarkers.clear();
+
+        for (Node node : navTool.getPath()) {
+            LatLong latLong = new LatLong(node.getLocation().getLatitude(), node.getLocation().getLongitude());
+            Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(mainActivity.getDrawable(R.drawable.marker_icon));
+            Marker marker = new Marker(latLong, bitmap, 0, 0);
+            pathMarkers.add(marker);
+            mainActivity.mapView.getLayerManager().getLayers().add(marker);
+        }
     }
 
     /**

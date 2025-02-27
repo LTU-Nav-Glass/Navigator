@@ -326,7 +326,9 @@
     "floor": 2,
     "type": "CORRIDOR",
     "edges": [
-      "BOTTOM_LONG_CORRIDOR_MID"
+      "BOTTOM_LONG_CORRIDOR_MID",
+      "ALPHA_BR_WEIRD_1",
+      "ALPHA_TR_CORNER"
     ]
   },
   {

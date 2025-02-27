@@ -7,6 +7,8 @@ import android.location.Location;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
@@ -28,10 +30,8 @@ public class Graph {
     private void loadGraphFromJson(Context context, String filename) {
         AssetManager assetManager = context.getAssets();
         try (InputStream inputStream = assetManager.open(filename)) {
-            int size = inputStream.available();
-            byte[] buffer = new byte[size];
-            inputStream.read(buffer);
-            String json = new String(buffer, StandardCharsets.UTF_8);
+            String json = IOUtils.toString(inputStream);
+            inputStream.close();
 
             Gson gson = new Gson();
             Type nodeListType = new TypeToken<List<Node>>() {}.getType();
@@ -39,6 +39,12 @@ public class Graph {
 
             nodes = new HashMap<>();
             for (Node node : nodeList) {
+                if(node.getLocation() == null) {
+                    Location location = new Location("");
+                    location.setLongitude(node.getLongitude());
+                    location.setLatitude(node.getLatitude());
+                    node.setLocation(location);
+                }
                 nodes.put(node.getId(), node);
             }
         } catch (IOException e) {
@@ -130,9 +136,6 @@ public class Graph {
             }
             for (String edge : node.getEdges()) {
                 Node adjacentNode = nodes.get(edge);
-                if (adjacentNode == null) {
-                    System.out.println("Invalid Edge: " + edge);
-                }
                 if (adjacentNode.getType() == Node.Type.STAIRS) {
                     continue;
                 }
@@ -214,11 +217,14 @@ public class Graph {
                     String edge3 = tempEdges.get(2);
                     Node roomNode = nodes.get(edge3);
 
-                    roomNode.getEdges().removeIf(edge -> edge.equals(tempNodeId));
+                    if(roomNode != null) {
+                        roomNode.getEdges().removeIf(edge -> edge.equals(tempNodeId));
 
-                    if (roomNode.getType() == Node.Type.ROOM) {
-                        roomNodeIdsToRemove.add(roomNode.getId());
+                        if (roomNode.getType() == Node.Type.ROOM) {
+                            roomNodeIdsToRemove.add(roomNode.getId());
+                        }
                     }
+
                 }
             }
 
