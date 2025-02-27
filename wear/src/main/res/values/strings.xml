@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Wear Navigator</string>
+    <string name="desc_compass">Compass</string>
+    <string name="desc_compass_arrow">Compass arrow</string>
+</resources>
