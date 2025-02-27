@@ -197,7 +197,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-        /**
+
+    public void onLocationChanged(double longitude, double latitude, double altitude) {
+        compassManager.onLocationChanged(longitude, latitude, altitude);
+    }
+
+    /**
      * Method called when the activity gains focus.
      */
     @Override

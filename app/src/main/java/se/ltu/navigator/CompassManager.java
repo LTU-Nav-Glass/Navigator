@@ -20,10 +20,14 @@ import org.mapsforge.map.layer.overlay.Marker;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import se.ltu.navigator.location.Room;
 import se.ltu.navigator.location.UserLocationHandler;
+import se.ltu.navigator.navigation.NavTool;
+import se.ltu.navigator.navigation.Node;
 import se.ltu.navigator.navinfo.NavInfo;
 
 /**
@@ -38,7 +42,9 @@ public class CompassManager implements SensorEventListener {
     private final Sensor rotationSensor;
 
     // Data
-    private Room target;
+    private Node target;
+    private Room destination;
+    private ArrayList<Marker> pathMarkers = new ArrayList<>();
     private final float[] rotationMatrix = new float[16];
     private final float[] orientationVector = new float[3];
     private float currentAzimuth;
@@ -50,10 +56,12 @@ public class CompassManager implements SensorEventListener {
     private double centerOfABuildingLat;
     private double centerOfABuildingLong;
     private float scalingFactor;
+    private NavTool navTool;
 
     public CompassManager(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
         userLocationHandler = new UserLocationHandler(mainActivity);
+        navTool = new NavTool(mainActivity);
 
         this.centerOfABuildingLat = 65.618253; // 65.617153
         this.centerOfABuildingLong = 22.138150;
@@ -123,8 +131,36 @@ public class CompassManager implements SensorEventListener {
      * @param target The new target room.
      */
     public void setTarget(@NotNull Room target) {
-        this.target = target;
+        this.destination = target;
         addTargetMarker(target.getLocation());
+        navTool.findPath(userLocationHandler.getLongitude(), userLocationHandler.getLocation().getLatitude(), target);
+        //TODO: add path visualization
+        getNextTarget();
+
+        Location currentLocation = userLocationHandler.getLocation();
+        if (currentLocation != null) {
+            onLocationChanged(currentLocation.getLongitude(), currentLocation.getLatitude(), currentLocation.getAltitude());
+        }
+    }
+
+    private void getNextTarget() {
+        Node next = navTool.popFromPath();
+        if (next != null) {
+            this.target = next;
+            //TODO: update path visualization
+            updatePathMarkers();
+        } else {
+            this.target = destination;
+        }
+    }
+
+    public void onLocationChanged(double longitude, double latitude, double altitude) {
+        mainActivity.mapManager.getMapView().setCenter(new LatLong(latitude, longitude));
+        updateMapPosition(mainActivity, latitude, longitude);
+
+        if (target != null && userLocationHandler.getLocation().distanceTo(target.getLocation()) < 5) {
+            getNextTarget();
+        }
     }
 
     public Room getTarget(){return target;}
@@ -144,6 +180,25 @@ public class CompassManager implements SensorEventListener {
         targetMarker = new Marker(targetLatLong, bitmap, 0, 0);
 
         mainActivity.getMapManager().mapView.getLayerManager().getLayers().add(targetMarker);
+    }
+
+    /**
+     * Takes a list of Nodes and adds markers to the mapView at each Node's location.
+     * Also removes any markers that were previously added. Stores markers in pathMarkers.
+     */
+    private void updatePathMarkers() {
+        for (Marker marker : pathMarkers) {
+            mainActivity.getMapManager().mapView.getLayerManager().getLayers().remove(marker);
+        }
+        pathMarkers.clear();
+
+        for (Node node : navTool.getPath()) {
+            LatLong latLong = new LatLong(node.getLocation().getLatitude(), node.getLocation().getLongitude());
+            Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(mainActivity.getDrawable(R.drawable.marker_icon));
+            Marker marker = new Marker(latLong, bitmap, 0, 0);
+            pathMarkers.add(marker);
+            mainActivity.getMapManager().mapView.getLayerManager().getLayers().add(marker);
+        }
     }
 
     /**
@@ -203,13 +258,6 @@ public class CompassManager implements SensorEventListener {
 
                 mainActivity.mapManager.switchMap();
 
-                // centering the map layout on the newly detected location
-                mainActivity.mapManager.getMapView().setCenter(new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude()));
-
-                updateMapPosition(mainActivity, currentLocation);
-
-
-
                 if (target != null) {
                     NavInfo.DISTANCE.setData(Math.round(currentLocation.distanceTo(target.getLocation())) + "m");
 
@@ -243,9 +291,9 @@ public class CompassManager implements SensorEventListener {
         }
     }
 
-    private void updateMapPosition(MainActivity mainActivity, Location currentLocation) {
-        mainActivity.getMapManager().pdfImageView.setY(this.scalingFactor*(float)(this.centerOfABuildingLat - currentLocation.getLatitude()));
-        mainActivity.getMapManager().pdfImageView.setX(this.scalingFactor*(float)(this.centerOfABuildingLong - currentLocation.getLongitude())); // 22.137084348154577
+    private void updateMapPosition(MainActivity mainActivity, double latitude, double longitude) {
+        mainActivity.getMapManager().pdfImageView.setY(this.scalingFactor*(float)(this.centerOfABuildingLat - latitude));
+        mainActivity.getMapManager().pdfImageView.setX(this.scalingFactor*(float)(this.centerOfABuildingLong - longitude)); // 22.137084348154577
     }
 
     /**
