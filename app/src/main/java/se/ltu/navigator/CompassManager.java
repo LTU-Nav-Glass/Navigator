@@ -22,17 +22,16 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
-import java.util.Observer;
 
 import se.ltu.navigator.location.Room;
+import se.ltu.navigator.location.UserLocationHandler;
 import se.ltu.navigator.navigation.NavTool;
 import se.ltu.navigator.navigation.Node;
 import se.ltu.navigator.navinfo.NavInfo;
-import se.ltu.navigator.location.UserLocationManager;
 
 /**
  * Compass logic manager responsible to change arrow and compass angle according to provided
- * locations.
+ * locations - also updates information for mapView
  */
 public class CompassManager implements SensorEventListener {
     public static final int SAMPLING_PERIOD_US = 20000;
@@ -50,13 +49,13 @@ public class CompassManager implements SensorEventListener {
     private float lastAzimuth;
     private float currentBearing;
     private float lastBearing;
-    private final UserLocationManager userLocationManager;
+    private final UserLocationHandler userLocationHandler;
     private Marker targetMarker;
     private NavTool navTool;
 
     public CompassManager(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
-        userLocationManager = new UserLocationManager(mainActivity);
+        userLocationHandler = new UserLocationHandler(mainActivity);
         navTool = new NavTool(mainActivity);
 
         sensorManager = ((SensorManager) mainActivity.getSystemService(Context.SENSOR_SERVICE));
@@ -67,6 +66,8 @@ public class CompassManager implements SensorEventListener {
         rotationMatrix[ 4] = 1;
         rotationMatrix[ 8] = 1;
         rotationMatrix[12] = 1;
+
+        // register Listeners for changes in NavInfo that require further actions or updates
 
         NavInfo.DISTANCE.registerListener((obs, arg) -> mainActivity.compassArrowText.setText((String) arg));
 
@@ -89,7 +90,7 @@ public class CompassManager implements SensorEventListener {
             return;
         }
 
-        int current = this.userLocationManager.getFloor();
+        int current = this.userLocationHandler.getFloor();
         int target = this.target.getFloor();
 
         if (current < target) {
@@ -106,7 +107,7 @@ public class CompassManager implements SensorEventListener {
      */
     public void startMonitoring() {
         sensorManager.registerListener(this, rotationSensor, SAMPLING_PERIOD_US);
-        userLocationManager.startUpdates();
+        userLocationHandler.startUpdates();
     }
 
     /**
@@ -114,7 +115,7 @@ public class CompassManager implements SensorEventListener {
      */
     public void stopMonitoring() {
         sensorManager.unregisterListener(this);
-        userLocationManager.stopUpdates();
+        userLocationHandler.stopUpdates();
     }
 
     /**
@@ -123,11 +124,11 @@ public class CompassManager implements SensorEventListener {
     public void setTarget(@NotNull Room target) {
         this.destination = target;
         addTargetMarker(target.getLocation());
-        navTool.findPath(userLocationManager.getLocation().getLongitude(), userLocationManager.getLocation().getLatitude(), target);
+        navTool.findPath(userLocationHandler.getLongitude(), userLocationManager.getLocation().getLatitude(), target);
         //TODO: add path visualization
         getNextTarget();
 
-        Location currentLocation = userLocationManager.getLocation();
+        Location currentLocation = userLocationHandler.getLocation();
         if (currentLocation != null) {
             onLocationChanged(currentLocation.getLongitude(), currentLocation.getLatitude(), currentLocation.getAltitude());
         }
@@ -146,7 +147,7 @@ public class CompassManager implements SensorEventListener {
     public void onLocationChanged(double longitude, double latitude, double altitude) {
         mainActivity.mapView.setCenter(new LatLong(latitude, longitude));
 
-        if (target != null && userLocationManager.getLocation().distanceTo(target.getLocation()) < 5) {
+        if (target != null && userLocationHandler.getLocation().distanceTo(target.getLocation()) < 5) {
             getNextTarget();
         }
     }
@@ -168,12 +169,12 @@ public class CompassManager implements SensorEventListener {
     }
 
     /**
-     * Returns the UserLocationManager object
+     * Returns the UserLocationHandler object
      * @return
      */
-    public UserLocationManager getUserLocationManager()
+    public UserLocationHandler getUserLocationManager()
     {
-        return this.userLocationManager;
+        return this.userLocationHandler;
     }
 
     /**
@@ -216,7 +217,7 @@ public class CompassManager implements SensorEventListener {
 
             lastAzimuth = currentAzimuth;
 
-            Location currentLocation = userLocationManager.getLocation();
+            Location currentLocation = userLocationHandler.getLocation();
             if (currentLocation != null) {
                 Instant instant = Instant.ofEpochMilli(currentLocation.getTime());
                 NavInfo.LOCATION_ACCURACY.setData(Math.round(currentLocation.getAccuracy()) + "m");
@@ -228,7 +229,7 @@ public class CompassManager implements SensorEventListener {
                     currentBearing = currentLocation.bearingTo(target.getLocation());
                     NavInfo.BEARING.setData(Math.round(currentBearing) + "°");
 
-                    // Animate the rotation of the compass (arrow)
+                    // Animate the rotation of the compass arrow
                     RotateAnimation rotateArrow = new RotateAnimation(lastBearing, currentBearing, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                     rotateArrow.setDuration(SAMPLING_PERIOD_US / 1000);
                     rotateArrow.setInterpolator(new LinearInterpolator());
