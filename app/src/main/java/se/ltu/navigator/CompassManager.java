@@ -249,8 +249,8 @@ public class CompassManager implements SensorEventListener {
     }
 
     private void updateMapPosition(MainActivity mainActivity, Location currentLocation) {
-        mainActivity.getMapManager().pdfImageView.setY(this.scalingFactor*(float)(this.centerOfABuildingLat - 65.61749260609082));
-        mainActivity.getMapManager().pdfImageView.setX(this.scalingFactor*(float)(this.centerOfABuildingLong - 22.137084348154577)); // 22.137084348154577
+        mainActivity.getMapManager().pdfImageView.setY(this.scalingFactor*(float)(this.centerOfABuildingLat - currentLocation.getLatitude()));
+        mainActivity.getMapManager().pdfImageView.setX(this.scalingFactor*(float)(this.centerOfABuildingLong - currentLocation.getLongitude())); // 22.137084348154577
     }
 
     /**
