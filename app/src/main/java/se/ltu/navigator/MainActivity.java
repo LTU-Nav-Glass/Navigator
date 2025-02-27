@@ -94,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
     protected SearchBarManager searchBarManager;
     protected FloorPromptHelper floorPromptHelper;
     protected MapManager mapManager;
-    protected FingerprintManager fingerprintManager;
 
     /**
      * Method called when the view is created.

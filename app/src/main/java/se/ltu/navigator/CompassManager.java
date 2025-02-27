@@ -127,6 +127,8 @@ public class CompassManager implements SensorEventListener {
         addTargetMarker(target.getLocation());
     }
 
+    public Room getTarget(){return target;}
+
     /**
      *
      * Adds a marker to the mapView at the target location.
@@ -134,21 +136,21 @@ public class CompassManager implements SensorEventListener {
      */
     private void addTargetMarker(Location targetLocation) {
         if (targetMarker != null) {
-            mainActivity.mapView.getLayerManager().getLayers().remove(targetMarker);
+            mainActivity.getMapManager().mapView.getLayerManager().getLayers().remove(targetMarker);
         }
 
         LatLong targetLatLong = new LatLong(targetLocation.getLatitude(), targetLocation.getLongitude());
         Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(mainActivity.getDrawable(R.drawable.marker_icon));
         targetMarker = new Marker(targetLatLong, bitmap, 0, 0);
 
-        mainActivity.mapView.getLayerManager().getLayers().add(targetMarker);
+        mainActivity.getMapManager().mapView.getLayerManager().getLayers().add(targetMarker);
     }
 
     /**
      * Returns the UserLocationHandler object
      * @return
      */
-    public UserLocationHandler getUserLocationManager()
+    public UserLocationHandler getUserLocationHandler()
     {
         return this.userLocationHandler;
     }

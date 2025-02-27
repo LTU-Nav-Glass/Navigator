@@ -8,7 +8,6 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
@@ -22,19 +21,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Array;
 import java.util.ArrayList;
 
-import se.ltu.navigator.location.UserLocationManager;
+import se.ltu.navigator.location.UserLocationHandler;
 
 public class MapManager {
     private static final String TAG = "MapManager";
     private final String LTU_MAP_FILENAME = "planet_22.13,65.615_22.151,65.621.map";
     private CompassManager compassManager;
-    private UserLocationManager userLocationManager;
     private MainActivity mainActivity;
     private AssetManager assetManager;
-    private MapView mapView;
+    protected MapView mapView;
     private PdfRenderer pdfRenderer;
     private Bitmap pdfBitmap;
     protected ImageView pdfImageView;
@@ -42,13 +39,14 @@ public class MapManager {
     private double[][] building_bounds;
     private int current_building_index;
     private String currentFilename;
+    private UserLocationHandler userLocationHandler;
 
     public MapManager(MainActivity mainActivity, CompassManager compassManager) {
         this.mainActivity = mainActivity;
         this.compassManager = compassManager;
 
         assetManager = mainActivity.getAssets();
-        userLocationManager = compassManager.getUserLocationManager();
+        userLocationHandler = compassManager.getUserLocationHandler();
         asset_filenames = new ArrayList<>();
         building_bounds = new double[5][4 * 2]; // 5 buildings each with 4 corners with latitude and longitude
         initMapList();
@@ -272,8 +270,8 @@ public class MapManager {
     private int getUserBuilding()
     {
 
-        double userLat = userLocationManager.getLatitude();
-        double userLong = userLocationManager.getLongitude();
+        double userLat = userLocationHandler.getLatitude();
+        double userLong = userLocationHandler.getLongitude();
 
         for(int hus_index = 0; hus_index < building_bounds.length; hus_index++)
         {

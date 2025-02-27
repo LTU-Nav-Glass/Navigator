@@ -41,7 +41,7 @@ public class FloorPromptHelper extends DialogHelper {
             @Override
             public void onClick(DialogInterface dialog, int whichButton) {
                 int floor = Integer.parseInt(inputText.getText().toString());
-                compassManager.getUserLocationManager().setFloor(floor);
+                compassManager.getUserLocationHandler().setFloor(floor);
                 Snackbar.make(mainActivity.getRoot(), "Your floor is " + floor, Snackbar.LENGTH_SHORT)
                         .setAnchorView(R.id.bottom_sheet)
                         .show();

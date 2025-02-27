@@ -161,6 +161,6 @@ public class UserSensorHandler
 
         return detectPressureChange(e) &&
         ((pressureStable && deltaTime >= FLOOR_CHANGE_TIMESTAMP)
-                || (mainActivity.getCompassManager().getTarget().getFloor() - userLocationManager.getFloor() > 1));
+                || (mainActivity.getCompassManager().getTarget().getFloor() - userLocationHandler.getFloor() > 1));
     }
 }
