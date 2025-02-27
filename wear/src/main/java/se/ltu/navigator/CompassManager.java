@@ -1,4 +1,4 @@
-package se.ltu.wearnavigator;
+package se.ltu.navigator;
 
 import android.content.Context;
 import android.hardware.Sensor;
@@ -140,6 +140,8 @@ public class CompassManager implements SensorEventListener {
             // Azimuth is [0]
             currentAzimuth = (float) Math.toDegrees(orientationVector[0]);
 
+            target = mainActivity.navigatorBridge.getTargetRoom();
+
             // Animate the rotation of the compass (disk & arrow)
             RotateAnimation rotateCompass = new RotateAnimation(-lastAzimuth, -currentAzimuth, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
             rotateCompass.setDuration(SAMPLING_PERIOD_US/1000);
@@ -158,7 +160,7 @@ public class CompassManager implements SensorEventListener {
                 if (mainActivity.navigatorBridge.getTargetRoom() != null) {
                     mainActivity.compassArrowText.setText(Math.round(currentLocation.distanceTo(target.getLocation())) + "m");
 
-                    currentBearing = currentLocation.bearingTo(target.getLocation());
+                    currentBearing = -currentLocation.bearingTo(target.getLocation());
 
                     // Animate the rotation of the compass arrow
                     RotateAnimation rotateArrow = new RotateAnimation(lastBearing, currentBearing, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
@@ -178,7 +180,7 @@ public class CompassManager implements SensorEventListener {
 
             if (mainActivity.navigatorBridge.getCurrentFloor() != lastFloor) {
                 lastFloor = mainActivity.navigatorBridge.getCurrentFloor();
-                mainActivity.compassFloorIndicator.setText(lastFloor);
+                mainActivity.compassFloorIndicator.setText(Integer.toString(lastFloor));
                 updateFloorIcon();
             }
 

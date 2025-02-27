@@ -1,4 +1,4 @@
-package se.ltu.wearnavigator;
+package se.ltu.navigator;
 
 import android.location.Location;
 import android.util.Log;
@@ -84,17 +84,16 @@ public class NavigatorBridge implements DataClient.OnDataChangedListener {
 
     @Override
     public void onDataChanged(@NonNull DataEventBuffer dataEventBuffer) {
-        Log.i("NavigatorBridge", "Detecting event: " +dataEventBuffer);
         for (DataEvent event : dataEventBuffer) {
             if (event.getType() == DataEvent.TYPE_CHANGED) {
                 DataItem item = event.getDataItem();
                 DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
 
-                Log.i("NavigatorBridge", "Detecting data change");
+                Log.i("NavigatorBridge", "Detecting data change in '" + item.getUri().getPath() + "'");
 
                 if (item.getUri().getPath() != null) {
-                    switch (item.getUri().getPath()) {
-                        case "/location":
+                    switch (item.getUri().getPath().split("/")[1]) {
+                        case "location":
                             if (Objects.equals(dataMap.getString(CURRENT_LOCATION_KEY), "null")) {
                                 currentLocation = null;
                             } else {
@@ -104,10 +103,10 @@ public class NavigatorBridge implements DataClient.OnDataChangedListener {
                                 );
                             }
                             break;
-                        case "/floor":
+                        case "floor":
                             currentFloor = dataMap.getInt(CURRENT_FLOOR_KEY);
                             break;
-                        case "/room":
+                        case "room":
                             if (Objects.equals(dataMap.getString(TARGET_ROOM_KEY), "null")) {
                                 currentLocation = null;
                             } else {

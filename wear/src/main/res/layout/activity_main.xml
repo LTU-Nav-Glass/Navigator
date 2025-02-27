@@ -78,7 +78,7 @@
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:text="-"
-                        android:textAppearance="?textAppearanceTitleLarge"
+                        android:textAppearance="?textAppearanceBodySmall"
                         android:textColor="?colorSecondaryContainer" />
 
                 </RelativeLayout>
@@ -88,7 +88,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_margin="22dp"
+                android:layout_margin="15dp"
                 android:background="@drawable/disk"
                 android:clipToOutline="true">
 

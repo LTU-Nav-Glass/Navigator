@@ -9,6 +9,7 @@ import android.util.Log;
 import androidx.core.app.ActivityCompat;
 
 import se.ltu.navigator.MainActivity;
+import se.ltu.navigator.navinfo.NavInfo;
 
 
 public class UserLocationHandler {
@@ -74,6 +75,7 @@ public class UserLocationHandler {
     public void setFloor(int floor) {
         this.floor = floor;
 
+        NavInfo.FLOOR.setData(Integer.toString(floor));
         mainActivity.watchBridge.setCurrentFloor(floor);
 
         // resets pressure to new floor's pressure when changing floor
@@ -90,14 +92,15 @@ public class UserLocationHandler {
 
     public void setLocation(Location location) {
         if (location == null) return;
+
+        Log.i(TAG, "Updating localisation");
+
         this.location = location;
         longitude = location.getLongitude();
         latitude = location.getLatitude();
         altitude = location.getAltitude();
 
         mainActivity.watchBridge.setCurrentLocation(location);
-
-        Log.i(TAG, "Updating localisation");
     }
 
     /**

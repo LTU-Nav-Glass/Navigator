@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "se.ltu.wearnavigator"
+    namespace = "se.ltu.navigator"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "se.ltu.wearnavigator"
+        applicationId = "se.ltu.navigator"
         minSdk = 31
         targetSdk = 35
         versionCode = 1
@@ -42,5 +42,6 @@ dependencies {
     implementation(libs.mapsforge.map.v0230)
     implementation(libs.mapsforge.map.reader.v0230)
     implementation(libs.mapsforge.core.v0230)
+    implementation(libs.play.services.wearable)
     implementation(libs.gson)
 }

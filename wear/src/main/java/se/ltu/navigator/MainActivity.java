@@ -1,9 +1,8 @@
-package se.ltu.wearnavigator;
+package se.ltu.navigator;
 
 import android.annotation.SuppressLint;
 import android.content.res.AssetManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.ImageView;
@@ -31,7 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import se.ltu.wearnavigator.databinding.ActivityMainBinding;
+import se.ltu.navigator.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 

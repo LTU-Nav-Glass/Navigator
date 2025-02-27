@@ -11,7 +11,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.wearable.DataClient;
 import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.PutDataMapRequest;
-import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -38,6 +37,10 @@ public class WatchBridge {
     private final RemoteActivityHelper helper;
     private final Uri appURI;
     private final Intent intent;
+
+    private Location currentLocation;
+    private int currentFloor;
+    private Room targetRoom;
 
     public WatchBridge(MainActivity mainActivity) {
         dataClient = Wearable.getDataClient(mainActivity);
@@ -80,19 +83,21 @@ public class WatchBridge {
     }
 
     private Task<DataItem> sendData(PutDataMapRequest putDataMapRequest) {
-        Log.i("WatchBridge", "Sending data information to wearable");
+        Log.i("WatchBridge", "Sending data information to wearable in '" + putDataMapRequest.getUri().getPath() + "'");
         putDataMapRequest.setUrgent();
         Task<DataItem> task = dataClient.putDataItem(putDataMapRequest.asPutDataRequest());
 
-        task.addOnCanceledListener(() -> Log.e("WatchBridge", "Data transfer cancelled"));
-        task.addOnFailureListener((e) -> Log.e("WatchBridge", "Data transfer failed: " + e.getMessage()));
-        task.addOnSuccessListener((i) -> Log.i("WatchBridge", "Data transfer successfully completed"));
+        task.addOnCanceledListener(() -> Log.e("WatchBridge", "Data transfer in '" + putDataMapRequest.getUri().getPath() + "' cancelled"));
+        task.addOnFailureListener((e) -> Log.e("WatchBridge", "Data transfer in '" + putDataMapRequest.getUri().getPath() + "' failed: " + e.getMessage()));
+        task.addOnSuccessListener((i) -> Log.i("WatchBridge", "Data transfer in '" + putDataMapRequest.getUri().getPath() + "' done"));
 
         return task;
     }
 
     public void setCurrentLocation(Location location) {
-        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/location");
+        currentLocation = location;
+
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/location/" + System.currentTimeMillis());
         if (location == null) {
             putDataMapReq.getDataMap().putString(CURRENT_LOCATION_KEY, "null");
         } else {
@@ -102,13 +107,17 @@ public class WatchBridge {
     }
 
     public void setCurrentFloor(int floor) {
-        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/floor");
+        currentFloor = floor;
+
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/floor/" + System.currentTimeMillis());
         putDataMapReq.getDataMap().putInt(CURRENT_FLOOR_KEY, floor);
         sendData(putDataMapReq);
     }
 
     public void setTargetRoom(Room room) {
-        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/room");
+        targetRoom = room;
+
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/room/" + System.currentTimeMillis());
         if (room == null) {
             putDataMapReq.getDataMap().putString(TARGET_ROOM_KEY, "null");
         } else {
@@ -119,5 +128,9 @@ public class WatchBridge {
 
     public void startNavigation() {
         helper.startRemoteActivity(intent, appURI.getHost());
+
+        setCurrentLocation(currentLocation);
+        setCurrentFloor(currentFloor);
+        setTargetRoom(targetRoom);
     }
 }
