@@ -124,7 +124,7 @@ public class CompassManager implements SensorEventListener {
     public void setTarget(@NotNull Room target) {
         this.destination = target;
         addTargetMarker(target.getLocation());
-        navTool.findPath(userLocationHandler.getLongitude(), userLocationManager.getLocation().getLatitude(), target);
+        navTool.findPath(userLocationHandler.getLongitude(), userLocationHandler.getLocation().getLatitude(), target);
         //TODO: add path visualization
         getNextTarget();
 
