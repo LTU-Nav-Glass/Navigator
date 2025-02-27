@@ -78,19 +78,19 @@ public class MainActivity extends AppCompatActivity {
     protected TextView compassArrowText;
     protected LinearLayout compassFloorIndicatorWrapper;
     protected TextView compassFloorIndicator;
+    protected MapView mapView;
 
     // Navigation infos
     protected LinearLayout bottomSheet;
     protected BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
     protected RecyclerView navInfo;
 
-    protected MapView mapView;
-
     /*
      * Logic
      */
 
     // Modules
+    public WatchBridge watchBridge;
     protected CompassManager compassManager;
     protected SearchBarManager searchBarManager;
     protected FloorPromptHelper floorPromptHelper;
@@ -136,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
         mapSetup();
 
         // Initialize modules
+        watchBridge = new WatchBridge(this);
         compassManager = new CompassManager(this);
         searchBarManager = new SearchBarManager(this);
         floorPromptHelper = new FloorPromptHelper(this, compassManager); //when initialized, automattically prompts user for floor
