@@ -3,6 +3,7 @@ package se.ltu.navigator.navigation;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.location.Location;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

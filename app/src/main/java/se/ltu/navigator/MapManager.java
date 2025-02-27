@@ -68,7 +68,7 @@ public class MapManager {
         else {
             // Check that user's current floor works
             currentFilename = asset_filenames.get(current_building_index).get(1);
-            Log.d(TAG, currentFilename);
+//            Log.d(TAG, currentFilename);
         }
         if (lastFilename.compareTo(currentFilename) != 0)
             mapSetupHandler();

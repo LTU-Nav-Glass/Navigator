@@ -134,7 +134,6 @@ public class CompassManager implements SensorEventListener {
         this.destination = target;
         addTargetMarker(target.getLocation());
         navTool.findPath(userLocationHandler.getLongitude(), userLocationHandler.getLocation().getLatitude(), target);
-        //TODO: add path visualization
         getNextTarget();
 
         Location currentLocation = userLocationHandler.getLocation();
@@ -147,7 +146,6 @@ public class CompassManager implements SensorEventListener {
         Node next = navTool.popFromPath();
         if (next != null) {
             this.target = next;
-            //TODO: update path visualization
             updatePathMarkers();
         } else {
             this.target = destination;
@@ -155,15 +153,14 @@ public class CompassManager implements SensorEventListener {
     }
 
     public void onLocationChanged(double longitude, double latitude, double altitude) {
-        mainActivity.mapManager.getMapView().setCenter(new LatLong(latitude, longitude));
-        updateMapPosition(mainActivity, latitude, longitude);
+//        mainActivity.mapManager.getMapView().setCenter(new LatLong(latitude, longitude));
 
         if (target != null && userLocationHandler.getLocation().distanceTo(target.getLocation()) < 5) {
             getNextTarget();
         }
     }
 
-    public Room getTarget(){return target;}
+    public Room getTarget(){return destination;}
 
     /**
      *
@@ -257,6 +254,8 @@ public class CompassManager implements SensorEventListener {
                 NavInfo.CURRENT_LOCATION.setData(currentLocation.getLatitude() + ", " + currentLocation.getLongitude() + "\n(" + Duration.between(instant, Instant.now()).toSeconds() + "s ago)");
 
                 mainActivity.mapManager.switchMap();
+                updateMapPosition(mainActivity, currentLocation.getLatitude(), currentLocation.getLongitude());
+                mainActivity.mapManager.getMapView().setCenter(new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude()));
 
                 if (target != null) {
                     NavInfo.DISTANCE.setData(Math.round(currentLocation.distanceTo(target.getLocation())) + "m");

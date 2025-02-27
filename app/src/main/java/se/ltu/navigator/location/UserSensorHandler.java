@@ -159,6 +159,9 @@ public class UserSensorHandler
         long currentTimestamp = e.timestamp;
         long deltaTime = currentTimestamp - lastTimestamp;
 
+        if (mainActivity.getCompassManager().getTarget() == null) {
+            return detectPressureChange(e) && (pressureStable && deltaTime >= FLOOR_CHANGE_TIMESTAMP);
+        }
         return detectPressureChange(e) &&
         ((pressureStable && deltaTime >= FLOOR_CHANGE_TIMESTAMP)
                 || (mainActivity.getCompassManager().getTarget().getFloor() - userLocationHandler.getFloor() > 1));
