@@ -62,7 +62,7 @@ public class MapManager {
      * This method measures the user's coordinates and displays the correct map
      */
     public void switchMap() {
-        current_building_index = getUserBuilding();
+        current_building_index = 0;
         String lastFilename = currentFilename;
 
         if (current_building_index == -1)
@@ -203,6 +203,15 @@ public class MapManager {
             //Display bitmap to ImageView
             pdfImageView.setImageBitmap(pdfBitmap);
 
+            pdfImageView.setScaleX(10);
+            pdfImageView.setScaleY(10);
+
+            pdfImageView.setRotation(-21);
+
+            pdfImageView.setX(300);
+            pdfImageView.setY(500);
+
+
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -234,7 +243,7 @@ public class MapManager {
     /**
      * This method initializes the boundaries of each building to measure if the user is in the general area
      * This simplifies each building to 4 corners and creates a square area around (even though the buildings are more complex shapes)
-     * The even indexes are the longitude while the odd are latitude
+     * The even indexes are latitude and the odd are longitude
      */
     private void initBuildingBoundaries() {
         // A Hus
@@ -262,27 +271,25 @@ public class MapManager {
     private int getUserBuilding()
     {
 
-        double userLong = userLocationManager.getLongitude();
         double userLat = userLocationManager.getLatitude();
-
-        //Test case for random loc in A Hus
-        userLong = 65.61718591551842;
-        userLat = 22.136828823718133;
+        double userLong = userLocationManager.getLongitude();
 
         for(int hus_index = 0; hus_index < building_bounds.length; hus_index++)
         {
             // Measure if user is within bounds of longitude
-            if(userLong < building_bounds[hus_index][0]
-                    && userLong < building_bounds[hus_index][2]
-                    && userLong > building_bounds[hus_index][4]
-                    && userLong > building_bounds[hus_index][6])
+            if(userLat <= building_bounds[hus_index][0]
+                    && userLat <= building_bounds[hus_index][2]
+                    && userLat >= building_bounds[hus_index][4]
+                    && userLat >= building_bounds[hus_index][6])
             {
+                //Log.d(TAG, "UserLat True");
                 // Measure if user is within bounds of latitude
-                if(userLat > building_bounds[hus_index][1]
-                        && userLat > building_bounds[hus_index][5]
-                        && userLat < building_bounds[hus_index][3]
-                        && userLat < building_bounds[hus_index][7])
+                if(userLong > building_bounds[hus_index][1]
+                        && userLong > building_bounds[hus_index][5]
+                        && userLong < building_bounds[hus_index][3]
+                        && userLong < building_bounds[hus_index][7])
                 {
+                    //Log.d(TAG, "User in A");
                     return hus_index;
                 }
             }
