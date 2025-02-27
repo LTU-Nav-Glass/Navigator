@@ -47,6 +47,7 @@ public class SearchBarManager implements TextWatcher {
                     mainActivity.searchView.hide();
                     mainActivity.compassManager.setTarget(room);
                     mainActivity.promptUserFloor();
+                    mainActivity.watchBridge.startNavigation();
                 });
             }
             mainActivity.runOnUiThread(() -> {

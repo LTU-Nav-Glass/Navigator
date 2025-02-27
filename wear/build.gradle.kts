@@ -42,4 +42,5 @@ dependencies {
     implementation(libs.mapsforge.map.v0230)
     implementation(libs.mapsforge.map.reader.v0230)
     implementation(libs.mapsforge.core.v0230)
+    implementation(libs.gson)
 }

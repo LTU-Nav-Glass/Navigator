@@ -74,6 +74,8 @@ public class UserLocationHandler {
     public void setFloor(int floor) {
         this.floor = floor;
 
+        mainActivity.watchBridge.setCurrentFloor(floor);
+
         // resets pressure to new floor's pressure when changing floor
         userSensorHandler.allowLastPressureReset();
     }
@@ -92,6 +94,8 @@ public class UserLocationHandler {
         longitude = location.getLongitude();
         latitude = location.getLatitude();
         altitude = location.getAltitude();
+
+        mainActivity.watchBridge.setCurrentLocation(location);
 
         Log.i(TAG, "Updating localisation");
     }

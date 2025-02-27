@@ -37,13 +37,14 @@ android {
 dependencies {
 
     implementation(libs.appcompat)
-    implementation(libs.material)
+    implementation(libs.google.material)
     implementation(libs.constraintlayout)
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
     implementation(libs.commons.io)
+    implementation(libs.wear.remote.interactions)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -52,4 +53,6 @@ dependencies {
     implementation(libs.mapsforge.map.v0230)
     implementation(libs.mapsforge.map.reader.v0230)
     implementation(libs.mapsforge.core.v0230)
+    implementation(libs.play.services.wearable)
+    implementation(libs.gson)
 }
