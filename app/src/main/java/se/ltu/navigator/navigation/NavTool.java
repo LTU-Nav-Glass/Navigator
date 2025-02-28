@@ -1,6 +1,7 @@
 package se.ltu.navigator.navigation;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,19 +44,35 @@ public class NavTool {
      */
     public void findPath(double longitude, double latitude, Room room) {
         //temporary check to only generate paths for A building
-        if (room.getId().toLowerCase().charAt(0) != 'a') {
+        Graph g = pickGraph(room.getId());
+        if (g == null) {
             this.path = null;
             return;
         }
         List<Node> path = new ArrayList<>();
-        for (Graph graph : graphs) {
-            graph.insertNodeAtClosestEdge(room.getLocation().getLongitude(), room.getLocation().getLatitude(), room.getId(), room.getId()+"_temp");
-            path = graph.findShortestPath(longitude, latitude, room.getId());
-        }
-        for (Graph graph : graphs) {
-            graph.cleanGraph();
-        }
+        g.insertNodeAtClosestEdge(room.getLocation().getLongitude(), room.getLocation().getLatitude(), room.getId(), room.getId()+"_temp");
+        path = g.findShortestPath(longitude, latitude, room.getId());
+        g.cleanGraph();
         this.path = path;
+
+        //print out the path in order to debug
+//        for (Node n : path) {
+//            Log.d("NavTool", n.getId());
+//        }
+    }
+
+    /**
+     * Picks which graph to use based on the room id.
+     * @param roomID The room id.
+     * @return The graph.
+     */
+    private Graph pickGraph(String roomID) {
+        switch (roomID.toLowerCase().charAt(0)) {
+            case 'a':
+                return graphs[0];
+            default:
+                return null;
+        }
     }
 
     /**

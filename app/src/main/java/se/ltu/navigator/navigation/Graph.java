@@ -169,6 +169,8 @@ public class Graph {
             closestNode1[0].getEdges().add(newNodeId);
             closestNode2[0].getEdges().add(newNodeId);
 
+//            Log.d("Graph", "Inserted " + newNodeId + " at edge between " + closestNode1[0].getId() + " and " + closestNode2[0].getId());
+
             if (inputNodeId != null) {
                 Node inputNode = new Node(inputNodeId, longitude, latitude, closestNode1[0].getFloor(), Node.Type.ROOM, new ArrayList<>());
                 nodes.put(inputNodeId, inputNode);
@@ -225,7 +227,6 @@ public class Graph {
                             roomNodeIdsToRemove.add(roomNode.getId());
                         }
                     }
-
                 }
             }
 
@@ -259,20 +260,16 @@ public class Graph {
 
         double dot = A * C + B * D;
         double lenSq = C * C + D * D;
-        double param = dot / lenSq;
+        double param = lenSq != 0 ? dot / lenSq : -1;
 
-        double closestX, closestY;
-
-        if (param < 0 || (x1 == x2 && y1 == y2)) {
-            closestX = x1;
-            closestY = y1;
-        } else if (param > 1) {
-            closestX = x2;
-            closestY = y2;
-        } else {
-            closestX = x1 + param * C;
-            closestY = y1 + param * D;
+        // If the projection is too close to the endpoints, use the midpoint instead.
+        double epsilon = 0.001;
+        if (param < epsilon || param > 1 - epsilon) {
+            param = 0.5;
         }
+
+        double closestX = x1 + param * C;
+        double closestY = y1 + param * D;
 
         return new double[]{closestX, closestY};
     }

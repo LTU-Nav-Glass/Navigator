@@ -54,8 +54,8 @@ public class UserLocationHandler {
     public Location getLocation() {
         //for debugging purposes use this
 //        Location test = new Location("");
-//        test.setLatitude(65.61742601670103);
-//        test.setLongitude(22.1370319119678);
+//        test.setLatitude(65.61768045184031);
+//        test.setLongitude(22.138135688759508);
 //        return test;
         return location;
     }

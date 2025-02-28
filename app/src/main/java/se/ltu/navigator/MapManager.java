@@ -11,7 +11,10 @@ import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
+import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.cache.TileCache;
+import org.mapsforge.map.layer.overlay.Marker;
+import org.mapsforge.map.layer.overlay.Polyline;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
@@ -167,11 +170,28 @@ public class MapManager {
             mapView.setCenter(new LatLong(65.618, 22.141));
             mapView.setZoomLevel((byte) 18);
 
+//            enableInteraction();
+
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    private void enableInteraction() {
+        mapView.setClickable(true);
+        mapView.getMapScaleBar().setVisible(false);
+        mapView.setBuiltInZoomControls(true);
+        mapView.getMapZoomControls().hide();
+    }
+    public void hideLTUMap() {
+        for (Layer layer : mapView.getLayerManager().getLayers()) {
+            if (layer instanceof Marker || layer instanceof Polyline) { continue; }
+            layer.setVisible(false);
+        }
+    }
+    public void hidePdfMap() {
+        pdfImageView.setVisibility(ImageView.INVISIBLE);
     }
 
     private void mapPDFSetup() {
@@ -211,15 +231,13 @@ public class MapManager {
 
             pdfImageView.setRotation(-21);
 
+//            hidePdfMap();
+
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-    }
-
-    private void resetMap() {
 
     }
 

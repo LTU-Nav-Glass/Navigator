@@ -10,13 +10,19 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
 import org.mapsforge.core.graphics.Bitmap;
+import org.mapsforge.core.graphics.Color;
+import org.mapsforge.core.graphics.Paint;
+import org.mapsforge.core.graphics.Style;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.layer.overlay.Marker;
+import org.mapsforge.map.layer.overlay.Polyline;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -44,7 +50,7 @@ public class CompassManager implements SensorEventListener {
     // Data
     private Node target;
     private Room destination;
-    private ArrayList<Marker> pathMarkers = new ArrayList<>();
+    private Polyline polyline;
     private final float[] rotationMatrix = new float[16];
     private final float[] orientationVector = new float[3];
     private float currentAzimuth;
@@ -133,7 +139,7 @@ public class CompassManager implements SensorEventListener {
     public void setTarget(@NotNull Room target) {
         this.destination = target;
         addTargetMarker(target.getLocation());
-        navTool.findPath(userLocationHandler.getLongitude(), userLocationHandler.getLocation().getLatitude(), target);
+        navTool.findPath(userLocationHandler.getLocation().getLongitude(), userLocationHandler.getLocation().getLatitude(), target);
         getNextTarget();
 
         Location currentLocation = userLocationHandler.getLocation();
@@ -146,7 +152,7 @@ public class CompassManager implements SensorEventListener {
         Node next = navTool.popFromPath();
         if (next != null) {
             this.target = next;
-            updatePathMarkers();
+            visualizePath();
         } else {
             this.target = destination;
         }
@@ -183,19 +189,44 @@ public class CompassManager implements SensorEventListener {
      * Takes a list of Nodes and adds markers to the mapView at each Node's location.
      * Also removes any markers that were previously added. Stores markers in pathMarkers.
      */
-    private void updatePathMarkers() {
-        for (Marker marker : pathMarkers) {
-            mainActivity.getMapManager().mapView.getLayerManager().getLayers().remove(marker);
+    private void visualizePath() {
+        // Remove existing polyline
+        if (polyline != null) {
+            mainActivity.getMapManager().mapView.getLayerManager().getLayers().remove(polyline);
         }
-        pathMarkers.clear();
+
+        // Create a list of LatLong points for the polyline
+        List<LatLong> polylinePoints = getPolylinePoints();
+
+        Paint paint = AndroidGraphicFactory.INSTANCE.createPaint();
+        paint.setColor(AndroidGraphicFactory.INSTANCE.createColor(Color.BLUE));
+        paint.setStrokeWidth(5);
+        paint.setStyle(Style.STROKE);
+
+        // Create a new polyline with the points
+        polyline = new Polyline(paint, AndroidGraphicFactory.INSTANCE);
+        polyline.getLatLongs().addAll(polylinePoints);
+
+        // Add the new polyline to the map
+        mainActivity.getMapManager().mapView.getLayerManager().getLayers().add(polyline);
+    }
+
+    @NonNull
+    private List<LatLong> getPolylinePoints() {
+        List<LatLong> polylinePoints = new ArrayList<>();
+
+        // Add the current position as the first point
+        Location currentLocation = userLocationHandler.getLocation();
+        if (currentLocation != null) {
+            LatLong currentLatLong = new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude());
+            polylinePoints.add(currentLatLong);
+        }
 
         for (Node node : navTool.getPath()) {
             LatLong latLong = new LatLong(node.getLocation().getLatitude(), node.getLocation().getLongitude());
-            Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(mainActivity.getDrawable(R.drawable.marker_icon));
-            Marker marker = new Marker(latLong, bitmap, 0, 0);
-            pathMarkers.add(marker);
-            mainActivity.getMapManager().mapView.getLayerManager().getLayers().add(marker);
+            polylinePoints.add(latLong);
         }
+        return polylinePoints;
     }
 
     /**
