@@ -60,6 +60,23 @@ public class UserLocationHandler {
         return location;
     }
 
+    /** Debugging version of getLocation()
+     * @param debug Set to true of debug mode should be used
+     *
+     * @return A custom current position for debugging if debug flag is true - otherwise just return normal location
+     */
+    public  Location getLocation(boolean debug) {
+        if (debug) {
+            Location location = new Location("");
+            location.setLatitude(65.61711132989254);
+            location.setLongitude(22.137669155810737);
+            return location;
+        }
+        else {
+            return this.getLocation();
+        }
+    }
+
     public float getLastPressure(){ return lastPressure;}
 
     public Location getTargetLocation(){return targetLocation;}

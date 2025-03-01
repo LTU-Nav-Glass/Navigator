@@ -2,22 +2,20 @@ package se.ltu.navigator;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
-import android.graphics.pdf.PdfRenderer;
-import android.os.ParcelFileDescriptor;
-import android.util.Log;
-import android.widget.ImageView;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
-import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.overlay.Marker;
-import org.mapsforge.map.layer.overlay.Polyline;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
+import android.graphics.drawable.BitmapDrawable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,9 +33,6 @@ public class MapManager {
     private MainActivity mainActivity;
     private AssetManager assetManager;
     protected MapView mapView;
-    private PdfRenderer pdfRenderer;
-    private Bitmap pdfBitmap;
-    protected ImageView pdfImageView;
     private ArrayList<ArrayList<String>> asset_filenames; // Holds array of building map filenames
     private double[][] building_bounds;
     private int current_building_index;
@@ -63,14 +58,14 @@ public class MapManager {
      * This method measures the user's coordinates and displays the correct map
      */
     public void switchMap() {
-        current_building_index = 0;
+        current_building_index = 0; // Todo
         String lastFilename = currentFilename;
 
         if (current_building_index == -1)
             currentFilename = LTU_MAP_FILENAME;
         else {
             // Check that user's current floor works
-            currentFilename = asset_filenames.get(current_building_index).get(1);
+            currentFilename = asset_filenames.get(current_building_index).get(1); // todo
 //            Log.d(TAG, currentFilename);
         }
         if (lastFilename.compareTo(currentFilename) != 0)
@@ -79,18 +74,14 @@ public class MapManager {
 
     // ISSUE, DOES NOT SWITCH BACK TO COMPASS
     public void mapSetupHandler() {
-        switch (currentFilename) {
-            case LTU_MAP_FILENAME:
-                mapLTUSetup();
-                break;
-            default:
-                mapPDFSetup();
-                break;
+        mapLTUSetup();
+        if (this.current_building_index > -1) {
+            mapPDFSetup();
         }
     }
 
     /**
-     * This method switches the current map displayed on app when user changes floors
+     * This method switches the current map displayed on app when user changes floors TODO
      */
     public void switchCurrentFloor(int floorDir) {
 
@@ -114,10 +105,6 @@ public class MapManager {
         return mapView;
     }
 
-    public boolean useLTUMap() {
-        return currentFilename.compareTo(LTU_MAP_FILENAME) == 0;
-    }
-
     private void mapLTUSetup() {
         try {
             mapView = mainActivity.findViewById(R.id.mapView);
@@ -126,7 +113,7 @@ public class MapManager {
             mapView.getMapScaleBar().setVisible(false);
             mapView.setBuiltInZoomControls(false);
 
-            InputStream inputStream = assetManager.open(currentFilename);
+            InputStream inputStream = assetManager.open(LTU_MAP_FILENAME);
 
             File tempFile = File.createTempFile("temp_map", ".map", mainActivity.getCacheDir());
 
@@ -167,8 +154,8 @@ public class MapManager {
 
 
             mapView.getLayerManager().getLayers().add(tileRendererLayer);
-            mapView.setCenter(new LatLong(65.618, 22.141));
-            mapView.setZoomLevel((byte) 18);
+            mapView.setCenter(new LatLong(65.618, 22.141)); // initial coordinates when current location isn´t yet available
+            mapView.setZoomLevel((byte) 18); //18
 
 //            enableInteraction();
 
@@ -184,54 +171,23 @@ public class MapManager {
         mapView.setBuiltInZoomControls(true);
         mapView.getMapZoomControls().hide();
     }
-    public void hideLTUMap() {
-        for (Layer layer : mapView.getLayerManager().getLayers()) {
-            if (layer instanceof Marker || layer instanceof Polyline) { continue; }
-            layer.setVisible(false);
-        }
-    }
-    public void hidePdfMap() {
-        pdfImageView.setVisibility(ImageView.INVISIBLE);
-    }
 
     private void mapPDFSetup() {
         try {
-            // display pdfImageView to mapView
-            pdfImageView = mainActivity.findViewById(R.id.pdfImageView);
-            File tempFile = File.createTempFile("temp_pdf", ".pdf", mainActivity.getCacheDir());
+            Bitmap initbitmap = BitmapFactory.decodeStream(assetManager.open(this.currentFilename));
 
-            if (tempFile.exists()) {
-                InputStream inputStream = assetManager.open(currentFilename);
-                FileOutputStream outputStream = new FileOutputStream(tempFile);
+            Matrix matrix = new Matrix();
+            matrix.postScale(0.8f, 0.8f); // Scale
+            matrix.postRotate(-21); // Rotate
 
-                byte[] buffer = new byte[1024];
-                int size = inputStream.read(buffer);
-                while (size != -1) {
-                    outputStream.write(buffer, 0, size);
-                    size = inputStream.read(buffer);
-                }
+            // Create a new transformed Bitmap
+            Bitmap transformedBitmap = Bitmap.createBitmap(initbitmap, 0, 0, initbitmap.getWidth(), initbitmap.getHeight(), matrix, true);
 
-                inputStream.close();
-                outputStream.close();
-            }
-
-            ParcelFileDescriptor parcelFileDescriptor = ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY);
-            pdfRenderer = new PdfRenderer(parcelFileDescriptor);
-
-            // render page to bitmap
-            PdfRenderer.Page pdfPage = pdfRenderer.openPage(0);
-            pdfBitmap = Bitmap.createBitmap(pdfPage.getWidth(), pdfPage.getHeight(), Bitmap.Config.ARGB_8888);
-            pdfPage.render(pdfBitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
-
-            //Display bitmap to ImageView
-            pdfImageView.setImageBitmap(pdfBitmap);
-
-            pdfImageView.setScaleX(3);
-            pdfImageView.setScaleY(3);
-
-            pdfImageView.setRotation(-21);
-
-//            hidePdfMap();
+            Drawable drawable = new BitmapDrawable(null, transformedBitmap);
+            org.mapsforge.core.graphics.Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(drawable);
+            LatLong targetLatLong = new LatLong(65.61716, 22.13814); // map needs to be centered here to be displayed correctly - only tested for floor 2
+            Marker targetMarker = new Marker(targetLatLong, bitmap, 0, 0);
+            mapView.getLayerManager().getLayers().add(targetMarker);
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -244,9 +200,9 @@ public class MapManager {
     private void initMapList() {
         // A Hus
         ArrayList<String> a_Hus = new ArrayList();
-        a_Hus.add("A-huset1.pdf");
-        a_Hus.add("A-huset2.pdf");
-        a_Hus.add("A-huset3.pdf");
+        a_Hus.add("A-huset1.png");
+        a_Hus.add("A-huset2.png");
+        a_Hus.add("A-huset3.png");
 
         // B Hus
         ArrayList<String> b_Hus = new ArrayList<>();

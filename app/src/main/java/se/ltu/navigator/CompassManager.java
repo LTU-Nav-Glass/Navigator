@@ -59,19 +59,12 @@ public class CompassManager implements SensorEventListener {
     private float lastBearing;
     private final UserLocationHandler userLocationHandler;
     private Marker targetMarker;
-    private double centerOfABuildingLat;
-    private double centerOfABuildingLong;
-    private float scalingFactor;
     private NavTool navTool;
 
     public CompassManager(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
         userLocationHandler = new UserLocationHandler(mainActivity);
         navTool = new NavTool(mainActivity);
-
-        this.centerOfABuildingLat = 65.618253; // 65.617153
-        this.centerOfABuildingLong = 22.138150;
-        this.scalingFactor = 600000;
 
         sensorManager = ((SensorManager) mainActivity.getSystemService(Context.SENSOR_SERVICE));
         rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
@@ -137,14 +130,19 @@ public class CompassManager implements SensorEventListener {
      * @param target The new target room.
      */
     public void setTarget(@NotNull Room target) {
-        this.destination = target;
-        addTargetMarker(target.getLocation());
-        navTool.findPath(userLocationHandler.getLocation().getLongitude(), userLocationHandler.getLocation().getLatitude(), target);
-        getNextTarget();
+        try {
+            this.destination = target;
+            addTargetMarker(target.getLocation());
+            navTool.findPath(userLocationHandler.getLocation().getLongitude(), userLocationHandler.getLocation().getLatitude(), target);
+            getNextTarget();
 
-        Location currentLocation = userLocationHandler.getLocation();
-        if (currentLocation != null) {
-            onLocationChanged(currentLocation.getLongitude(), currentLocation.getLatitude(), currentLocation.getAltitude());
+            Location currentLocation = userLocationHandler.getLocation();
+            if (currentLocation != null) {
+                onLocationChanged(currentLocation.getLongitude(), currentLocation.getLatitude(), currentLocation.getAltitude());
+            }
+        }
+        catch (NullPointerException e) {
+
         }
     }
 
@@ -285,7 +283,6 @@ public class CompassManager implements SensorEventListener {
                 NavInfo.CURRENT_LOCATION.setData(currentLocation.getLatitude() + ", " + currentLocation.getLongitude() + "\n(" + Duration.between(instant, Instant.now()).toSeconds() + "s ago)");
 
                 mainActivity.mapManager.switchMap();
-                updateMapPosition(mainActivity, currentLocation.getLatitude(), currentLocation.getLongitude());
                 mainActivity.mapManager.getMapView().setCenter(new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude()));
 
                 if (target != null) {
@@ -319,11 +316,6 @@ public class CompassManager implements SensorEventListener {
                 NavInfo.TARGET_FLOOR.setData("-");
             }
         }
-    }
-
-    private void updateMapPosition(MainActivity mainActivity, double latitude, double longitude) {
-        mainActivity.getMapManager().pdfImageView.setY(this.scalingFactor*(float)(this.centerOfABuildingLat - latitude));
-        mainActivity.getMapManager().pdfImageView.setX(this.scalingFactor*(float)(this.centerOfABuildingLong - longitude)); // 22.137084348154577
     }
 
     /**
