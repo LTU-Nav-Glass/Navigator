@@ -1,11 +1,16 @@
 package se.ltu.navigator;
 
 import android.content.Context;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
@@ -41,6 +46,7 @@ import se.ltu.navigator.navinfo.NavInfo;
  * locations - also updates information for mapView
  */
 public class CompassManager implements SensorEventListener {
+    private static final String TAG = "CompassManager";
     public static final int SAMPLING_PERIOD_US = 20000;
 
     private final MainActivity mainActivity;
@@ -59,6 +65,7 @@ public class CompassManager implements SensorEventListener {
     private float lastBearing;
     private final UserLocationHandler userLocationHandler;
     private Marker targetMarker;
+    private Marker userMarker;
     private NavTool navTool;
 
     public CompassManager(MainActivity mainActivity) {
@@ -183,6 +190,22 @@ public class CompassManager implements SensorEventListener {
         mainActivity.getMapManager().mapView.getLayerManager().getLayers().add(targetMarker);
     }
 
+    private void updateUserMarker(){
+        if (userMarker != null) {
+            mainActivity.getMapManager().mapView.getLayerManager().getLayers().remove(userMarker);
+        }
+
+        LatLong userLatLong = new LatLong(userLocationHandler.getLatitude(), userLocationHandler.getLongitude());
+
+        Drawable marker_icon = mainActivity.getDrawable(R.drawable.marker_icon);
+
+        Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(marker_icon);
+
+        userMarker = new Marker(userLatLong, bitmap, 0, 0);
+
+        mainActivity.getMapManager().mapView.getLayerManager().getLayers().add(userMarker);
+    }
+
     /**
      * Takes a list of Nodes and adds markers to the mapView at each Node's location.
      * Also removes any markers that were previously added. Stores markers in pathMarkers.
@@ -282,8 +305,9 @@ public class CompassManager implements SensorEventListener {
                 NavInfo.LOCATION_ACCURACY.setData(Math.round(currentLocation.getAccuracy()) + "m");
                 NavInfo.CURRENT_LOCATION.setData(currentLocation.getLatitude() + ", " + currentLocation.getLongitude() + "\n(" + Duration.between(instant, Instant.now()).toSeconds() + "s ago)");
 
-                mainActivity.mapManager.switchMap();
+                //mainActivity.mapManager.switchMap();
                 mainActivity.mapManager.getMapView().setCenter(new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude()));
+                updateUserMarker();
 
                 if (target != null) {
                     NavInfo.DISTANCE.setData(Math.round(currentLocation.distanceTo(target.getLocation())) + "m");
