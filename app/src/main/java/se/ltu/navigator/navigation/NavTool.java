@@ -55,7 +55,7 @@ public class NavTool {
         g.cleanGraph();
         this.path = path;
 
-        //print out the path in order to debug
+//        print out the path in order to debug
 //        for (Node n : path) {
 //            Log.d("NavTool", n.getId());
 //        }

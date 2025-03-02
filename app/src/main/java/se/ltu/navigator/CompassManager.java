@@ -130,7 +130,6 @@ public class CompassManager implements SensorEventListener {
      * @param target The new target room.
      */
     public void setTarget(@NotNull Room target) {
-        try {
             this.destination = target;
             addTargetMarker(target.getLocation());
             navTool.findPath(userLocationHandler.getLocation().getLongitude(), userLocationHandler.getLocation().getLatitude(), target);
@@ -140,10 +139,6 @@ public class CompassManager implements SensorEventListener {
             if (currentLocation != null) {
                 onLocationChanged(currentLocation.getLongitude(), currentLocation.getLatitude(), currentLocation.getAltitude());
             }
-        }
-        catch (NullPointerException e) {
-
-        }
     }
 
     private void getNextTarget() {
@@ -282,7 +277,7 @@ public class CompassManager implements SensorEventListener {
                 NavInfo.LOCATION_ACCURACY.setData(Math.round(currentLocation.getAccuracy()) + "m");
                 NavInfo.CURRENT_LOCATION.setData(currentLocation.getLatitude() + ", " + currentLocation.getLongitude() + "\n(" + Duration.between(instant, Instant.now()).toSeconds() + "s ago)");
 
-                mainActivity.mapManager.switchMap();
+//                mainActivity.mapManager.switchMap();
                 mainActivity.mapManager.getMapView().setCenter(new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude()));
 
                 if (target != null) {

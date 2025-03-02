@@ -106,9 +106,6 @@ public class Graph {
             path.add(nodes.get(at));
         }
         Collections.reverse(path);
-
-        nodes.remove(tempNodeId);
-
         return path;
     }
 
@@ -197,6 +194,7 @@ public class Graph {
 
         // Remove temporary nodes and reconnect edges
         for (String tempNodeId : tempNodeIds) {
+//            Log.d("Graph", "Cleaning temporary node " + tempNodeId);
             Node tempNode = nodes.get(tempNodeId);
             List<String> tempEdges = tempNode.getEdges();
 
@@ -235,6 +233,7 @@ public class Graph {
 
         // Remove room nodes connected to temporary nodes
         for (String roomNodeId : roomNodeIdsToRemove) {
+//            Log.d("Graph", "Removing room node " + roomNodeId);
             nodes.remove(roomNodeId);
         }
     }
