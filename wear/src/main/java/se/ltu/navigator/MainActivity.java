@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     // Modules
     protected NavigatorBridge navigatorBridge;
     protected CompassManager compassManager;
+    protected MapManager mapManager;
 
     /**
      * Method called when the view is created.
@@ -90,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
         // Initialize modules
         navigatorBridge = new NavigatorBridge();
         compassManager = new CompassManager(this);
+        mapManager = new MapManager(this, compassManager);
     }
 
     // setting up the initial mapView -> further logic takes place in CompassManager

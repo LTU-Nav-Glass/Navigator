@@ -38,6 +38,7 @@ dependencies {
     implementation(libs.play.services.wearable)
     implementation(libs.appcompat)
     implementation(libs.google.material)
+    implementation(libs.commons.io)
     implementation(libs.mapsforge.map.android.v0230)
     implementation(libs.mapsforge.map.v0230)
     implementation(libs.mapsforge.map.reader.v0230)
