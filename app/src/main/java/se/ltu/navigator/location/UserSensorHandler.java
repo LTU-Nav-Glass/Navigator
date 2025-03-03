@@ -11,9 +11,9 @@ import se.ltu.navigator.MainActivity;
 public class UserSensorHandler
 {
     private static final String TAG = "UserSensorHandler";
-    private final float CHANGE_IN_FLOOR_PRESSURE = 0.34F;
+    private final float CHANGE_IN_FLOOR_PRESSURE = 0.32F;
     private final float PRESSURE_CHANGE_THRESHOLD = 0.04F;
-   private final long FLOOR_CHANGE_TIMESTAMP = 3000;
+   private final long FLOOR_CHANGE_TIMESTAMP = 2000;
 
     private final MainActivity mainActivity;
     private UserLocationHandler userLocationHandler;
@@ -80,7 +80,7 @@ public class UserSensorHandler
                 if (resetPressure) //only sets LastPressure when its the first time getting to a floor
                 {
                     userLocationHandler.setLastPressure(currentPressures[pIndex]);
-                    Log.d("Barometer","set user pressure to " + currentPressures[pIndex]);
+                    Log.i(TAG,"set user pressure to " + currentPressures[pIndex]);
 
                     // reset conditional values
                     lastTimestamp = event.timestamp;
@@ -95,7 +95,7 @@ public class UserSensorHandler
 
                     userLocationHandler.setLastPressure(currentPressures[pIndex]);
                     userLocationHandler.setFloor(userFloor+floorDirection);
-                    Log.d("Barometer","User floor is now: " + userLocationHandler.getFloor());
+                    Log.i(TAG,"User floor is now: " + userLocationHandler.getFloor());
                 }
 
             }
@@ -104,10 +104,7 @@ public class UserSensorHandler
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
             if (sensor.getType() == Sensor.TYPE_PRESSURE)
             {
-                Log.d(TAG, "baro acc: " + accuracy);
-            } else if (sensor.getType() == Sensor.TYPE_ACCELEROMETER)
-            {
-                Log.d(TAG, "accel acc: " + accuracy);
+                Log.i(TAG, "baro acc: " + accuracy);
             }
         }
 
@@ -134,13 +131,11 @@ public class UserSensorHandler
             floorDirection = -1;
         }
 
-        return Math.abs(deltaP) > Math.abs(CHANGE_IN_FLOOR_PRESSURE);
+        return Math.abs(deltaP) > CHANGE_IN_FLOOR_PRESSURE;
     }
 
     /**
      * This method returns true if the user has been on a new floor
-     * NEEDED IMPROVEMENT: Measure if user needs to change anymore floors
-     *      - If the user does and moves up multiple flights in succession --> app calibrates to wrong floor
      * @param e
      * @return
      */
@@ -161,8 +156,21 @@ public class UserSensorHandler
         long currentTimestamp = e.timestamp;
         long deltaTime = currentTimestamp - lastTimestamp;
 
-        return detectPressureChange(e)
-                && pressureStable //|| Math.abs(userLocationHandler.getTargetLocation().PLACEHOLDER-getRoom().getFloor() - userLocationHandler.getFloor()) > 1)
-                    && deltaTime >= FLOOR_CHANGE_TIMESTAMP;
+        if (mainActivity.getCompassManager().getTarget() == null) {
+            return detectPressureChange(e) && (pressureStable && deltaTime >= FLOOR_CHANGE_TIMESTAMP);
+        }
+
+        int floorDifference = -1;
+
+        /**
+        try{
+            floorDifference = Math.abs(mainActivity.getCompassManager().getTarget().getFloor() - userLocationHandler.getFloor());\
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        **/
+        return detectPressureChange(e) &&
+        ((pressureStable && deltaTime >= FLOOR_CHANGE_TIMESTAMP)
+                || floorDifference != -1 && floorDifference > 1 );
     }
 }

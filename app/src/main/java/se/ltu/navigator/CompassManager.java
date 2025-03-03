@@ -1,29 +1,44 @@
 package se.ltu.navigator;
 
 import android.content.Context;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
+
+import androidx.annotation.NonNull;
 
 import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
 import org.mapsforge.core.graphics.Bitmap;
+import org.mapsforge.core.graphics.Color;
+import org.mapsforge.core.graphics.Paint;
+import org.mapsforge.core.graphics.Style;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.layer.overlay.Marker;
+import org.mapsforge.map.layer.overlay.Polyline;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import se.ltu.navigator.location.Room;
 import se.ltu.navigator.location.UserLocationHandler;
+import se.ltu.navigator.navigation.NavTool;
+import se.ltu.navigator.navigation.Node;
 import se.ltu.navigator.navinfo.NavInfo;
 
 /**
@@ -31,6 +46,7 @@ import se.ltu.navigator.navinfo.NavInfo;
  * locations - also updates information for mapView
  */
 public class CompassManager implements SensorEventListener {
+    private static final String TAG = "CompassManager";
     public static final int SAMPLING_PERIOD_US = 20000;
 
     private final MainActivity mainActivity;
@@ -38,7 +54,9 @@ public class CompassManager implements SensorEventListener {
     private final Sensor rotationSensor;
 
     // Data
-    private Room target;
+    private Node target;
+    private Room destination;
+    private Polyline polyline;
     private final float[] rotationMatrix = new float[16];
     private final float[] orientationVector = new float[3];
     private float currentAzimuth;
@@ -47,10 +65,13 @@ public class CompassManager implements SensorEventListener {
     private float lastBearing;
     private final UserLocationHandler userLocationHandler;
     private Marker targetMarker;
+    private Marker userMarker;
+    private NavTool navTool;
 
     public CompassManager(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
         userLocationHandler = new UserLocationHandler(mainActivity);
+        navTool = new NavTool(mainActivity);
 
         sensorManager = ((SensorManager) mainActivity.getSystemService(Context.SENSOR_SERVICE));
         rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
@@ -116,34 +137,121 @@ public class CompassManager implements SensorEventListener {
      * @param target The new target room.
      */
     public void setTarget(@NotNull Room target) {
-        this.target = target;
+        this.destination = target;
+        addTargetMarker(target.getLocation());
+        navTool.findPath(userLocationHandler.getLocation().getLongitude(), userLocationHandler.getLocation().getLatitude(), target);
+        getNextTarget();
 
         mainActivity.watchBridge.setTargetRoom(target);
 
-        addTargetMarker(target.getLocation());
+        Location currentLocation = userLocationHandler.getLocation();
+        if (currentLocation != null) {
+            onLocationChanged(currentLocation.getLongitude(), currentLocation.getLatitude(), currentLocation.getAltitude());
+        }
     }
 
+    private void getNextTarget() {
+        Node next = navTool.popFromPath();
+        if (next != null) {
+            this.target = next;
+            visualizePath();
+        } else {
+            this.target = destination;
+        }
+    }
+
+    public void onLocationChanged(double longitude, double latitude, double altitude) {
+//        mainActivity.mapManager.getMapView().setCenter(new LatLong(latitude, longitude));
+
+        if (target != null && userLocationHandler.getLocation().distanceTo(target.getLocation()) < 5) {
+            getNextTarget();
+        }
+    }
+
+    public Room getTarget(){return destination;}
+
     /**
+     *
      * Adds a marker to the mapView at the target location.
      * @param targetLocation The location to place the marker.
      */
     private void addTargetMarker(Location targetLocation) {
         if (targetMarker != null) {
-            mainActivity.mapView.getLayerManager().getLayers().remove(targetMarker);
+            mainActivity.getMapManager().mapView.getLayerManager().getLayers().remove(targetMarker);
         }
 
         LatLong targetLatLong = new LatLong(targetLocation.getLatitude(), targetLocation.getLongitude());
         Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(mainActivity.getDrawable(R.drawable.marker_icon));
         targetMarker = new Marker(targetLatLong, bitmap, 0, 0);
 
-        mainActivity.mapView.getLayerManager().getLayers().add(targetMarker);
+        mainActivity.getMapManager().mapView.getLayerManager().getLayers().add(targetMarker);
+    }
+
+    private void updateUserMarker(){
+        if (userMarker != null) {
+            mainActivity.getMapManager().mapView.getLayerManager().getLayers().remove(userMarker);
+        }
+
+        LatLong userLatLong = new LatLong(userLocationHandler.getLatitude(), userLocationHandler.getLongitude());
+
+        Drawable marker_icon = mainActivity.getDrawable(R.drawable.user_marker_icon);
+
+        Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(marker_icon);
+
+        userMarker = new Marker(userLatLong, bitmap, 0, 0);
+
+        mainActivity.getMapManager().mapView.getLayerManager().getLayers().add(userMarker);
+    }
+
+    /**
+     * Takes a list of Nodes and adds markers to the mapView at each Node's location.
+     * Also removes any markers that were previously added. Stores markers in pathMarkers.
+     */
+    private void visualizePath() {
+        // Remove existing polyline
+        if (polyline != null) {
+            mainActivity.getMapManager().mapView.getLayerManager().getLayers().remove(polyline);
+        }
+
+        // Create a list of LatLong points for the polyline
+        List<LatLong> polylinePoints = getPolylinePoints();
+
+        Paint paint = AndroidGraphicFactory.INSTANCE.createPaint();
+        paint.setColor(AndroidGraphicFactory.INSTANCE.createColor(Color.BLUE));
+        paint.setStrokeWidth(5);
+        paint.setStyle(Style.STROKE);
+
+        // Create a new polyline with the points
+        polyline = new Polyline(paint, AndroidGraphicFactory.INSTANCE);
+        polyline.getLatLongs().addAll(polylinePoints);
+
+        // Add the new polyline to the map
+        mainActivity.getMapManager().mapView.getLayerManager().getLayers().add(polyline);
+    }
+
+    @NonNull
+    private List<LatLong> getPolylinePoints() {
+        List<LatLong> polylinePoints = new ArrayList<>();
+
+        // Add the current position as the first point
+        Location currentLocation = userLocationHandler.getLocation();
+        if (currentLocation != null) {
+            LatLong currentLatLong = new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude());
+            polylinePoints.add(currentLatLong);
+        }
+
+        for (Node node : navTool.getPath()) {
+            LatLong latLong = new LatLong(node.getLocation().getLatitude(), node.getLocation().getLongitude());
+            polylinePoints.add(latLong);
+        }
+        return polylinePoints;
     }
 
     /**
      * Returns the UserLocationHandler object
      * @return
      */
-    public UserLocationHandler getUserLocationManager()
+    public UserLocationHandler getUserLocationHandler()
     {
         return this.userLocationHandler;
     }
@@ -194,8 +302,9 @@ public class CompassManager implements SensorEventListener {
                 NavInfo.LOCATION_ACCURACY.setData(Math.round(currentLocation.getAccuracy()) + "m");
                 NavInfo.CURRENT_LOCATION.setData(currentLocation.getLatitude() + ", " + currentLocation.getLongitude() + "\n(" + Duration.between(instant, Instant.now()).toSeconds() + "s ago)");
 
-                // centering the map layout on the newly detected location
-                mainActivity.mapView.setCenter(new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude()));
+//                mainActivity.mapManager.switchMap();
+                mainActivity.mapManager.getMapView().setCenter(new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude()));
+                updateUserMarker();
 
                 if (target != null) {
                     NavInfo.DISTANCE.setData(Math.round(currentLocation.distanceTo(target.getLocation())) + "m");

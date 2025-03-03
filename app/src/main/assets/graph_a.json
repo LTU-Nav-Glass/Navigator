@@ -1,0 +1,367 @@
+[
+  {
+    "id": "NW_ENTRANCE",
+    "longitude": 22.135850084188775,
+    "latitude": 65.6172761685132,
+    "floor": 2,
+    "type": "EXIT",
+    "edges": [
+      "NW_CORRIDOR_1"
+    ]
+  },
+  {
+    "id": "NW_EXIT_STAIRS",
+    "longitude": 22.135956023905244,
+    "latitude": 65.617266406782,
+    "floor": 2,
+    "type": "STAIRS",
+    "edges": [
+      "NW_CORRIDOR_1"
+    ]
+  },
+  {
+    "id": "NW_CORRIDOR_1",
+    "longitude": 22.13603515659821,
+    "latitude": 65.61730357407062,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "NW_ENTRANCE",
+      "N_MID_CORRIDOR",
+      "NW_EXIT_STAIRS",
+      "SW_CORNER"
+    ]
+  },
+  {
+    "id": "N_MID_CORRIDOR",
+    "longitude": 22.136748768306784,
+    "latitude": 65.61741792049268,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "NW_CORRIDOR_1",
+      "N_MID_STAIRS",
+      "S_MID_CORRIDOR_2"
+    ]
+  },
+  {
+    "id": "N_MID_STAIRS",
+    "longitude": 22.13666340920496,
+    "latitude": 65.61743265662683,
+    "floor": 2,
+    "type": "STAIRS",
+    "edges": [
+      "N_MID_CORRIDOR"
+    ]
+  },
+  {
+    "id": "N_MID_CORRIDOR_2",
+    "longitude": 22.13748354191644,
+    "latitude": 65.61753437109672,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "N_MID_CORRIDOR",
+      "N_MID_STAIRS_2",
+      "S_MID_CORRIDOR_1"
+    ]
+  },
+  {
+    "id": "N_MID_STAIRS_2",
+    "longitude": 22.13736284250978,
+    "latitude": 65.61754101480419,
+    "floor": 2,
+    "type": "STAIRS",
+    "edges": [
+      "N_MID_CORRIDOR_2"
+    ]
+  },
+  {
+    "id": "NE_CORRIDOR_1",
+    "longitude": 22.137719576320276,
+    "latitude": 65.61757534060506,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "N_MID_CORRIDOR_2",
+      "NE_CORRIDOR_2"
+    ]
+  },
+  {
+    "id": "NE_DEAD_END",
+    "longitude": 22.137637768950885,
+    "latitude": 65.61765506486424,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "NE_CORRIDOR_1"
+    ]
+  },
+  {
+    "id": "NE_CORRIDOR_2",
+    "longitude": 22.138183598448283,
+    "latitude": 65.61764676026533,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+        "NE_CORRIDOR_1",
+        "NE_ENTRANCE",
+        "NE_EXIT_STAIRS"
+    ]
+  },
+  {
+    "id": "NE_ENTRANCE",
+    "longitude": 22.138331119952273,
+    "latitude": 65.61767776408855,
+    "floor": 2,
+    "type": "EXIT",
+    "edges": [
+      "NE_CORRIDOR_2"
+    ]
+  },
+  {
+    "id": "NE_EXIT_STAIRS",
+    "longitude": 22.138011937101215,
+    "latitude": 65.61759084256435,
+    "floor": 2,
+    "type": "STAIRS",
+    "edges": [
+      "NE_CORRIDOR_2"
+    ]
+  },
+  {
+    "id": "SE_CORRIDOR_1",
+    "longitude": 22.138507802910656,
+    "latitude": 65.61731784744629,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "NE_CORRIDOR_2",
+      "SE_CORRIDOR_2"
+    ]
+  },
+  {
+    "id": "SE_CORRIDOR_2",
+    "longitude": 22.138423997302205,
+    "latitude": 65.6173007435504,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "SE_CORRIDOR_1",
+      "SE_DEAD_END",
+      "SE_STAIRS_1"
+    ]
+  },
+  {
+    "id": "SE_DEAD_END",
+    "longitude": 22.138501195525237,
+    "latitude": 65.6172141116872,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "SE_CORRIDOR_2"
+    ]
+  },
+  {
+    "id": "SE_STAIRS_1",
+    "longitude": 22.138394355773926,
+    "latitude": 65.61722884782135,
+    "floor": 2,
+    "type": "STAIRS",
+    "edges": [
+      "SE_CORRIDOR_2"
+    ]
+  },
+  {
+    "id": "S_MID_CORRIDOR_1",
+    "longitude": 22.137767760914596,
+    "latitude": 65.61719806611539,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "SE_CORRIDOR_2",
+      "S_MID_STAIRS_1",
+      "S_MID_CORRIDOR_2",
+      "N_MID_CORRIDOR_2"
+    ]
+  },
+  {
+    "id": "S_MID_STAIRS_1",
+    "longitude": 22.137628586653342,
+    "latitude": 65.61719806611539,
+    "floor": 2,
+    "type": "STAIRS",
+    "edges": [
+      "S_MID_CORRIDOR_1"
+    ]
+  },
+  {
+    "id": "S_MID_CORRIDOR_2",
+    "longitude": 22.137059554704635,
+    "latitude": 65.61707923244523,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "S_MID_CORRIDOR_1",
+      "S_MID_STAIRS_2",
+      "N_MID_CORRIDOR"
+    ]
+  },
+  {
+    "id": "S_MID_STAIRS_2",
+    "longitude": 22.13691203321885,
+    "latitude": 65.61708140672565,
+    "floor": 2,
+    "type": "STAIRS",
+    "edges": [
+      "S_MID_CORRIDOR_2"
+    ]
+  },
+  {
+    "id": "SW_CORNER",
+    "longitude": 22.13633245381394,
+    "latitude": 65.616968073677,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "S_MID_CORRIDOR_2",
+      "SW_CORNER_STAIRS",
+      "NW_CORRIDOR_1",
+      "SW_BOX_TL"
+    ]
+  },
+  {
+    "id": "SW_CORNER_STAIRS",
+    "longitude": 22.13618765919351,
+    "latitude": 65.61696521916242,
+    "floor": 2,
+    "type": "STAIRS",
+    "edges": [
+      "SW_CORNER"
+    ]
+  },
+  {
+    "id": "SW_BOX_TL",
+    "longitude": 22.13672343104397,
+    "latitude": 65.61647396898283,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "SW_CORNER",
+      "SW_BOX_TR",
+      "SW_BOX_BL"
+    ]
+  },
+  {
+    "id": "SW_BOX_TR",
+    "longitude": 22.136825988660622,
+    "latitude": 65.6164903587139,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "SW_BOX_TL",
+      "SW_BOX_BR"
+    ]
+  },
+  {
+    "id": "SW_BOX_BR",
+    "longitude": 22.13690786933843,
+    "latitude": 65.61641250739926,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "SW_BOX_TR",
+      "SW_BOX_BL",
+      "BOTTOM_LONG_CORRIDOR_MID"
+    ]
+  },
+  {
+    "id": "SW_BOX_BL",
+    "longitude": 22.1367978680238,
+    "latitude": 65.6163944103497,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "SW_BOX_BR",
+      "SW_BOX_TL",
+      "SW_BOX_STAIRS"
+    ]
+  },
+  {
+    "id": "SW_BOX_STAIRS",
+    "longitude": 22.136725912276628,
+    "latitude": 65.61639645907293,
+    "floor": 2,
+    "type": "STAIRS",
+    "edges": [
+      "SW_BOX_BL"
+    ]
+  },
+  {
+    "id": "BOTTOM_LONG_CORRIDOR_MID",
+    "longitude": 22.13737955890122,
+    "latitude": 65.61648744520464,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "SW_BOX_BR",
+      "BLCM_STAIRS",
+      "ALPHA_BL_CORNER"
+    ]
+  },
+  {
+    "id": "BLCM_STAIRS",
+    "longitude": 22.137347070547914,
+    "latitude": 65.61651994648533,
+    "floor": 2,
+    "type": "STAIRS",
+    "edges": [
+      "BOTTOM_LONG_CORRIDOR_MID"
+    ]
+  },
+  {
+    "id": "ALPHA_BL_CORNER",
+    "longitude": 22.13825415579663,
+    "latitude": 65.61662676305339,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "BOTTOM_LONG_CORRIDOR_MID",
+      "ALPHA_BR_WEIRD_1",
+      "ALPHA_TR_CORNER"
+    ]
+  },
+  {
+    "id": "ALPHA_BR_WEIRD_1",
+    "longitude": 22.138863385832018,
+    "latitude": 65.6167262227848,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "ALPHA_BL_CORNER",
+      "ALPHA_BR_WEIRD_2"
+    ]
+  },
+  {
+    "id": "ALPHA_BR_WEIRD_2",
+    "longitude": 22.138926417739576,
+    "latitude": 65.61680733379552,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "ALPHA_BR_WEIRD_1",
+      "ALPHA_TR_CORNER"
+    ]
+  },
+  {
+    "id": "ALPHA_TR_CORNER",
+    "longitude": 22.13863848491983,
+    "latitude": 65.61709711852961,
+    "floor": 2,
+    "type": "CORRIDOR",
+    "edges": [
+      "ALPHA_BR_WEIRD_2",
+      "ALPHA_BL_CORNER"
+    ]
+  }
+]
