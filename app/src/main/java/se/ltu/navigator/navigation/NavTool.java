@@ -99,7 +99,7 @@ public class NavTool {
      * @return The next node.
      */
     public Node peekFromPath() {
-        if (!path.isEmpty()) {
+        if (path != null && !path.isEmpty()) {
             return path.get(0);
         }
         return null;
