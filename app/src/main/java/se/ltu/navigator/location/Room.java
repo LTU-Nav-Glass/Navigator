@@ -2,21 +2,10 @@ package se.ltu.navigator.location;
 
 import android.location.Location;
 
-public class Room {
+import se.ltu.navigator.navigation.Node;
 
-    private final String id;
-    private final Location location;
-    private final int floor;
+public class Room extends Node {
     public Room(String id, double longitude, double latitude, int floor) {
-        this.id = id;
-        this.floor = floor;
-        this.location = new Location("");
-        this.location.setLongitude(longitude);
-        this.location.setLatitude(latitude);
-        this.location.setAccuracy(0);
+        super(id, longitude, latitude, floor, Type.ROOM, null);
     }
-
-    public Location getLocation() { return location; }
-    public String getId() { return id; }
-    public int getFloor() { return floor; }
 }

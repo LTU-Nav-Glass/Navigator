@@ -44,16 +44,34 @@ public class UserLocationHandler {
         return latitude;
     }
 
-    public double getAltitude() {
-        return altitude;
-    }
+    public double getAltitude() {return altitude;}
 
-    public int getFloor() {
-        return floor;
-    }
+    public int getFloor() {return floor;}
 
     public Location getLocation() {
+        //for debugging purposes use this
+//        Location test = new Location("");
+//        test.setLatitude(65.61768045184031);
+//        test.setLongitude(22.138135688759508);
+//        return test;
         return location;
+    }
+
+    /** Debugging version of getLocation()
+     * @param debug Set to true of debug mode should be used
+     *
+     * @return A custom current position for debugging if debug flag is true - otherwise just return normal location
+     */
+    public  Location getLocation(boolean debug) {
+        if (debug) {
+            Location location = new Location("");
+            location.setLatitude(65.61711132989254);
+            location.setLongitude(22.137669155810737);
+            return location;
+        }
+        else {
+            return this.getLocation();
+        }
     }
 
     public float getLastPressure(){ return lastPressure;}
@@ -99,6 +117,7 @@ public class UserLocationHandler {
         longitude = location.getLongitude();
         latitude = location.getLatitude();
         altitude = location.getAltitude();
+        mainActivity.onLocationChanged(longitude, latitude, altitude);
 
         mainActivity.watchBridge.setCurrentLocation(location);
     }
@@ -121,7 +140,6 @@ public class UserLocationHandler {
 
         // Initializes lastPressure
         lastPressure = userSensorHandler.getPressure();
-        Log.d(TAG, "Last Pressure: " + lastPressure);
 
     }
 
