@@ -140,7 +140,7 @@ public class CompassManager implements SensorEventListener {
             this.destination = target;
             addTargetMarker(target.getLocation());
             navTool.findPath(userLocationHandler.getLocation().getLongitude(), userLocationHandler.getLocation().getLatitude(), target);
-            getNextTarget();
+            visualizePath();
 
         mainActivity.watchBridge.setTargetRoom(target);
 
@@ -302,7 +302,7 @@ public class CompassManager implements SensorEventListener {
                 NavInfo.LOCATION_ACCURACY.setData(Math.round(currentLocation.getAccuracy()) + "m");
                 NavInfo.CURRENT_LOCATION.setData(currentLocation.getLatitude() + ", " + currentLocation.getLongitude() + "\n(" + Duration.between(instant, Instant.now()).toSeconds() + "s ago)");
 
-//                mainActivity.mapManager.switchMap();
+                mainActivity.mapManager.switchMap();
                 mainActivity.mapManager.getMapView().setCenter(new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude()));
                 updateUserMarker();
 
