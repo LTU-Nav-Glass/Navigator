@@ -12,7 +12,7 @@ The app can be used in conjunction with AR glasses to allow a seamless integrati
 - Alexandre - @[Deleranax](https://github.com/Deleranax)
   > "Thank you helping us help you help us all."
 - Elliot - @[elliotdelano](https://github.com/elliotdelano)
-  > Quote TODO
+  > "Give me that issue it sounds fun."
 
 ## Inspiration
 This project is part of the Pervasive Computing course by Kåre Synnes at LTU. More information about this course is available at: 

@@ -159,7 +159,8 @@
     "floor": 2,
     "type": "CORRIDOR",
     "edges": [
-      "SE_CORRIDOR_2"
+      "SE_CORRIDOR_2",
+      "ALPHA_TR_CORNER"
     ]
   },
   {
@@ -361,7 +362,8 @@
     "type": "CORRIDOR",
     "edges": [
       "ALPHA_BR_WEIRD_2",
-      "ALPHA_BL_CORNER"
+      "ALPHA_BL_CORNER",
+      "SE_DEAD_END"
     ]
   }
 ]
