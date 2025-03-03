@@ -197,7 +197,7 @@ public class CompassManager implements SensorEventListener {
 
         LatLong userLatLong = new LatLong(userLocationHandler.getLatitude(), userLocationHandler.getLongitude());
 
-        Drawable marker_icon = mainActivity.getDrawable(R.drawable.marker_icon);
+        Drawable marker_icon = mainActivity.getDrawable(R.drawable.user_marker_icon);
 
         Bitmap bitmap = AndroidGraphicFactory.convertToBitmap(marker_icon);
 
