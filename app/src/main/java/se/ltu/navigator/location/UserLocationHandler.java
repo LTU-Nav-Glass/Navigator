@@ -43,13 +43,9 @@ public class UserLocationHandler {
         return latitude;
     }
 
-    public double getAltitude() {
-        return altitude;
-    }
+    public double getAltitude() {return altitude;}
 
-    public int getFloor() {
-        return floor;
-    }
+    public int getFloor() {return floor;}
 
     public Location getLocation() {
         //for debugging purposes use this
@@ -137,7 +133,6 @@ public class UserLocationHandler {
 
         // Initializes lastPressure
         lastPressure = userSensorHandler.getPressure();
-        Log.d(TAG, "Last Pressure: " + lastPressure);
 
     }
 
