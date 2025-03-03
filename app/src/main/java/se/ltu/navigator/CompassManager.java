@@ -100,13 +100,13 @@ public class CompassManager implements SensorEventListener {
     }
 
     private void updateFloorIcon() {
-        if (this.target == null) {
+        if (this.destination == null) {
             mainActivity.compassFloorIndicator.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             return;
         }
 
         int current = this.userLocationHandler.getFloor();
-        int target = this.target.getFloor();
+        int target = this.destination.getFloor();
 
         if (current < target) {
             mainActivity.compassFloorIndicator.setCompoundDrawablesWithIntrinsicBounds(R.drawable.rounded_arrow_warm_up_24, 0, 0, 0);
@@ -302,12 +302,12 @@ public class CompassManager implements SensorEventListener {
                 NavInfo.LOCATION_ACCURACY.setData(Math.round(currentLocation.getAccuracy()) + "m");
                 NavInfo.CURRENT_LOCATION.setData(currentLocation.getLatitude() + ", " + currentLocation.getLongitude() + "\n(" + Duration.between(instant, Instant.now()).toSeconds() + "s ago)");
 
-//                mainActivity.mapManager.switchMap();
+                mainActivity.mapManager.switchMap();
                 mainActivity.mapManager.getMapView().setCenter(new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude()));
                 updateUserMarker();
 
                 if (target != null) {
-                    NavInfo.DISTANCE.setData(Math.round(currentLocation.distanceTo(target.getLocation())) + "m");
+                    NavInfo.DISTANCE.setData(Math.round(currentLocation.distanceTo(destination.getLocation())) + "m");
 
                     currentBearing = currentLocation.bearingTo(target.getLocation());
                     NavInfo.BEARING.setData(Math.round(currentBearing) + "°");
@@ -329,9 +329,9 @@ public class CompassManager implements SensorEventListener {
                 NavInfo.CURRENT_LOCATION.setData("-");
             }
 
-            if (target != null) {
-                NavInfo.TARGET_LOCATION.setData(target.getLocation().getLatitude() + ", " + target.getLocation().getLongitude());
-                NavInfo.TARGET_FLOOR.setData(Integer.toString(target.getFloor()));
+            if (destination != null) {
+                NavInfo.TARGET_LOCATION.setData(destination.getLocation().getLatitude() + ", " + target.getLocation().getLongitude());
+                NavInfo.TARGET_FLOOR.setData(Integer.toString(destination.getFloor()));
             } else {
                 NavInfo.TARGET_LOCATION.setData("-");
                 NavInfo.TARGET_FLOOR.setData("-");
