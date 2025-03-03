@@ -139,7 +139,12 @@ public class CompassManager implements SensorEventListener {
     public void setTarget(@NotNull Room target) {
             this.destination = target;
             addTargetMarker(target.getLocation());
-            navTool.findPath(userLocationHandler.getLocation().getLongitude(), userLocationHandler.getLocation().getLatitude(), target);
+            try {
+                navTool.findPath(userLocationHandler.getLocation().getLongitude(), userLocationHandler.getLocation().getLatitude(), target);
+            }
+            catch (NullPointerException e) {
+                navTool.findPath(userLocationHandler.getLocation(true).getLongitude(), userLocationHandler.getLocation(true).getLatitude(), target);
+            }
             visualizePath();
 
         mainActivity.watchBridge.setTargetRoom(target);
@@ -330,7 +335,7 @@ public class CompassManager implements SensorEventListener {
             }
 
             if (destination != null) {
-                NavInfo.TARGET_LOCATION.setData(destination.getLocation().getLatitude() + ", " + target.getLocation().getLongitude());
+                NavInfo.TARGET_LOCATION.setData(destination.getLocation().getLatitude() + ", " + destination.getLocation().getLongitude());
                 NavInfo.TARGET_FLOOR.setData(Integer.toString(destination.getFloor()));
             } else {
                 NavInfo.TARGET_LOCATION.setData("-");
