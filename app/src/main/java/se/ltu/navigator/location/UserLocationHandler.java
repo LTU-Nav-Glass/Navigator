@@ -5,6 +5,12 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 
 import androidx.core.app.ActivityCompat;
 
@@ -28,7 +34,7 @@ public class UserLocationHandler {
 
     //these two variables will be used for updating user during movement
     private final long TIME_BETWEEN_UPDATES = 5000;
-    private final float MINIMUM_DISTANCE_CHANGE_FOR_UPDATES = 0;
+    private final float MINIMUM_DISTANCE_CHANGE_FOR_UPDATES = 5;
 
     public UserLocationHandler(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -134,7 +140,29 @@ public class UserLocationHandler {
             return;
         }
 
-        locationManager.requestLocationUpdates(LocationManager.FUSED_PROVIDER, TIME_BETWEEN_UPDATES, MINIMUM_DISTANCE_CHANGE_FOR_UPDATES, this::setLocation);
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(mainActivity);
+
+        LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, TIME_BETWEEN_UPDATES)
+                .setMinUpdateDistanceMeters(MINIMUM_DISTANCE_CHANGE_FOR_UPDATES)
+                .build();
+
+        LocationCallback locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) return;
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
+                        setLocation(location); // Call your method with new location
+                    }
+                }
+            }
+        };
+
+        // Request location updates
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, mainActivity.getMainLooper());
+
+
+        // locationManager.requestLocationUpdates(LocationManager.FUSED_PROVIDER, TIME_BETWEEN_UPDATES, MINIMUM_DISTANCE_CHANGE_FOR_UPDATES, this::setLocation);
 
         userSensorHandler.registerSensors();
 

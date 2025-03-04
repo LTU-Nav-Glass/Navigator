@@ -22,6 +22,7 @@ commonsIo = "1.3.2"
 playServicesWearable = "19.0.0"
 materialVersion = "1.12.0"
 wearRemoteInteractions = "1.1.0"
+playServicesLocation = "21.0.1"
 
 [libraries]
 android_maskable_layout = { module = "com.github.christophesmet:android_maskable_layout", version.ref = "android_maskable_layout" }
@@ -49,6 +50,8 @@ commons-io = { group = "org.apache.commons", name = "commons-io", version.ref = 
 play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "playServicesWearable" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
 wear-remote-interactions = { group = "androidx.wear", name = "wear-remote-interactions", version.ref = "wearRemoteInteractions" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

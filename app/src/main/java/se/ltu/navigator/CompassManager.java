@@ -7,6 +7,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
@@ -285,6 +286,9 @@ public class CompassManager implements SensorEventListener {
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() != Sensor.TYPE_ROTATION_VECTOR) {
+            Log.i(TAG, Integer.toString(event.sensor.getType()));
+        }
         if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
             // We compute the rotation matrix from the rotation vector
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
