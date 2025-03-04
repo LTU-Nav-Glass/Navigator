@@ -20,4 +20,5 @@
     <string name="button_toggle_map">Map</string>
     <string name="title_floor">Floor</string>
     <string name="title_target_floor">Target Floor</string>
+    <string name="compass_hint">Double tap to reveal map</string>
 </resources>

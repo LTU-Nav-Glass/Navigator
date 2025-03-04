@@ -38,6 +38,7 @@
     </com.google.android.material.search.SearchView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -172,5 +173,15 @@
         android:orientation="vertical">
 
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/compass_hint"
+        app:layout_anchor="@+id/constraintLayout"
+        app:layout_anchorGravity="bottom|center"
+        style="?textAppearanceBodyMedium"
+        android:textColor="?colorOnBackground"
+        android:textStyle="italic"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

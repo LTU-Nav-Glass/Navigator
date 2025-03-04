@@ -130,19 +130,19 @@ public class CompassManager implements SensorEventListener {
     }
 
     /**
-     * @param target The new target room.
+     * @param destination The new destination room.
      */
-    public void setTarget(@NotNull Room target) {
-        this.destination = target;
-        addTargetMarker(target.getLocation());
+    public void setDestination(@NotNull Room destination) {
+        this.destination = destination;
+        addDestinationMarker(destination.getLocation());
         try {
-            navTool.findPath(userLocationHandler.getLocation().getLongitude(), userLocationHandler.getLocation().getLatitude(), target);
+            navTool.findPath(userLocationHandler.getLocation().getLongitude(), userLocationHandler.getLocation().getLatitude(), destination);
         }
         catch (NullPointerException e) {
-            navTool.findPath(userLocationHandler.getLocation(true).getLongitude(), userLocationHandler.getLocation(true).getLatitude(), target);
+            navTool.findPath(userLocationHandler.getLocation(true).getLongitude(), userLocationHandler.getLocation(true).getLatitude(), destination);
         }
 
-        mainActivity.watchBridge.setTargetRoom(target);
+        mainActivity.watchBridge.setDestinationRoom(destination);
 
         if (navTool.getPath() == null) {
             this.target = this.destination;
@@ -184,7 +184,7 @@ public class CompassManager implements SensorEventListener {
      * Adds a marker to the mapView at the target location.
      * @param targetLocation The location to place the marker.
      */
-    private void addTargetMarker(Location targetLocation) {
+    private void addDestinationMarker(Location targetLocation) {
         if (targetMarker != null) {
             mainActivity.getMapManager().mapView.getLayerManager().getLayers().remove(targetMarker);
         }

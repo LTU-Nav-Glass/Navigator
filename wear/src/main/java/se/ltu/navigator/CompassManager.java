@@ -45,6 +45,7 @@ public class CompassManager implements SensorEventListener {
     // Data
     private Node target;
     private Room destination;
+    private Room lastDestination;
     private Polyline polyline;
     private final float[] rotationMatrix = new float[16];
     private final float[] orientationVector = new float[3];
@@ -53,7 +54,7 @@ public class CompassManager implements SensorEventListener {
     private float currentBearing;
     private float lastBearing;
     private int lastFloor;
-    private int lastTargetFloor;
+    private int lastDestinationFloor;
     private Marker targetMarker;
     private Marker userMarker;
     private NavTool navTool;
@@ -72,7 +73,7 @@ public class CompassManager implements SensorEventListener {
         rotationMatrix[12] = 1;
 
         lastFloor = Integer.MIN_VALUE;
-        lastTargetFloor = Integer.MIN_VALUE;
+        lastDestinationFloor = Integer.MIN_VALUE;
     }
 
     private void updateFloorIcon() {
@@ -108,12 +109,13 @@ public class CompassManager implements SensorEventListener {
     }
 
     /**
-     * @param target The new target room.
+     * @param destination The new target room.
      */
-    public void setTarget(@NotNull Room target) {
-        this.destination = target;
-        addTargetMarker(target.getLocation());
-        navTool.findPath(mainActivity.navigatorBridge.getCurrentLocation().getLongitude(), mainActivity.navigatorBridge.getCurrentLocation().getLatitude(), target);
+    public void setDestination(@NotNull Room destination) {
+        this.destination = destination;
+        this.lastDestination = destination;
+        addTargetMarker(destination.getLocation());
+        navTool.findPath(mainActivity.navigatorBridge.getCurrentLocation().getLongitude(), mainActivity.navigatorBridge.getCurrentLocation().getLatitude(), destination);
         getNextTarget();
 
         Location currentLocation = mainActivity.navigatorBridge.getCurrentLocation();
@@ -245,7 +247,7 @@ public class CompassManager implements SensorEventListener {
             // Azimuth is [0]
             currentAzimuth = (float) Math.toDegrees(orientationVector[0]);
 
-            target = mainActivity.navigatorBridge.getTargetRoom();
+            target = mainActivity.navigatorBridge.getDestinationRoom();
 
             // Animate the rotation of the compass (disk & arrow)
             RotateAnimation rotateCompass = new RotateAnimation(-lastAzimuth, -currentAzimuth, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
@@ -266,7 +268,10 @@ public class CompassManager implements SensorEventListener {
                 mainActivity.mapManager.getMapView().setCenter(new LatLong(currentLocation.getLatitude(), currentLocation.getLongitude()));
                 updateUserMarker();
 
-                if (mainActivity.navigatorBridge.getTargetRoom() != null) {
+                if (mainActivity.navigatorBridge.getDestinationRoom() != lastDestination)
+                    setDestination(mainActivity.navigatorBridge.getDestinationRoom());
+
+                if (destination != null) {
                     mainActivity.compassArrowText.setText(Math.round(currentLocation.distanceTo(target.getLocation())) + "m");
 
                     currentBearing = -currentLocation.bearingTo(target.getLocation());
@@ -293,13 +298,13 @@ public class CompassManager implements SensorEventListener {
                 updateFloorIcon();
             }
 
-            if (target != null) {
-                if (target.getFloor() != lastTargetFloor) {
+            if (destination != null) {
+                if (destination.getFloor() != lastDestinationFloor) {
                     updateFloorIcon();
                 }
             } else {
-                if (lastTargetFloor != Integer.MIN_VALUE) {
-                    lastTargetFloor = Integer.MIN_VALUE;
+                if (lastDestinationFloor != Integer.MIN_VALUE) {
+                    lastDestinationFloor = Integer.MIN_VALUE;
                     updateFloorIcon();
                 }
             }

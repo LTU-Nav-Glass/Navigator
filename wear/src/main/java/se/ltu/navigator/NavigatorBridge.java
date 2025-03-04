@@ -36,7 +36,7 @@ public class NavigatorBridge implements DataClient.OnDataChangedListener {
 
     private Location currentLocation;
     private int currentFloor;
-    private Room targetRoom;
+    private Room destinationRoom;
 
     public NavigatorBridge() {
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -80,8 +80,8 @@ public class NavigatorBridge implements DataClient.OnDataChangedListener {
         return currentFloor;
     }
 
-    public Room getTargetRoom() {
-        return targetRoom;
+    public Room getDestinationRoom() {
+        return destinationRoom;
     }
 
     @Override
@@ -110,9 +110,9 @@ public class NavigatorBridge implements DataClient.OnDataChangedListener {
                             break;
                         case "room":
                             if (Objects.equals(dataMap.getString(TARGET_ROOM_KEY), "null")) {
-                                currentLocation = null;
+                                destinationRoom = null;
                             } else {
-                                targetRoom = gson.fromJson(
+                                destinationRoom = gson.fromJson(
                                         dataMap.getString(TARGET_ROOM_KEY),
                                         Room.class
                                 );

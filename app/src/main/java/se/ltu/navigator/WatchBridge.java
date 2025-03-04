@@ -40,7 +40,7 @@ public class WatchBridge {
 
     private Location currentLocation;
     private int currentFloor;
-    private Room targetRoom;
+    private Room destinationRoom;
 
     public WatchBridge(MainActivity mainActivity) {
         dataClient = Wearable.getDataClient(mainActivity);
@@ -114,8 +114,8 @@ public class WatchBridge {
         sendData(putDataMapReq);
     }
 
-    public void setTargetRoom(Room room) {
-        targetRoom = room;
+    public void setDestinationRoom(Room room) {
+        destinationRoom = room;
 
         PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/room/" + System.currentTimeMillis());
         if (room == null) {
@@ -131,6 +131,6 @@ public class WatchBridge {
 
         setCurrentLocation(currentLocation);
         setCurrentFloor(currentFloor);
-        setTargetRoom(targetRoom);
+        setDestinationRoom(destinationRoom);
     }
 }
