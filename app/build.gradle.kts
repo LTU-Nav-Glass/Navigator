@@ -55,4 +55,5 @@ dependencies {
     implementation(libs.mapsforge.core.v0230)
     implementation(libs.play.services.wearable)
     implementation(libs.gson)
+    implementation(libs.play.services.location)
 }
