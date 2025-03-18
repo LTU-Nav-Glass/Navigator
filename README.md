@@ -1,7 +1,7 @@
 # Navigator: Always heading in the right direction
 
 Navigator is an indoor navigation Android application allowing users to seamlessly navigate towards any specific location, including indoor locations. The prototype found in this repository was developed as part of the Pervasive Computing course at LTU (Luleå Tekniska Universitet) and allows students and other staff at LTU to easily find their rooms at Luleå Campus of LTU.
-The app can be used in conjunction with AR glasses to allow a seamless integration of direction services for augmented reality contexts.
+The app can be used in conjunction with a smartwatch to allow a seamless integration of direction services onto your wrist.
 
 
 ## Contributors
@@ -21,10 +21,12 @@ https://www.ltu.se/en/education/course/m70/m7012e-pervasive-computing
 The prototype can be seen as an extention of the wonderful LTU Map Web App: https://map.ltu.se/
 
 ## Current work in progress
-...
+see [Issues](https://github.com/LTU-Nav-Glass/Navigator/issues)
 
 ## Project Status
-...
+🟡 WORKING PROTOTYPE
+
+We developed a working prototype for LTU campus Luleå in Hus A on the second floor. The Navigator should be able to successfully lead you to any room on the second floor in Hus A.
 
 ## Useful ressources
 ### Recommended papers
