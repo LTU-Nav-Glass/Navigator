@@ -43,4 +43,18 @@ We developed a working prototype for LTU campus Luleå in Hus A on the second fl
 [The paper is available here.](https://www.mdpi.com/2673-7418/3/1/1)
 
 ## FAQ
-...
+#### Does this project support iOS?
+No.
+
+#### How do I contribute to this project?
+You can link this repository via Android Studio, and run and modify it there. To add your changes, simply do a Pull Request.
+
+#### How do I install and run the application on a smartwatch?
+1. Connect your smartwatch to your phone
+2. Launch Android Studio on your computer with this application linked
+3. Connect your smartwatch via WiFi to your computer and Android Studio [(see here)](https://developer.android.com/training/wearables/get-started/connect-phone)
+4. Launch the app on your phone
+5. Launch **wear** via Android Studio on your smartwatch
+
+#### Does this only work on LTU campus in Luleå?
+Yes.
